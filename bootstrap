@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+aclocal --install -Im4
+autoheader
+automake --foreign --add-missing
+autoreconf --force --install -Im4
