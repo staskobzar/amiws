@@ -29,8 +29,25 @@
 #ifndef __AMIWS_H
 #define __AMIWS_H
 
+#include <stdio.h>
 #include <amip.h>
 #include "frozen.h"
 #include "mongoose.h"
+
+#define POLL_SLEEP 100
+
+struct amiws_params {
+  unsigned int port;
+  char *host;
+  char *address;
+};
+
+void amiws_init(struct amiws_params * params);
+
+void amiws_destroy();
+
+void amiws_loop();
+
+void ami_ev_handler(struct mg_connection *nc, int ev, void *ev_data);
 
 #endif

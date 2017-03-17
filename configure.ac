@@ -34,4 +34,9 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  src/Makefile
                  test/Makefile])
+
+# Enable Test Anything Protocol
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
+AC_PROG_AWK
+
 AC_OUTPUT

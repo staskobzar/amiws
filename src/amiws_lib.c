@@ -28,4 +28,55 @@
 #include "amiws.h"
 
 static struct mg_mgr mgr;
+static struct mg_connection *websock;
+
+void amiws_init(struct amiws_params* params)
+{
+  mg_mgr_init(&mgr, params);
+  mg_connect(&mgr, params->address, ami_ev_handler);
+}
+
+void amiws_destroy()
+{
+  mg_mgr_free(&mgr);
+}
+
+void amiws_loop()
+{
+  mg_mgr_poll(&mgr, POLL_SLEEP);
+}
+
+void ami_ev_handler(struct mg_connection *nc,
+                    int ev,
+                    void *ev_data)
+{
+  (void)ev_data;
+  struct mbuf *io = &nc->recv_mbuf;
+  struct amiws_params *prm = (struct amiws_params*) nc->mgr->user_data;
+  AMIVer ver;
+
+  switch(ev) {
+    case MG_EV_POLL:
+      printf("MG_EV_POLL\n");
+      break;
+    case MG_EV_CONNECT:
+      printf("MG_EV_CONNECT\n");
+      break;
+    case MG_EV_RECV:
+      printf("RECV: %.*s\n", (int)io->len, io->buf);
+      if (amiparse_prompt (io->buf, &ver) == RV_SUCCESS)
+        printf("AMI ver: %d.%d.%d\n", ver.major, ver.minor, ver.patch);
+      else
+        printf("Invalid prompt.\n");
+      break;
+    case MG_EV_CLOSE:
+      printf("MG_EV_CLOSE reconnect %s...\n", prm->address);
+      mg_connect(&mgr, prm->address, ami_ev_handler);
+      sleep(1);
+      break;
+    default:
+      printf("Event: %d\n", ev);
+      break;
+  }
+}
 
