@@ -28,12 +28,12 @@
 #include "amiws.h"
 
 static struct mg_mgr mgr;
-static struct mg_connection *websock;
 
 void amiws_init(struct amiws_params* params)
 {
   mg_mgr_init(&mgr, params);
   mg_connect(&mgr, params->address, ami_ev_handler);
+  mg_connect(&mgr, "tcp://127.0.0.1:5039", ami_ev_handler);
 }
 
 void amiws_destroy()
@@ -63,11 +63,15 @@ void ami_ev_handler(struct mg_connection *nc,
       printf("MG_EV_CONNECT\n");
       break;
     case MG_EV_RECV:
-      printf("RECV: %.*s\n", (int)io->len, io->buf);
+      printf("RECV %p [%lu]: %.*s\n", nc->mgr, io->len, (int)io->len, io->buf);
+      mbuf_remove(io, io->len);
+
+      /*
       if (amiparse_prompt (io->buf, &ver) == RV_SUCCESS)
         printf("AMI ver: %d.%d.%d\n", ver.major, ver.minor, ver.patch);
       else
         printf("Invalid prompt.\n");
+      */
       break;
     case MG_EV_CLOSE:
       printf("MG_EV_CLOSE reconnect %s...\n", prm->address);

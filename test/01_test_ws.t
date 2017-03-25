@@ -41,13 +41,15 @@ sub cb_func{
       });
 }
 
-AnyEvent::WebSocket::Client->new()->
-  connect('ws://localhost:8000')->
-  cb(\&cb_func);
-
 tcp_server '127.0.0.1', 5038, sub {
    my ($fh, $host, $port) = @_;
+
+  AnyEvent::WebSocket::Client->new()->
+    connect('ws://localhost:8000')->
+    cb(\&cb_func);
+
    while (my $pack = shift @packets) {
+     sleep 2;
      print "SEND: $pack";
      syswrite $fh, $pack;
    }
