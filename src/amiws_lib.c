@@ -29,11 +29,22 @@
 
 static struct mg_mgr mgr;
 
-void amiws_init(struct amiws_params* params)
+void amiws_init(struct amiws_config *conf)
 {
-  mg_mgr_init(&mgr, params);
-  mg_connect(&mgr, params->address, ami_ev_handler);
-  mg_connect(&mgr, "tcp://127.0.0.1:5039", ami_ev_handler);
+
+  mg_mgr_init(&mgr, NULL);
+
+  printf("Init connection\n");
+  for (struct amiws_conn* conn = conf->head; conn; conn = conn->next) {
+    amiws_connect_ami_server(conn);
+  }
+}
+
+void amiws_connect_ami_server(struct amiws_conn *conn)
+{
+  struct mg_connection *mgcon;
+  mgcon = mg_connect(&mgr, conn->address, ami_ev_handler);
+  mgcon->user_data = (void*) conn;
 }
 
 void amiws_destroy()
@@ -52,35 +63,71 @@ void ami_ev_handler(struct mg_connection *nc,
 {
   (void)ev_data;
   struct mbuf *io = &nc->recv_mbuf;
-  struct amiws_params *prm = (struct amiws_params*) nc->mgr->user_data;
-  AMIVer ver;
+  AMIPacket *ami_pack;
+  struct str *hv;
+  struct amiws_conn *conn = (struct amiws_conn *) nc->user_data;
 
   switch(ev) {
     case MG_EV_POLL:
-      printf("MG_EV_POLL\n");
+      //printf("MG_EV_POLL\n");
       break;
     case MG_EV_CONNECT:
       printf("MG_EV_CONNECT\n");
       break;
     case MG_EV_RECV:
-      printf("RECV %p [%lu]: %.*s\n", nc->mgr, io->len, (int)io->len, io->buf);
-      mbuf_remove(io, io->len);
+      //printf("RECV %p [%lu]: %.*s\n", nc->mgr, io->len, (int)io->len, io->buf);
 
-      /*
-      if (amiparse_prompt (io->buf, &ver) == RV_SUCCESS)
-        printf("AMI ver: %d.%d.%d\n", ver.major, ver.minor, ver.patch);
-      else
-        printf("Invalid prompt.\n");
-      */
+      if ( amiparse_prompt(io->buf, &conn->ami_ver) == RV_SUCCESS ) {
+        printf("AMI prompt: ver%d.%d.%d.\n", conn->ami_ver.major,
+            conn->ami_ver.minor, conn->ami_ver.patch);
+        ami_login(nc, conn);
+        mbuf_remove(io, io->len);
+      } else if (amiparse_stanza(io->buf,io->len) == RV_SUCCESS) {
+        ami_pack = amiparse_pack(io->buf);
+        printf("==================\n");
+        if (ami_pack->type == AMI_EVENT) {
+          hv = amiheader_value(ami_pack, Event);
+          printf("Event: %.*s\n", (int)hv->len, hv->buf);
+          // str_destroy (hv);
+        } else {
+          printf("Header: %s\n", pack_type_str( ami_pack->type ));
+        }
+        printf("==================\n");
+        mbuf_remove(io, io->len);
+        amipack_destroy(ami_pack);
+      } else {
+        printf("--- NOT STANZA ---\n");
+      }
+      // else : if packet is not complete (no stanza CRLF CRLF)
+      // then : break and wait till next part arrives
+
       break;
     case MG_EV_CLOSE:
-      printf("MG_EV_CLOSE reconnect %s...\n", prm->address);
-      mg_connect(&mgr, prm->address, ami_ev_handler);
+      printf("MG_EV_CLOSE reconnect ... [%s] %s\n", conn->address, conn->name);
+      amiws_connect_ami_server(conn);
       sleep(1);
       break;
     default:
       printf("Event: %d\n", ev);
       break;
   }
+}
+
+// TODO: when login fails - stop connecting
+void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
+{
+  struct str *pack_str;
+  AMIPacket *pack = (AMIPacket *) amipack_init ();
+  amipack_type(pack, AMI_ACTION);
+  amipack_append (pack, Action, "Login");
+  amipack_append (pack, Username, conn->username);
+  amipack_append (pack, Secret, conn->secret);
+
+  pack_str = amipack_to_str (pack);
+
+  mg_send(nc, pack_str->buf, pack_str->len);
+
+  str_destroy (pack_str);
+  amipack_destroy (pack);
 }
 

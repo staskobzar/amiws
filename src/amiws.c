@@ -3,14 +3,47 @@
 int main(int argc, const char *argv[])
 {
 
-  struct amiws_params params;
-  params.port = 5038;
-  params.host = "127.0.0.1";
-  params.address = "tcp://127.0.0.1:5038";
+  struct amiws_config *conf = (struct amiws_config *) calloc(1, sizeof(struct amiws_config));
+  struct amiws_conn *conn1  = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn));
+  //struct amiws_conn *conn2  = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn));
+
+  conf->head = conn1;
+  conf->tail = conn1;
+  conf->size = 1;
+  conn1->name = "gw05.mor";
+  conn1->port = 5038;
+  conn1->host = "192.168.1.105";
+  conn1->address = "tcp://192.168.1.105:5038";
+  conn1->username = "admin";
+  conn1->secret = "ulaval";
+  conn1->next = NULL;
+
+  /*
+  conf->head = conn1;
+  conf->tail = conn2;
+  conf->size = 2;
+
+  conn1->name = "gw05.mor";
+  conn1->port = 5038;
+  conn1->host = "127.0.0.1";
+  conn1->address = "tcp://127.0.0.1:5038";
+  conn1->username = "gw05";
+  conn1->secret = "ulaval";
+  conn1->next = conn2;
+
+  conn2->name = "gw07.mor";
+  conn2->port = 5039;
+  conn2->host = "127.0.0.1";
+  conn2->address = "tcp://127.0.0.1:5039";
+  conn2->username = "gw07";
+  conn2->secret = "ulaval";
+  conn2->next = NULL;
+  */
 
   atexit (amiws_destroy);
-  amiws_init(&params);
+  amiws_init(conf);
 
+  /*
   amiws_loop(); // connect
   amiws_loop(); // poll
   amiws_loop();
@@ -23,34 +56,13 @@ int main(int argc, const char *argv[])
   amiws_loop();
   amiws_loop();
   amiws_loop();
-
-  //for(;;) amiws_loop();
-  //amiws_destroy();
-  /*
-  struct mbuf buf;
-  mbuf_init(&buf, 0);
-  printf("buf->len = %lu; buf->size = %lu\n", buf.len, buf.size);
-  mbuf_append(&buf, "Hello ", 6);
-  printf("buf->len = %lu; buf->size = %lu\n", buf.len, buf.size);
-  mbuf_append(&buf, "World", 5);
-  printf("buf->len = %lu; buf->size = %lu\n", buf.len, buf.size);
-  mbuf_append(&buf, "\n", 1);
-  printf("buf->len = %lu; buf->size = %lu\n", buf.len, buf.size);
-  printf("buf = %.*s", buf.len, buf.buf);
-
-  mbuf_free(&buf);
-
-  struct mbuf *nbuf = (struct mbuf*) malloc(sizeof(struct mbuf));
-  mbuf_init(nbuf,0);
-  printf("nbuf->len = %lu; nbuf->size = %lu\n", nbuf->len, nbuf->size);
-  mbuf_append(nbuf, "Good night, ", 12);
-  printf("nbuf->len = %lu; nbuf->size = %lu\n", nbuf->len, nbuf->size);
-  mbuf_append(nbuf, "Sweet Prince!\n", 14);
-  printf("nbuf->len = %lu; nbuf->size = %lu\n", nbuf->len, nbuf->size);
-  printf("nbuf = %.*s", nbuf->len, nbuf->buf);
-  mbuf_free(nbuf);
-  free(nbuf);
   */
 
+  for(;;) amiws_loop();
+  //amiws_destroy();
+
+  //free(conn1);
+  //free(conn2);
+  //free(conf);
   return 0;
 }

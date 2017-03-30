@@ -34,20 +34,35 @@
 #include "frozen.h"
 #include "mongoose.h"
 
-#define POLL_SLEEP 100
+#define POLL_SLEEP 1000
 
-struct amiws_params {
-  unsigned int port;
-  char *host;
-  char *address;
+struct amiws_config {
+  struct amiws_conn *head;
+  struct amiws_conn *tail;
+  int size;
 };
 
-void amiws_init(struct amiws_params * params);
+struct amiws_conn {
+  char *name;
+  char *address;
+  unsigned int port;
+  char *host;
+  char *username;
+  char *secret;
+  AMIVer ami_ver;
+  struct amiws_conn *next;
+};
+
+void amiws_init(struct amiws_config *conf);
+
+void amiws_connect_ami_server(struct amiws_conn *conn);
 
 void amiws_destroy();
 
 void amiws_loop();
 
 void ami_ev_handler(struct mg_connection *nc, int ev, void *ev_data);
+
+void ami_login(struct mg_connection *nc, struct amiws_conn *conn);
 
 #endif
