@@ -35,6 +35,7 @@
 #include "mongoose.h"
 
 #define POLL_SLEEP 1000
+#define BUFSIZE 1024 * 8
 
 struct amiws_config {
   struct amiws_conn *head;
@@ -63,6 +64,12 @@ void amiws_loop();
 
 void ami_ev_handler(struct mg_connection *nc, int ev, void *ev_data);
 
+void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data);
+
+void websock_send (struct mg_connection *nc, const char *json);
+
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn);
+
+char *amipack_to_json(const char *buf);
 
 #endif
