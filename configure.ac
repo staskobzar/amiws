@@ -24,6 +24,9 @@ AC_CHECK_HEADER([amip.h], [],
              [ AC_MSG_ERROR([AMI library header "amip.h" not found.
         >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
+# Checks for syslog header files.
+AC_CHECK_HEADER([syslog.h], [],
+             [ AC_MSG_ERROR([syslog library header "syslog.h" not found.]) ])
 
 # Checks for typedefs, structures, and compiler characteristics.
 

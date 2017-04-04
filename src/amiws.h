@@ -30,17 +30,23 @@
 #define __AMIWS_H
 
 #include <stdio.h>
+#include <syslog.h>
 #include <amip.h>
+
+#include "config.h"
 #include "frozen.h"
 #include "mongoose.h"
 
-#define POLL_SLEEP 1000
+#define POLL_SLEEP 10000
 #define BUFSIZE 1024 * 8
 
 struct amiws_config {
   struct amiws_conn *head;
   struct amiws_conn *tail;
   int size;
+  int log_facility;
+  int log_level;
+  char *ws_port;
 };
 
 struct amiws_conn {

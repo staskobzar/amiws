@@ -4492,6 +4492,15 @@ fi
 
 
 
+# Checks for syslog header files.
+ac_fn_c_check_header_mongrel "$LINENO" "syslog.h" "ac_cv_header_syslog_h" "$ac_includes_default"
+if test "x$ac_cv_header_syslog_h" = xyes; then :
+
+else
+   as_fn_error $? "syslog library header \"syslog.h\" not found." "$LINENO" 5
+fi
+
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 

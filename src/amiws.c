@@ -10,6 +10,9 @@ int main(int argc, const char *argv[])
   conf->head      = conn1;
   conf->tail      = conn1;
   conf->size      = 1;
+  conf->log_facility = LOG_SYSLOG;
+  conf->log_level = LOG_DEBUG;
+  conf->ws_port   = "8000";
   conn1->name     = "gw05.mor";
   conn1->port     = 5038;
   conn1->host     = "192.168.1.105";
