@@ -7,6 +7,9 @@
 /* Define to 1 if you have the `amip' library (-lamip). */
 #define HAVE_LIBAMIP 1
 
+/* Define to 1 if you have the `config' library (-lconfig). */
+#define HAVE_LIBCONFIG 1
+
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 

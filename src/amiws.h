@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <syslog.h>
+#include <libconfig.h>
 #include <amip.h>
 
 #include "config.h"

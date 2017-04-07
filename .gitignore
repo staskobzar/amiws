@@ -65,6 +65,7 @@ Makefile.in
 /aclocal.m4
 /compile
 /config.guess
+/config.status
 /config.h.in
 /config.sub
 /configure.scan

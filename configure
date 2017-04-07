@@ -4084,6 +4084,55 @@ else
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for config_lookup_string in -lconfig" >&5
+$as_echo_n "checking for config_lookup_string in -lconfig... " >&6; }
+if ${ac_cv_lib_config_config_lookup_string+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lconfig  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char config_lookup_string ();
+int
+main ()
+{
+return config_lookup_string ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_config_config_lookup_string=yes
+else
+  ac_cv_lib_config_config_lookup_string=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_config_config_lookup_string" >&5
+$as_echo "$ac_cv_lib_config_config_lookup_string" >&6; }
+if test "x$ac_cv_lib_config_config_lookup_string" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBCONFIG 1
+_ACEOF
+
+  LIBS="-lconfig $LIBS"
+
+else
+   as_fn_error $? "libconfig library not found.
+        >> Install it from \"https://github.com/hyperrealm/libconfig.git\" and retry." "$LINENO" 5
+fi
+
+
 # Checks for header files.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'

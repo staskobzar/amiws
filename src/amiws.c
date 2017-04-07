@@ -16,7 +16,9 @@ int main(int argc, const char *argv[])
   conn1->name     = "gw05.mor";
   conn1->port     = 5038;
   conn1->host     = "192.168.1.105";
+  //conn1->host     = "127.0.0.1";
   conn1->address  = "tcp://192.168.1.105:5038";
+  //conn1->address  = "tcp://127.0.0.1:5038";
   conn1->username = "admin";
   conn1->secret   = "ulaval";
   conn1->next     = NULL;

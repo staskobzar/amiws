@@ -36,7 +36,7 @@ void amiws_init(struct amiws_config *conf)
   mg_mgr_init(&mgr, NULL);
 
   setlogmask (LOG_UPTO (conf->log_level));
-  openlog(PACKAGE, LOG_CONS | LOG_PID | LOG_NDELAY, conf->log_facility);
+  openlog(PACKAGE, LOG_PERROR | LOG_CONS | LOG_PID | LOG_NDELAY, conf->log_facility);
 
   syslog (LOG_INFO, "Initiate connection");
   for (struct amiws_conn* conn = conf->head; conn; conn = conn->next) {
@@ -111,6 +111,7 @@ void ami_ev_handler(struct mg_connection *nc,
     case MG_EV_CLOSE:
       syslog (LOG_INFO, "MG_EV_CLOSE reconnect ... [%s] %s\n", conn->address, conn->name);
       amiws_connect_ami_server(conn);
+      sleep(1);
       break;
     default:
       syslog (LOG_DEBUG, "Unhandled connection event: %d", ev);
