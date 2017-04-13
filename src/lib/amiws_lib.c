@@ -32,6 +32,7 @@ struct mg_connection *nc_ws;
 
 void amiws_init(struct amiws_config *conf)
 {
+  char port_str[5];
 
   mg_mgr_init(&mgr, NULL);
 
@@ -43,8 +44,9 @@ void amiws_init(struct amiws_config *conf)
     amiws_connect_ami_server(conn);
   }
 
-  syslog (LOG_INFO, "Listening Web Socket port %s", conf->ws_port);
-  nc_ws = mg_bind(&mgr, conf->ws_port, websock_ev_handler);
+  sprintf(port_str, "%d", conf->ws_port);
+  syslog (LOG_INFO, "Listening Web Socket port %s", port_str);
+  nc_ws = mg_bind(&mgr, port_str, websock_ev_handler);
   mg_set_protocol_http_websocket(nc_ws);
 }
 
@@ -204,3 +206,174 @@ void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
   amipack_destroy (pack);
 }
 
+struct amiws_config *read_conf(const char *filename)
+{
+  FILE *fh;
+  yaml_parser_t parser;
+  yaml_token_t  token;
+  struct amiws_config *conf;
+  struct amiws_conn *conn;
+  char *key, *val;
+  enum token_context context = CXT_TKN_KEY,
+                     block;
+
+  if (!yaml_parser_initialize (&parser)) {
+    fprintf(stderr, "ERROR: Failed to initialize YAML parser.\n");
+    return NULL;
+  }
+
+  if ( (fh = fopen( filename, "rb" )) == NULL ) {
+    fprintf(stderr, "ERROR: file \"%s\" does not exists or can not be read.\n", filename);
+    return NULL;
+  }
+
+  yaml_parser_set_input_file (&parser, fh);
+
+  conf = (struct amiws_config *) calloc(1, sizeof(struct amiws_config));
+  /* global parameters */
+  conf->log_level     = DEFAULT_LOG_LEVEL;
+  conf->log_facility  = DEFAULT_LOG_FACILITY;
+  conf->ws_port       = DEFAULT_WEBSOCK_PORT;
+  conf->size          = 0;
+  conf->head          = NULL;
+  conf->head          = NULL;
+
+  while(1) {
+    if (!yaml_parser_scan(&parser, &token)) {
+      fprintf(stderr, "ERROR: Failed to parse token.\n");
+      break;
+    }
+
+    if (token.type == YAML_KEY_TOKEN) context = CXT_TKN_KEY;
+    if (token.type == YAML_VALUE_TOKEN) context = CXT_TKN_VALUE;
+    if (token.type == YAML_BLOCK_ENTRY_TOKEN) {
+      conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn));
+      block = CXT_BLOCK_START;
+    }
+    if (token.type == YAML_BLOCK_END_TOKEN && block == CXT_BLOCK_START) {
+      if (conf->size == 0) {
+        conf->head = conn;
+        conf->tail = conn;
+        conn->next = NULL;
+      } else {
+        conf->tail->next = conn;
+        conf->tail = conn;
+      }
+      conf->size++;
+      block = CXT_BLOCK_END;
+    }
+    if (token.type == YAML_SCALAR_TOKEN) {
+      if (context == CXT_TKN_KEY) {
+        key = strdup(token.data.scalar.value);
+        assert (key);
+      } else {
+        val = strdup(token.data.scalar.value);
+        assert (val);
+        if (block == CXT_BLOCK_START) set_conn_param(conn, key, val);
+        else set_conf_param(conf, key, val);
+      }
+    }
+    if( token.type == YAML_STREAM_END_TOKEN ) break;
+    yaml_token_delete(&token);
+  }
+
+  yaml_parser_delete(&parser);
+  free(val);
+  free(key);
+  fclose(fh);
+  return valid_conf(conf);
+}
+
+static void set_conf_param( struct amiws_config *conf,
+                            char *key,
+                            char *val)
+{
+  if (strcmp(key, "log_level") == 0) {
+
+    conf->log_level = intval(val);
+    if (conf->log_level == -1)
+      fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+
+  } else if (strcmp(key, "log_facility") == 0) {
+
+    conf->log_facility = intval(val);
+    if (conf->log_facility == -1)
+      fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+
+  } else if (strcmp(key, "ws_port") == 0) {
+
+    conf->ws_port = intval(val);
+    if (conf->ws_port == -1)
+      fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+
+  } else {
+    fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
+  }
+}
+
+static void set_conn_param( struct amiws_conn *conn,
+                            char *key,
+                            char *val)
+{
+  if (strcmp(key, "name") == 0) {
+
+    conn->name = val;
+
+  } else if (strcmp(key, "port") == 0) {
+
+    conn->port = intval(val);
+    if (conn->port == -1)
+      fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+
+  } else if (strcmp(key, "host") == 0) {
+
+    conn->host = val;
+
+  } else if (strcmp(key, "username") == 0) {
+
+    conn->username = val;
+
+  } else if (strcmp(key, "secret") == 0) {
+
+    conn->secret = val;
+
+  } else {
+    fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
+  }
+}
+
+static int str2int( const char *val, int len)
+{
+  int res = 0, i = 0, iv = 0;
+
+  if (!len) return -1;
+
+  for (i = 0; i < len; i++) {
+
+    iv = val[i] - '0';
+
+    if (iv < 0 || iv > 10) return -1;
+
+    res = (res * 10) + iv;
+
+  }
+
+  return res;
+}
+
+static struct amiws_config *valid_conf(struct amiws_config *conf)
+{
+  if (  conf->log_level    == -1 ||
+        conf->log_facility == -1 ||
+        conf->ws_port      == -1) {
+    free_conf(conf);
+    return NULL;
+  }
+  return conf;
+}
+
+static void free_conf(struct amiws_config *conf)
+{
+  if (conf)
+    free(conf);
+}

@@ -31,15 +31,21 @@
 
 #include <stdio.h>
 #include <syslog.h>
-#include <libconfig.h>
+#include <yaml.h>
 #include <amip.h>
 
 #include "config.h"
 #include "frozen.h"
 #include "mongoose.h"
 
+#define DEFAULT_LOG_LEVEL     LOG_INFO
+#define DEFAULT_LOG_FACILITY  LOG_SYSLOG
+#define DEFAULT_WEBSOCK_PORT  8000
+
 #define POLL_SLEEP 10000
 #define BUFSIZE 1024 * 8
+
+#define intval(val) str2int(val, strlen(val))
 
 struct amiws_config {
   struct amiws_conn *head;
@@ -47,7 +53,7 @@ struct amiws_config {
   int size;
   int log_facility;
   int log_level;
-  char *ws_port;
+  int ws_port;
 };
 
 struct amiws_conn {
@@ -59,6 +65,13 @@ struct amiws_conn {
   char *secret;
   AMIVer ami_ver;
   struct amiws_conn *next;
+};
+
+enum token_context {
+  CXT_TKN_KEY,
+  CXT_TKN_VALUE,
+  CXT_BLOCK_START,
+  CXT_BLOCK_END,
 };
 
 void amiws_init(struct amiws_config *conf);
@@ -78,5 +91,17 @@ void websock_send (struct mg_connection *nc, const char *json);
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn);
 
 char *amipack_to_json(const char *buf);
+
+struct amiws_config *read_conf(const char *filename);
+
+static void set_conf_param(struct amiws_config *conf, char *key, char *value);
+
+static void set_conn_param(struct amiws_conn *conn, char *key, char *value);
+
+static int str2int(const char *val, int len);
+
+static struct amiws_config *valid_conf(struct amiws_config *conf);
+
+static void free_conf(struct amiws_config *conf);
 
 #endif

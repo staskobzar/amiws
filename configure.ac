@@ -5,6 +5,8 @@ AC_PREREQ([2.69])
 AC_INIT([amiws], [1.0.0], [staskobzar@gmail.com])
 AM_INIT_AUTOMAKE([foreign parallel-tests color-tests -Wall -Werror])
 
+AC_PROG_RANLIB
+
 AC_CONFIG_SRCDIR([src/amiws.c])
 AC_CONFIG_HEADERS([config.h])
 
@@ -19,9 +21,9 @@ AC_CHECK_LIB([amip], [amipack_init], [],
              [ AC_MSG_ERROR([AMI library "amip" not found.
         >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
-AC_CHECK_LIB([config], [config_lookup_string], [],
-             [ AC_MSG_ERROR([libconfig library not found.
-        >> Install it from "https://github.com/hyperrealm/libconfig.git" and retry.]) ])
+AC_CHECK_LIB([yaml], [yaml_parser_initialize], [],
+             [ AC_MSG_ERROR([YAML library not found.
+        >> Install libyaml and retry.]) ])
 
 # Checks for header files.
 AC_CHECK_HEADER([amip.h], [],
@@ -36,10 +38,12 @@ AC_CHECK_HEADER([syslog.h], [],
 
 # Checks for library functions.
 
+AM_PROG_AR
 AC_CONFIG_FILES([Makefile
                  doc/Doxyfile
                  doc/Makefile
                  src/Makefile
+                 src/lib/Makefile
                  test/Makefile])
 
 # Enable Test Anything Protocol

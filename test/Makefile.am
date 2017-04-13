@@ -1,10 +1,11 @@
 LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
 
-TESTS = 01_test_ami.t
+TESTS = config_test
 
-check_PROGRAMS = mytest
+check_PROGRAMS = config_test
 
-mytest_SOURCE = mytest.c $(top_builddir)/src/amiws.h
-mytest_CFLAGS = -I$(top_builddir)/src
+config_test_SOURCE=config_test.c
+config_test_CFLAGS= -I$(top_builddir)/src/lib
+config_test_LDADD= -L$(top_builddir)/src/lib -lamiws -lmongoose -lfrozen -lcmocka
 
