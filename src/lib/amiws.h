@@ -47,6 +47,22 @@
 
 #define intval(val) str2int(val, strlen(val))
 
+#define macro_init_conf(conf) conf = (struct amiws_config *) calloc(1, sizeof(struct amiws_config));\
+  conf->log_level     = DEFAULT_LOG_LEVEL;    \
+  conf->log_facility  = DEFAULT_LOG_FACILITY; \
+  conf->ws_port       = DEFAULT_WEBSOCK_PORT; \
+  conf->size          = 0;                    \
+  conf->head          = NULL;                 \
+  conf->tail          = NULL;                 \
+
+#define macro_init_conn(conn) conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn)); \
+  conn->port = 5038;      \
+  conn->name = NULL;      \
+  conn->host = NULL;      \
+  conn->username = NULL;  \
+  conn->secret = NULL;    \
+
+
 struct amiws_config {
   struct amiws_conn *head;
   struct amiws_conn *tail;

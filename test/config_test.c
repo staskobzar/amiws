@@ -23,19 +23,105 @@ static void config_file_with_single_host(void **state)
 {
   (void) *state;
   struct amiws_config *conf = read_conf("fixtures/single_ami_host.yml");
+  struct amiws_conn *conn = conf->head;
   assert_int_equal(conf->log_facility, LOG_LOCAL4);
   assert_int_equal(conf->log_level,    LOG_DEBUG);
   assert_int_equal(conf->ws_port,      8008);
 
   assert_int_equal(conf->size,      1);
+
+  assert_string_equal(conn->name, "gw05.mor");
+  assert_int_equal(conn->port, 5038);
+  assert_string_equal(conn->host, "10.168.1.100");
+  assert_string_equal(conn->username, "admin");
+  assert_string_equal(conn->secret, "passw0rd");
+}
+
+static void config_file_with_multiple_hosts(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/multi_ami_host.yml");
+  struct amiws_conn *conn;
+
+  assert_int_equal(conf->size, 3);
+  conn = conf->head;
+
+  assert_string_equal(conn->name, "gw01.host");
+  assert_int_equal(conn->port, 5038);
+  assert_string_equal(conn->host, "10.168.1.100");
+  assert_string_equal(conn->username, "admin");
+  assert_string_equal(conn->secret, "pass001");
+
+  conn = conn->next;
+  assert_non_null(conn);
+  assert_string_equal(conn->name, "gw02.host");
+  assert_int_equal(conn->port, 5039);
+  assert_string_equal(conn->host, "10.12.30.1");
+  assert_string_equal(conn->username, "admin");
+  assert_string_equal(conn->secret, "pass002");
+
+  conn = conn->next;
+  assert_non_null(conn);
+  assert_string_equal(conn->name, "gw03.ast");
+  assert_int_equal(conn->port, 6038);
+  assert_string_equal(conn->host, "10.0.110.10");
+  assert_string_equal(conn->username, "asterisk");
+  assert_string_equal(conn->secret, "pass003");
+}
+
+static void config_file_test_default_vals(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/default_vals.yml");
+  struct amiws_conn *conn = conf->head;
+  assert_int_equal(conf->size, 1);
+  assert_int_equal(conf->log_facility, LOG_SYSLOG);
+  assert_int_equal(conf->log_level,    LOG_INFO);
+  assert_int_equal(conf->ws_port,      8000);
+
+  assert_int_equal(conn->port, 5038);
+}
+
+static void config_file_with_missing_password (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/missing_password.yml");
+  assert_null(conf);
+}
+
+static void config_file_with_missing_name (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/missing_name.yml");
+  assert_null(conf);
+}
+
+static void config_file_with_missing_host (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/missing_host.yml");
+  assert_null(conf);
+}
+
+static void config_file_with_missing_username (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/missing_username.yml");
+  assert_null(conf);
 }
 
 int main(int argc, const char *argv[])
 {
   const struct CMUnitTest tests[] = {
     cmocka_unit_test(config_file_does_not_exists),
-    cmocka_unit_test(config_file_with_single_host),
     cmocka_unit_test(config_file_with_invalid_int_value),
+    cmocka_unit_test(config_file_with_single_host),
+    cmocka_unit_test(config_file_with_multiple_hosts),
+    cmocka_unit_test(config_file_test_default_vals),
+    cmocka_unit_test(config_file_with_missing_password),
+    cmocka_unit_test(config_file_with_missing_name),
+    cmocka_unit_test(config_file_with_missing_host),
+    cmocka_unit_test(config_file_with_missing_username),
   };
   cmocka_set_message_output(CM_OUTPUT_TAP);
 

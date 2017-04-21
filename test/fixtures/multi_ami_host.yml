@@ -1,0 +1,24 @@
+# Test file with single AMI host
+
+log_level     : 7     # LOG_DEBUG
+log_facility  : 160   # LOG_LOCAL4
+ws_port       : 9000  # WebSocket port
+
+# list of AMI hosts
+amihosts:
+  - name: gw01.host
+    port: 5038
+    host: 10.168.1.100
+    username: admin
+    secret: pass001
+  - name: gw02.host
+    port: 5039
+    host: 10.12.30.1
+    username: admin
+    secret: pass002
+  - name: gw03.ast
+    port: 6038
+    host: 10.0.110.10
+    username: asterisk
+    secret: pass003
+

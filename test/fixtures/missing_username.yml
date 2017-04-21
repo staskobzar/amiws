@@ -1,0 +1,9 @@
+# Test missing required secret parameter for AMI host
+ws_port: 80
+
+# list of AMI hosts
+amihosts:
+  - name: gw05.mor
+    host: 10.168.1.100
+    secret: passwd
+

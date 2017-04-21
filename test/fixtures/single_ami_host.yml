@@ -6,9 +6,9 @@ ws_port       : 8008  # WebSocket port
 
 # list of AMI hosts
 amihosts:
-  -name: gw05.mor
-   port: 5038;
-   host: 10.168.1.100
-   username: admin
-   secret: passw0rd
+  - name: gw05.mor
+    port: 5038
+    host: 10.168.1.100
+    username: admin
+    secret: passw0rd
 

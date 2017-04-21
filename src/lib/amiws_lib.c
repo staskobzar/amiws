@@ -229,14 +229,7 @@ struct amiws_config *read_conf(const char *filename)
 
   yaml_parser_set_input_file (&parser, fh);
 
-  conf = (struct amiws_config *) calloc(1, sizeof(struct amiws_config));
-  /* global parameters */
-  conf->log_level     = DEFAULT_LOG_LEVEL;
-  conf->log_facility  = DEFAULT_LOG_FACILITY;
-  conf->ws_port       = DEFAULT_WEBSOCK_PORT;
-  conf->size          = 0;
-  conf->head          = NULL;
-  conf->head          = NULL;
+  macro_init_conf(conf);
 
   while(1) {
     if (!yaml_parser_scan(&parser, &token)) {
@@ -247,7 +240,7 @@ struct amiws_config *read_conf(const char *filename)
     if (token.type == YAML_KEY_TOKEN) context = CXT_TKN_KEY;
     if (token.type == YAML_VALUE_TOKEN) context = CXT_TKN_VALUE;
     if (token.type == YAML_BLOCK_ENTRY_TOKEN) {
-      conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn));
+      macro_init_conn(conn);
       block = CXT_BLOCK_START;
     }
     if (token.type == YAML_BLOCK_END_TOKEN && block == CXT_BLOCK_START) {
@@ -265,12 +258,10 @@ struct amiws_config *read_conf(const char *filename)
     if (token.type == YAML_SCALAR_TOKEN) {
       if (context == CXT_TKN_KEY) {
         key = strdup(token.data.scalar.value);
-        assert (key);
       } else {
         val = strdup(token.data.scalar.value);
-        assert (val);
-        if (block == CXT_BLOCK_START) set_conn_param(conn, key, val);
-        else set_conf_param(conf, key, val);
+        if (block == CXT_BLOCK_START) { set_conn_param(conn, key, val); }
+        else { set_conf_param(conf, key, val); }
       }
     }
     if( token.type == YAML_STREAM_END_TOKEN ) break;
@@ -278,8 +269,6 @@ struct amiws_config *read_conf(const char *filename)
   }
 
   yaml_parser_delete(&parser);
-  free(val);
-  free(key);
   fclose(fh);
   return valid_conf(conf);
 }
@@ -337,8 +326,12 @@ static void set_conn_param( struct amiws_conn *conn,
 
     conn->secret = val;
 
+  } else if (strcmp(key, "amihosts") == 0) {
+
+    fprintf(stderr, "INFO: Parsing hosts block.\n");
+
   } else {
-    fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
+    fprintf(stderr, "ERROR: Unknown parameter '%s: %s'.\n", key, val);
   }
 }
 
@@ -363,17 +356,43 @@ static int str2int( const char *val, int len)
 
 static struct amiws_config *valid_conf(struct amiws_config *conf)
 {
+  int err = 0;
   if (  conf->log_level    == -1 ||
         conf->log_facility == -1 ||
         conf->ws_port      == -1) {
     free_conf(conf);
     return NULL;
   }
-  return conf;
+  for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
+    if (conn->name == NULL) {
+      fprintf(stderr, "ERROR: Missing 'name' parameter for host.\n");
+      err = 1;
+    }
+    if (conn->port == -1) {
+      err = 1;
+    }
+    if (conn->host == NULL) {
+      fprintf(stderr, "ERROR: Missing 'host' parameter for %s.\n", conn->name);
+      err = 1;
+    }
+    if (conn->username == NULL) {
+      fprintf(stderr, "ERROR: Missing 'username' parameter for %s.\n", conn->name);
+      err = 1;
+    }
+    if (conn->secret == NULL) {
+      fprintf(stderr, "ERROR: Missing 'secret' parameter for host %s.\n", conn->name);
+      err = 1;
+    }
+  }
+  if(err) free_conf(conf);
+  return err ? NULL : conf;
 }
 
 static void free_conf(struct amiws_config *conf)
 {
+  for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
+    free(conn);
+  }
   if (conf)
     free(conf);
 }
