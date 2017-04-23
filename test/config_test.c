@@ -110,6 +110,36 @@ static void config_file_with_missing_username (void **state)
   assert_null(conf);
 }
 
+static void config_file_with_single_host_connection_address(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/single_ami_host.yml");
+  struct amiws_conn *conn = conf->head;
+  assert_string_equal(conn->address, "tcp://10.168.1.100:5038");
+}
+
+static void config_file_with_multiple_hosts_connection_address(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/multi_ami_host.yml");
+  struct amiws_conn *conn;
+
+  conn = conf->head;
+  assert_string_equal(conn->address, "tcp://10.168.1.100:5038");
+  conn = conn->next;
+  assert_string_equal(conn->address, "tcp://10.12.30.1:5039");
+  conn = conn->next;
+  assert_string_equal(conn->address, "tcp://10.0.110.10:6038");
+}
+
+static void config_file_test_default_vals_connection_address(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/default_vals.yml");
+  struct amiws_conn *conn = conf->head;
+  assert_string_equal(conn->address, "tcp://10.168.1.100:5038");
+}
+
 int main(int argc, const char *argv[])
 {
   const struct CMUnitTest tests[] = {
@@ -122,6 +152,9 @@ int main(int argc, const char *argv[])
     cmocka_unit_test(config_file_with_missing_name),
     cmocka_unit_test(config_file_with_missing_host),
     cmocka_unit_test(config_file_with_missing_username),
+    cmocka_unit_test(config_file_with_single_host_connection_address),
+    cmocka_unit_test(config_file_with_multiple_hosts_connection_address),
+    cmocka_unit_test(config_file_test_default_vals_connection_address),
   };
   cmocka_set_message_output(CM_OUTPUT_TAP);
 

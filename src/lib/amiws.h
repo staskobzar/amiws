@@ -38,6 +38,7 @@
 #include "frozen.h"
 #include "mongoose.h"
 
+#define DEFAULT_CONF_FILE     "/etc/amiws.yaml"
 #define DEFAULT_LOG_LEVEL     LOG_INFO
 #define DEFAULT_LOG_FACILITY  LOG_SYSLOG
 #define DEFAULT_WEBSOCK_PORT  8000
@@ -57,6 +58,7 @@
 
 #define macro_init_conn(conn) conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn)); \
   conn->port = 5038;      \
+  conn->address = NULL;      \
   conn->name = NULL;      \
   conn->host = NULL;      \
   conn->username = NULL;  \
@@ -110,14 +112,19 @@ char *amipack_to_json(const char *buf);
 
 struct amiws_config *read_conf(const char *filename);
 
+/* private methods */
 static void set_conf_param(struct amiws_config *conf, char *key, char *value);
 
 static void set_conn_param(struct amiws_conn *conn, char *key, char *value);
 
 static int str2int(const char *val, int len);
 
+static char* int2str(const char *val, int len);
+
 static struct amiws_config *valid_conf(struct amiws_config *conf);
 
 static void free_conf(struct amiws_config *conf);
+
+static void usage();
 
 #endif

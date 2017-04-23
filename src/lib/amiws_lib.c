@@ -82,9 +82,11 @@ void ami_ev_handler(struct mg_connection *nc,
     case MG_EV_POLL:
       //printf("MG_EV_POLL\n");
       break;
+
     case MG_EV_CONNECT:
-      syslog (LOG_DEBUG, "MG_EV_CONNECT");
+      syslog (LOG_DEBUG, "Event: MG_EV_CONNECT");
       break;
+
     case MG_EV_RECV:
 
       if ( amiparse_prompt(io->buf, &conn->ami_ver) == RV_SUCCESS ) {
@@ -109,6 +111,9 @@ void ami_ev_handler(struct mg_connection *nc,
         syslog (LOG_DEBUG, "Incomplete AMI packet: %.*s", (int)io->len, io->buf);
       }
 
+      break;
+    case MG_EV_SEND:
+      // sent data
       break;
     case MG_EV_CLOSE:
       syslog (LOG_INFO, "MG_EV_CLOSE reconnect ... [%s] %s\n", conn->address, conn->name);
@@ -269,7 +274,9 @@ struct amiws_config *read_conf(const char *filename)
   }
 
   yaml_parser_delete(&parser);
+
   fclose(fh);
+
   return valid_conf(conf);
 }
 
@@ -357,6 +364,7 @@ static int str2int( const char *val, int len)
 static struct amiws_config *valid_conf(struct amiws_config *conf)
 {
   int err = 0;
+
   if (  conf->log_level    == -1 ||
         conf->log_facility == -1 ||
         conf->ws_port      == -1) {
@@ -364,6 +372,7 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
     return NULL;
   }
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
+    char address[256] = "";
     if (conn->name == NULL) {
       fprintf(stderr, "ERROR: Missing 'name' parameter for host.\n");
       err = 1;
@@ -383,8 +392,15 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
       fprintf(stderr, "ERROR: Missing 'secret' parameter for host %s.\n", conn->name);
       err = 1;
     }
+    if(!err) {
+      sprintf(address, "tcp://%s:%d", conn->host, conn->port);
+      conn->address = strdup(address);
+    }
   }
-  if(err) free_conf(conf);
+
+  // if error found - free conf struct and return NULL
+  if(err) { free_conf(conf); }
+
   return err ? NULL : conf;
 }
 
