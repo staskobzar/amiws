@@ -28,6 +28,7 @@
 #include "amiws.h"
 
 static struct mg_mgr mgr;
+static struct mg_serve_http_opts s_http_server_opts;
 struct mg_connection *nc_ws;
 
 void amiws_init(struct amiws_config *conf)
@@ -39,7 +40,7 @@ void amiws_init(struct amiws_config *conf)
   setlogmask (LOG_UPTO (conf->log_level));
   openlog(PACKAGE, LOG_PERROR | LOG_CONS | LOG_PID | LOG_NDELAY, conf->log_facility);
 
-  syslog (LOG_INFO, "Initiate connection");
+  syslog (LOG_INFO, "AMI hosts connecting.");
   for (struct amiws_conn* conn = conf->head; conn; conn = conn->next) {
     amiws_connect_ami_server(conn);
   }
@@ -48,6 +49,7 @@ void amiws_init(struct amiws_config *conf)
   syslog (LOG_INFO, "Listening Web Socket port %s", port_str);
   nc_ws = mg_bind(&mgr, port_str, websock_ev_handler);
   mg_set_protocol_http_websocket(nc_ws);
+  s_http_server_opts.document_root = conf->web_root;
 }
 
 void amiws_connect_ami_server(struct amiws_conn *conn)
@@ -170,8 +172,15 @@ void websock_send (struct mg_connection *nc, const char *json)
 
 void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
 {
-  (void)nc;
+  struct http_message *hm = (struct http_message *) ev_data;
+
   switch (ev) {
+    case MG_EV_HTTP_REQUEST: {
+      syslog (LOG_INFO, "New HTTP connection from %s:%d",
+             inet_ntoa(nc->sa.sin.sin_addr), ntohs(nc->sa.sin.sin_port));
+      mg_serve_http(nc, hm, s_http_server_opts); /* Serve static content */
+      break;
+    }
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE: {
       syslog (LOG_INFO, "New Web Socket connection from %s:%d",
              inet_ntoa(nc->sa.sin.sin_addr), ntohs(nc->sa.sin.sin_port));
@@ -302,6 +311,10 @@ static void set_conf_param( struct amiws_config *conf,
     if (conf->ws_port == -1)
       fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
 
+  } else if (strcmp(key, "web_root") == 0) {
+
+    conf->web_root = val;
+
   } else {
     fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
   }
@@ -336,6 +349,10 @@ static void set_conn_param( struct amiws_conn *conn,
   } else if (strcmp(key, "amihosts") == 0) {
 
     fprintf(stderr, "INFO: Parsing hosts block.\n");
+
+  } else if (strcmp(key, "amihosts") == 0) {
+
+    conn->secret = val;
 
   } else {
     fprintf(stderr, "ERROR: Unknown parameter '%s: %s'.\n", key, val);

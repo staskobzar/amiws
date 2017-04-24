@@ -39,6 +39,7 @@
 #include "mongoose.h"
 
 #define DEFAULT_CONF_FILE     "/etc/amiws.yaml"
+#define DEFAULT_WEB_ROOT      "./web_root"
 #define DEFAULT_LOG_LEVEL     LOG_INFO
 #define DEFAULT_LOG_FACILITY  LOG_SYSLOG
 #define DEFAULT_WEBSOCK_PORT  8000
@@ -55,10 +56,12 @@
   conf->size          = 0;                    \
   conf->head          = NULL;                 \
   conf->tail          = NULL;                 \
+  conf->web_root      = DEFAULT_WEB_ROOT;     \
+
 
 #define macro_init_conn(conn) conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn)); \
   conn->port = 5038;      \
-  conn->address = NULL;      \
+  conn->address = NULL;   \
   conn->name = NULL;      \
   conn->host = NULL;      \
   conn->username = NULL;  \
@@ -72,6 +75,7 @@ struct amiws_config {
   int log_facility;
   int log_level;
   int ws_port;
+  char *web_root;
 };
 
 struct amiws_conn {
@@ -113,6 +117,7 @@ char *amipack_to_json(const char *buf);
 struct amiws_config *read_conf(const char *filename);
 
 /* private methods */
+
 static void set_conf_param(struct amiws_config *conf, char *key, char *value);
 
 static void set_conn_param(struct amiws_conn *conn, char *key, char *value);

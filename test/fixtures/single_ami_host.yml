@@ -3,6 +3,7 @@
 log_level     : 7     # LOG_DEBUG
 log_facility  : 160   # LOG_LOCAL4
 ws_port       : 8008  # WebSocket port
+web_root      : /home/amiws/web_root
 
 # list of AMI hosts
 amihosts:
