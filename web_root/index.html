@@ -4,9 +4,6 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
     <title>Asterisk Stats</title>
 
   </head>
@@ -14,7 +11,20 @@
 
     <div class="container-fluid">
       <h1>Asterisk Stats</h1>
-      <textarea id="events"></textarea>
+      <div class="row">
+        <div class="col-xs-12 col-md-8">
+
+          <h1>Packets received: <span id="pnum">0</span></h1>
+
+          <div id="calls_list">
+
+          </div>
+
+        </div>
+        <div class="col-xs-6 col-md-4">
+          <pre id="console" style="height:80%;font-size:x-small"></pre>
+        </div>
+      </div>
     </div>
   </body>
   <!-- Latest compiled and minified JavaScript -->

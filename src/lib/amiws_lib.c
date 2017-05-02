@@ -105,6 +105,7 @@ void ami_ev_handler(struct mg_connection *nc,
           syslog (LOG_DEBUG, "JSON STRING: %s", json);
           websock_send (nc, json);
         }
+        free(json);
         mbuf_remove(io, io->len);
 
       } else {
@@ -136,12 +137,11 @@ char *amipack_to_json(const char *ami_pack_str)
   int     len           = 0;
 
   if( (ami_pack = amiparse_pack(ami_pack_str)) == NULL ) {
+    syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
     return NULL;
   }
 
   len += json_printf(&out, "{ type: %d, data: {", ami_pack->type);
-
-  struct str *sp = amipack_to_str(ami_pack);
 
   for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
     len += json_printf(&out, "%Q: %Q", hdr->name->buf, hdr->value->buf);
