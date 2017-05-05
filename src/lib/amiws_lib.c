@@ -77,7 +77,8 @@ void ami_ev_handler(struct mg_connection *nc,
 {
   (void)ev_data;
   struct mbuf *io = &nc->recv_mbuf;
-  char *json;
+  char *json, *buf;
+  int len;
   struct amiws_conn *conn = (struct amiws_conn *) nc->user_data;
 
   switch(ev) {
@@ -97,22 +98,27 @@ void ami_ev_handler(struct mg_connection *nc,
             conn->ami_ver.minor, conn->ami_ver.patch);
         ami_login(nc, conn);
         mbuf_remove(io, io->len);
+        break;
 
-      } else if (amiparse_stanza(io->buf,io->len) == RV_SUCCESS) {
-
-        json = amipack_to_json(io->buf);
-        if (json != NULL) {
-          syslog (LOG_DEBUG, "JSON STRING: %s", json);
-          websock_send (nc, json);
-        }
-        free(json);
-        mbuf_remove(io, io->len);
-
-      } else {
-        // else : if packet is not complete (no stanza CRLF CRLF)
-        // then : break and wait till next part arrives
-        syslog (LOG_DEBUG, "Incomplete AMI packet: %.*s", (int)io->len, io->buf);
       }
+
+      len = scan_amipack(io->buf, io->len);
+
+      if(len <= 0) {
+        syslog (LOG_DEBUG, "Pack incomplete or invalid: %.*s", (int)io->len, io->buf);
+        break;
+      }
+
+      buf = strndup(io->buf, len);
+      json = amipack_to_json(buf);
+      if (json != NULL) {
+        syslog (LOG_DEBUG, "JSON STRING: %s", json);
+        websock_send (nc, json);
+      }
+
+      free(json);
+      free(buf);
+      mbuf_remove(io, len);
 
       break;
     case MG_EV_SEND:
@@ -287,6 +293,17 @@ struct amiws_config *read_conf(const char *filename)
   fclose(fh);
 
   return valid_conf(conf);
+}
+
+int scan_amipack( const char *p,
+                  size_t len)
+{
+  int i = 0, found = 0;
+  while(i < len && !found){
+    found = (p[i] == '\r' && p[i+1] == '\n' && p[i+2] =='\r' && p[i+3] == '\n');
+    i++;
+  }
+  return found ? i + 3 : 0;
 }
 
 static void set_conf_param( struct amiws_config *conf,
