@@ -118,5 +118,6 @@ doc/Doxyfile
 test/site.exp
 test/test.sh
 test/config_test
+test/pack_scan
 src/amiws
 

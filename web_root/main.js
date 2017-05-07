@@ -27,11 +27,23 @@ var AMIPack = (function(){
                 replace(/[^-_a-zA-Z0-9]/g,'-');
   }
 
-  AMIPack.prototype.newState = function() {
-    var el_id = this.getEventId();
-    var text = '[' + this.header('ChannelStateDesc') + ']';
+  AMIPack.prototype.stateText = function(state){
+    var text = '[' + state + ': ' + this.header('Channel') + '] ';
+    return text;
+  }
+
+  AMIPack.prototype.callText = function(){
+    var text = '';
     text += ' Call ' + this.header('CallerIDNum') + ' -> ';
     text += this.header('Exten');
+
+    return text;
+  }
+
+  AMIPack.prototype.newState = function() {
+    var el_id = this.getEventId();
+    var text = this.stateText(this.header('ChannelStateDesc'));
+    text += this.callText();
 
     $('#' + el_id).first('div')
         .text(text);
@@ -39,9 +51,10 @@ var AMIPack = (function(){
 
   AMIPack.prototype.hangupRequest = function() {
     var el_id = this.getEventId();
-    var text = '[Hangup]';
-    text += ' Call ' + this.header('CallerIDNum') + ' -> ';
-    text += this.header('Exten');
+    var text = this.stateText('Hangup');
+    text += this.callText();
+
+    console.info("Hanup channel " + this.getEventId());
 
     $('#' + el_id).first('div')
         .text(text);
@@ -54,12 +67,13 @@ var AMIPack = (function(){
   AMIPack.prototype.newChannel = function() {
     var el_id = this.getEventId();
     var call_div = $('<div/>',{ id: el_id, class: 'calldesc' });
-    call_div.append($('<div/>',{
-      text: '[Start] Call ' + this.header('CallerIDNum') +
-            ' -> ' + this.header('Exten')
-      })
-    );
+    var text = this.stateText('Start');
+    text += this.callText();
+
+    call_div.append($('<div/>',{ text: text }));
+
     $("#calls_list").append(call_div);
+    $("#pnum").text(parseInt($("#pnum").text()) + 1);
   }
 
   AMIPack.prototype.eventProc = function() {
@@ -79,7 +93,7 @@ var AMIPack = (function(){
         this.hangup();
         break;
       default:
-        console.log('Skip event "' + event + '"');
+        //console.log('Skip event "' + event + '"');
         break;
     }
   }
@@ -106,18 +120,37 @@ var AMIPack = (function(){
 })();
 
 $(document).ready(function() {
-  var sock = new WebSocket('ws://' + location.host);
 
-  sock.onopen = function(){
-    console.info("Onopen event.");
-  };
+  function connect(){
+    var sock = new WebSocket('ws://' + location.host);
 
-  sock.onmessage = function(ev){
-    if(ev.type == 'message'){
-      var pack = new AMIPack(ev.data);
-      pack.debug($("#console"));
-    } else {
-      console.info("No message type.");
-    }
-  };
+    sock.onopen = function(){
+      console.info("Onopen event.");
+    };
+
+    sock.onmessage = function(ev){
+      if(ev.type == 'message'){
+        var pack = new AMIPack(ev.data);
+        pack.debug($("#console"));
+      } else {
+        console.info("No message type.");
+      }
+    };
+
+    sock.onclose = function(ev){
+      console.info("Connection closed.");
+      setTimeout(function() {
+        connect();
+      }, 3000)
+    };
+
+    sock.onerror = function(err) {
+      console.error('Socket encountered error: ', err.message, 'Closing socket')
+      sock.close()
+    };
+  }
+
+  connect();
+
 });
+

@@ -102,23 +102,26 @@ void ami_ev_handler(struct mg_connection *nc,
 
       }
 
-      len = scan_amipack(io->buf, io->len);
+      while((len = scan_amipack(io->buf, io->len)) > 0) {
 
-      if(len <= 0) {
+        if(io->len < len){
+          syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", io->len, len);
+          break;
+        }
+        buf = strndup(io->buf, len);
+        json = amipack_to_json(buf);
+        if (json != NULL) {
+          syslog (LOG_DEBUG, "JSON STRING: %s", json);
+          websock_send (nc, json);
+        }
+
+        free(json);
+        free(buf);
+        mbuf_remove(io, len);
+      }
+      if (io->len > 0) {
         syslog (LOG_DEBUG, "Pack incomplete or invalid: %.*s", (int)io->len, io->buf);
-        break;
       }
-
-      buf = strndup(io->buf, len);
-      json = amipack_to_json(buf);
-      if (json != NULL) {
-        syslog (LOG_DEBUG, "JSON STRING: %s", json);
-        websock_send (nc, json);
-      }
-
-      free(json);
-      free(buf);
-      mbuf_remove(io, len);
 
       break;
     case MG_EV_SEND:
