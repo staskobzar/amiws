@@ -77,8 +77,6 @@ void ami_ev_handler(struct mg_connection *nc,
 {
   (void)ev_data;
   struct mbuf *io = &nc->recv_mbuf;
-  char *json, *buf;
-  int len;
   struct amiws_conn *conn = (struct amiws_conn *) nc->user_data;
 
   switch(ev) {
@@ -102,23 +100,8 @@ void ami_ev_handler(struct mg_connection *nc,
 
       }
 
-      while((len = scan_amipack(io->buf, io->len)) > 0) {
+      read_buffer(io, nc);
 
-        if(io->len < len){
-          syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", io->len, len);
-          break;
-        }
-        buf = strndup(io->buf, len);
-        json = amipack_to_json(buf);
-        if (json != NULL) {
-          syslog (LOG_DEBUG, "JSON STRING: %s", json);
-          websock_send (nc, json);
-        }
-
-        free(json);
-        free(buf);
-        mbuf_remove(io, len);
-      }
       if (io->len > 0) {
         syslog (LOG_DEBUG, "Pack incomplete or invalid: %.*s", (int)io->len, io->buf);
       }
@@ -298,7 +281,31 @@ struct amiws_config *read_conf(const char *filename)
   return valid_conf(conf);
 }
 
-int scan_amipack( const char *p,
+static void read_buffer(struct mbuf *io, struct mg_connection *nc)
+{
+  char *json, *buf;
+  int len;
+
+  while((len = scan_amipack(io->buf, io->len)) > 0) {
+
+    if(io->len < len){
+      syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", (int)io->len, len);
+      break;
+    }
+    buf = strndup(io->buf, len);
+    json = amipack_to_json(buf);
+    if (json != NULL) {
+      syslog (LOG_DEBUG, "JSON STRING: %s", json);
+      websock_send (nc, json);
+    }
+
+    free(json);
+    free(buf);
+    mbuf_remove(io, len);
+  }
+}
+
+static int scan_amipack( const char *p,
                   size_t len)
 {
   int i = 0, found = 0;

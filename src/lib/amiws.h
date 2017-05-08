@@ -116,9 +116,11 @@ char *amipack_to_json(const char *buf);
 
 struct amiws_config *read_conf(const char *filename);
 
-int scan_amipack(const char *pack, size_t len);
-
 /* private methods */
+
+static void read_buffer(struct mbuf *io, struct mg_connection *nc);
+
+static int scan_amipack(const char *pack, size_t len);
 
 static void set_conf_param(struct amiws_config *conf, char *key, char *value);
 
