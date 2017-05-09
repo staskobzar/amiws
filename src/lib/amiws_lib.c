@@ -48,6 +48,10 @@ void amiws_init(struct amiws_config *conf)
   sprintf(port_str, "%d", conf->ws_port);
   syslog (LOG_INFO, "Listening Web Socket port %s", port_str);
   nc_ws = mg_bind(&mgr, port_str, websock_ev_handler);
+  if(nc_ws == NULL) {
+    syslog (LOG_ERR, "Failed to bind port %s...", port_str);
+    exit(EXIT_FAILURE);
+  }
   mg_set_protocol_http_websocket(nc_ws);
   s_http_server_opts.document_root = conf->web_root;
 }

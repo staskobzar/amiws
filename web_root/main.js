@@ -6,6 +6,7 @@ var AMIPack = (function(){
   var data;
   var container;
   var ami_type = [ 'UNKNOWN', 'PROMPT', 'ACTION', 'EVENT', 'RESPONSE' ];
+  var state_color = {Ring: "#ffcc00", Up: "#00cc00", Down: "#ffcc00"};
 
   function AMIPack(event, el){
     var json = JSON.parse(event);
@@ -23,7 +24,7 @@ var AMIPack = (function(){
   }
 
   AMIPack.prototype.getEventId = function(){
-    return this.header('Channel').
+    return '1-' + this.header('Channel').
                 replace(/[^-_a-zA-Z0-9]/g,'-');
   }
 
@@ -66,14 +67,16 @@ var AMIPack = (function(){
 
   AMIPack.prototype.newChannel = function() {
     var el_id = this.getEventId();
-    var call_div = $('<div/>',{ id: el_id, class: 'calldesc' });
-    var text = this.stateText('Start');
-    text += this.callText();
+    var row = $('<tr>', {id: el_id});
 
-    call_div.append($('<div/>',{ text: text }));
+    row.append($('<td>',{class: 'status'}).
+                append('<i class="fa fa-lg fa-phone-square" aria-hidden="true"></i>') );
+    row.append($('<td>', {class: 'start-time'}).text(new Date().toLocaleString());
+    row.append($('<td>', {class: 'duration'}).text('00:00:00'));
+    row.append()
 
-    $("#calls_list").append(call_div);
-    $("#pnum").text(parseInt($("#pnum").text()) + 1);
+    $("#activecalls").append(row);
+      //$("#pnum").text(parseInt($("#pnum").text()) + 1);
   }
 
   AMIPack.prototype.eventProc = function() {
