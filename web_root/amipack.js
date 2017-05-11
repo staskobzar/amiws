@@ -21,29 +21,6 @@ var AMIPack = (function(){
     return color ? color : '#000000';
   }
 
-  var durFormat = function(val) {
-    val = parseInt(val);
-    var h = Math.floor(val / 3600);
-    var m = Math.floor(val / 60) % 60;
-    var s = val % 60;
-    var out = '';
-    out += h < 10 ? '0' + h : h;
-    out += ':';
-    out += m < 10 ? '0' + m : m;
-    out += ':';
-    out += s < 10 ? '0' + s : s;
-    return out;
-  }
-
-  AMIPack.prototype.updateDuration = function() {
-    $("#activecalls tbody td.duration")
-      .each(function(){
-              var len = parseInt($(this).attr('value')) + 1;
-              $(this).attr('value', len);
-              $(this).text(durFormat(len));
-      });
-  }
-
   AMIPack.prototype.typeName = function(){
     return ami_type[type] ? ami_type[type] : 'UNKNOWN';
   }
@@ -58,11 +35,11 @@ var AMIPack = (function(){
   }
 
   AMIPack.prototype.hangup = function() {
+    var calls = $("#server-1").find('div.calls-number').first();
+    calls.text( parseInt(calls.text()) - 1 );
     this.newState('Down');
-    /*
     $('#' + this.elemId()).fadeOut(1000,
         function(){$(this).remove();});
-    */
   }
 
   AMIPack.prototype.newState = function(state) {
@@ -70,11 +47,17 @@ var AMIPack = (function(){
     var tr = $('#' + this.elemId());
     tr.children('.status')
       .css('color', colorPick(state));
+    if(state == 'Up') {
+      tr.children('.duration')
+        .attr('status', 'up');
+    }
   }
 
   AMIPack.prototype.newChannel = function() {
     var el_id = this.elemId();
     var row = $('<tr>', {id: el_id});
+    var calls = $("#server-1").find('div.calls-number').first();
+    calls.text( parseInt(calls.text()) + 1 );
 
     row.append($('<td>',{class: 'status'})
                 .append('<i class="fa fa-lg fa-phone-square" aria-hidden="true"></i>') );
@@ -83,7 +66,7 @@ var AMIPack = (function(){
     row.append($('<td>', {class: 'source'}).text(this.header('CallerIDNum')));
     row.append($('<td>', {class: 'destination'}).text(this.header('Exten')));
 
-    $(tableid).append(row);
+    $(tableid).prepend(row);
   }
 
   AMIPack.prototype.eventProc = function() {
