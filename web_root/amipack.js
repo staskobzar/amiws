@@ -36,7 +36,8 @@ var AMIPack = (function(){
 
   AMIPack.prototype.hangup = function() {
     var calls = $("#server-1").find('div.calls-number').first();
-    calls.text( parseInt(calls.text()) - 1 );
+    var val   = parseInt(calls.text());
+    calls.text(  val > 0 ? val - 1 : 0 );
     this.newState('Down');
     $('#' + this.elemId()).fadeOut(1000,
         function(){$(this).remove();});
@@ -63,8 +64,8 @@ var AMIPack = (function(){
                 .append('<i class="fa fa-lg fa-phone-square" aria-hidden="true"></i>') );
     row.append($('<td>', {class: 'start-time'}).text(new Date().toLocaleString()));
     row.append($('<td>', {class: 'duration', value: '0'}).text(durFormat(0)));
-    row.append($('<td>', {class: 'source'}).text(this.header('CallerIDNum')));
-    row.append($('<td>', {class: 'destination'}).text(this.header('Exten')));
+    row.append($('<td>', {class: 'source'}).html(phoneNumFormat(this.header('CallerIDNum'))));
+    row.append($('<td>', {class: 'destination'}).html( phoneNumFormat(this.header('Exten')) ));
 
     $(tableid).prepend(row);
   }

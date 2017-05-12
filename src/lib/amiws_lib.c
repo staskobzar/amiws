@@ -107,7 +107,7 @@ void ami_ev_handler(struct mg_connection *nc,
       read_buffer(io, nc);
 
       if (io->len > 0) {
-        syslog (LOG_DEBUG, "Pack incomplete or invalid: %.*s", (int)io->len, io->buf);
+        syslog (LOG_DEBUG, "Stream tail: %.*s", (int)io->len, io->buf);
       }
 
       break;

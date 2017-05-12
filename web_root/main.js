@@ -13,6 +13,17 @@ function durFormat(val) {
   return out;
 }
 
+function phoneNumFormat(val) {
+  var num = libphonenumber.parse('+' + val);
+  if(num.phone) {
+    return '<span class="flag-icon flag-icon-' +
+      num.country.toLowerCase() + '"></span>' +
+      libphonenumber.format(num,'International');
+  } else {
+    return val;
+  }
+}
+
 function updateDuration() {
   $("#activecalls tbody td.duration")
     .each(function(){
