@@ -51,6 +51,7 @@ static void config_file_with_multiple_hosts(void **state)
   assert_string_equal(conn->host, "10.168.1.100");
   assert_string_equal(conn->username, "admin");
   assert_string_equal(conn->secret, "pass001");
+  assert_int_equal(conn->id, 1);
 
   conn = conn->next;
   assert_non_null(conn);
@@ -59,6 +60,7 @@ static void config_file_with_multiple_hosts(void **state)
   assert_string_equal(conn->host, "10.12.30.1");
   assert_string_equal(conn->username, "admin");
   assert_string_equal(conn->secret, "pass002");
+  assert_int_equal(conn->id, 2);
 
   conn = conn->next;
   assert_non_null(conn);
@@ -67,6 +69,7 @@ static void config_file_with_multiple_hosts(void **state)
   assert_string_equal(conn->host, "10.0.110.10");
   assert_string_equal(conn->username, "asterisk");
   assert_string_equal(conn->secret, "pass003");
+  assert_int_equal(conn->id, 3);
 }
 
 static void config_file_test_default_vals(void **state)

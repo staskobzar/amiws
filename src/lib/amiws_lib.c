@@ -111,21 +111,24 @@ void ami_ev_handler(struct mg_connection *nc,
       }
 
       break;
+
     case MG_EV_SEND:
       // sent data
       break;
+
     case MG_EV_CLOSE:
       syslog (LOG_INFO, "MG_EV_CLOSE reconnect ... [%s] %s\n", conn->address, conn->name);
       amiws_connect_ami_server(conn);
       sleep(1);
       break;
+
     default:
       syslog (LOG_DEBUG, "Unhandled connection event: %d", ev);
       break;
   }
 }
 
-char *amipack_to_json(const char *ami_pack_str)
+char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
 {
   AMIPacket *ami_pack;
   char    *buf          = (char *) malloc(BUFSIZE);
@@ -136,8 +139,12 @@ char *amipack_to_json(const char *ami_pack_str)
     syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
     return NULL;
   }
+  if (auth_fail(ami_pack)) {
+    syslog (LOG_ERR, "Authentication failed.");
+  }
 
-  len += json_printf(&out, "{ type: %d, data: {", ami_pack->type);
+  len += json_printf(&out, "{ type: %d, server_id: %d, server_name: %Q, data: {",
+      ami_pack->type, conn->id, conn->name);
 
   for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
     len += json_printf(&out, "%Q: %Q", hdr->name->buf, hdr->value->buf);
@@ -180,6 +187,7 @@ void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
     case MG_EV_WEBSOCKET_HANDSHAKE_DONE: {
       syslog (LOG_INFO, "New Web Socket connection from %s:%d",
              inet_ntoa(nc->sa.sin.sin_addr), ntohs(nc->sa.sin.sin_port));
+      // send state request to all
       break;
     }
     case MG_EV_WEBSOCKET_FRAME: {
@@ -187,6 +195,7 @@ void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
       /* New websocket message. Tell everybody. */
       struct mg_str d = {(char *) wm->data, wm->size};
       syslog (LOG_DEBUG, "WebSock Msg received: %.*s", (int)d.len, d.p);
+      send_ami_action(wm, nc);
       break;
     }
     case MG_EV_CLOSE: {
@@ -197,7 +206,6 @@ void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
   }
 }
 
-// TODO: when login fails - stop connecting
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
 {
   struct str *pack_str;
@@ -263,6 +271,7 @@ struct amiws_config *read_conf(const char *filename)
         conf->tail = conn;
       }
       conf->size++;
+      conn->id = conf->size;
       block = CXT_BLOCK_END;
     }
     if (token.type == YAML_SCALAR_TOKEN) {
@@ -290,6 +299,10 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
   char *json, *buf;
   int len;
 
+
+  struct amiws_conn *conn = (struct amiws_conn*) nc->user_data;
+  syslog (LOG_DEBUG, "Readding buffer from server: %s", conn->name);
+
   while((len = scan_amipack(io->buf, io->len)) > 0) {
 
     if(io->len < len){
@@ -297,7 +310,7 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
       break;
     }
     buf = strndup(io->buf, len);
-    json = amipack_to_json(buf);
+    json = amipack_to_json(buf, conn);
     if (json != NULL) {
       syslog (LOG_DEBUG, "JSON STRING: %s", json);
       websock_send (nc, json);
@@ -309,7 +322,7 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
   }
 }
 
-static int scan_amipack( const char *p,
+int scan_amipack( const char *p,
                   size_t len)
 {
   int i = 0, found = 0;
@@ -318,6 +331,54 @@ static int scan_amipack( const char *p,
     i++;
   }
   return found ? i + 3 : 0;
+}
+
+static void send_ami_action(struct websocket_message *wm,
+                            struct mg_connection *nc)
+{
+  struct str *p_str;
+  struct mg_connection *c;
+  char buf[BUFSIZE] = "";
+  AMIPacket *pack = (AMIPacket *) amipack_init ();
+
+  if(json_walk((const char*)wm->data, wm->size, json_scan_cb, (void*)pack) < (int)wm->size ){
+    syslog (LOG_ERR, "Invalid JSON string: %.*s", (int)wm->size, wm->data);
+    amipack_destroy(pack);
+    return;
+  }
+
+  p_str = amipack_to_str(pack);
+  syslog (LOG_DEBUG, "Converted to AMI packet from JSON:\n %.*s", (int)p_str->len, p_str->buf);
+
+  // send to all AMI connection
+  for (c = mg_next(nc->mgr, NULL); c != NULL; c = mg_next(nc->mgr, c)) {
+    if(c->flags & MG_F_IS_WEBSOCKET) continue;
+    mg_send(c, p_str->buf, p_str->len);
+  }
+
+  str_destroy(p_str);
+  amipack_destroy(pack);
+}
+
+static void json_scan_cb( void *callback_data,
+                          const char *name, size_t name_len,
+                          const char *path,
+                          const struct json_token *token)
+{
+  char feild[512], val[512];
+  AMIPacket *pack = (AMIPacket*) callback_data;
+  switch(token->type) {
+    case JSON_TYPE_STRING:
+    case JSON_TYPE_NUMBER:
+    case JSON_TYPE_TRUE:
+    case JSON_TYPE_FALSE:
+    case JSON_TYPE_NULL:
+      sprintf(feild, "%.*s", (int)name_len, name);
+      sprintf(val,   "%.*s", token->len, token->ptr);
+      amipack_append_unknown(pack, feild, val);
+      break;
+    default: break;
+  }
 }
 
 static void set_conf_param( struct amiws_config *conf,
@@ -407,6 +468,26 @@ static int str2int( const char *val, int len)
   }
 
   return res;
+}
+
+static int auth_fail(AMIPacket *pack)
+{
+  struct str *resp;
+
+  if(pack->type != AMI_RESPONSE)
+    return 0;
+
+  resp = amiheader_value(pack, Response);
+  if(strncasecmp(resp->buf, "Error", resp->len) != 0) {
+    return 0;
+  }
+  resp = amiheader_value(pack, Message);
+  if(strncasecmp(resp->buf, "Authentication failed", resp->len) == 0) {
+    str_destroy(resp);
+    return 1;
+  }
+  str_destroy(resp);
+  return 0;
 }
 
 static struct amiws_config *valid_conf(struct amiws_config *conf)

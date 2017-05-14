@@ -79,6 +79,7 @@ struct amiws_config {
 };
 
 struct amiws_conn {
+  int id;
   char *name;
   char *address;
   unsigned int port;
@@ -112,15 +113,15 @@ void websock_send (struct mg_connection *nc, const char *json);
 
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn);
 
-char *amipack_to_json(const char *buf);
+char *amipack_to_json(const char *buf, struct amiws_conn *conn);
 
 struct amiws_config *read_conf(const char *filename);
+
+int scan_amipack(const char *pack, size_t len);
 
 /* private methods */
 
 static void read_buffer(struct mbuf *io, struct mg_connection *nc);
-
-static int scan_amipack(const char *pack, size_t len);
 
 static void set_conf_param(struct amiws_config *conf, char *key, char *value);
 
@@ -129,6 +130,15 @@ static void set_conn_param(struct amiws_conn *conn, char *key, char *value);
 static int str2int(const char *val, int len);
 
 static char* int2str(const char *val, int len);
+
+static int auth_fail(AMIPacket *amipack);
+
+static void send_ami_action(struct websocket_message *wm, struct mg_connection *nc);
+
+static void json_scan_cb(void *callback_data,
+                          const char *name, size_t name_len,
+                          const char *path,
+                          const struct json_token *token);
 
 static struct amiws_config *valid_conf(struct amiws_config *conf);
 
