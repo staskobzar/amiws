@@ -136,6 +136,7 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
   int     len           = 0;
 
   if( (ami_pack = amiparse_pack(ami_pack_str)) == NULL ) {
+    amipack_destroy(ami_pack);
     syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
     return NULL;
   }
@@ -365,7 +366,7 @@ static void json_scan_cb( void *callback_data,
                           const char *path,
                           const struct json_token *token)
 {
-  char feild[512], val[512];
+  char field[512], val[512];
   AMIPacket *pack = (AMIPacket*) callback_data;
   switch(token->type) {
     case JSON_TYPE_STRING:
@@ -373,9 +374,12 @@ static void json_scan_cb( void *callback_data,
     case JSON_TYPE_TRUE:
     case JSON_TYPE_FALSE:
     case JSON_TYPE_NULL:
-      sprintf(feild, "%.*s", (int)name_len, name);
-      sprintf(val,   "%.*s", token->len, token->ptr);
-      amipack_append_unknown(pack, feild, val);
+      strncpy(field, name, name_len);
+      strncpy(val, token->ptr, token->len);
+
+      // TODO: fix memory leak on amipack_append_unknown
+      //amipack_append_unknown(pack, "Action", "CoreStatus");
+      amipack_append_unknown(pack, field, val);
       break;
     default: break;
   }

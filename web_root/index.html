@@ -13,9 +13,11 @@
       .duration{width: 6.5em;}
       .source{width: 12.0em;}
       .destination{width: 12.0em;}
-      .calls-number{font-size:36;font-weight:bold}
+      .server-name{font-weight:bold; min-width:12.0em}
+      .calls-number{font-size:26;font-weight:bold}
 
     </style>
+
     <title>Asterisk Stats</title>
 
   </head>
@@ -31,32 +33,55 @@
         <div class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
           <h3>AMI servers</h3>
 
-          <div id="server-1" class="col-lg-12">
-            <div class="panel panel-primary">
+          <div id="ami-servers-list"></div>
 
-              <div class="panel-heading">
-                <div class="row">
+          <script id="ami-server-tmpl" type="text/x-handlebars-template">
+            <div id="amiserver-{{id}}" class="amiserver col-lg-12">
+              <div class="panel panel-primary">
 
-                  <div class="col-xs-3">
-                    <i class="fa fa-tasks fa-5x"></i>
+                <div class="panel-heading">
+                  <div class="row">
+
+                    <div class="col-xs-3">
+                      <i class="fa fa-tasks fa-2x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                    <div class="calls-number">{{callnum}}</div>
+                      <div>Calls</div>
+                    </div>
+
                   </div>
-                  <div class="col-xs-9 text-right">
-                    <div class="calls-number">0</div>
-                    <div>Calls</div>
-                  </div>
-
                 </div>
-              </div>
 
-              <div class="panel-footer">
-              </div>
+                <div class="panel-body">
+                  Up since: {{startdate}} {{starttime}}
+                </div>
+                <div class="panel-footer">
+                  {{serv_name}}
+                </div>
 
+              </div>
             </div>
-          </div>
+          </script>
 
         </div>
 
         <main class="col-sm-9 offset-sm-3 col-md-10 offset-md-2 pt-3">
+
+          <script id="activecall-row-tmpl" type="text/x-handlebars-template">
+            <tr id="{{id}}">
+              <td class="status">
+                <i class="fa fa-lg fa-phone-square" aria-hidden="true"></i></td>
+              <td class="start-time">{{start_time}}</td>
+              <td class="duration" value="0">{{duration}}</td>
+              <td class="source">
+                <span class="flag-icon flag-icon-{{country_src}}"></span> {{source}}</td>
+              <td class="destination">
+                <span class="flag-icon flag-icon-{{country_dst}}"></span> {{dest}}</td>
+              <td class="server-name">{{server_name}}</td>
+            </tr>
+          </script>
+
           <h1>Active Calls</h1>
           <table id="activecalls" class="active-calls table table-striped">
             <thead>
@@ -66,6 +91,7 @@
                 <th class="duration">Duration</th>
                 <th class="source">Source</th>
                 <th class="destination">Destination</th>
+                <th class="server-name">Server name</th>
               </tr>
 
               <tbody>
@@ -78,11 +104,33 @@
       </div>
     </div>
 
+<!-- Modal Alert -->
+<div id="alertwin" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="alert alert-danger modal-content">
+      <div class="modal-header"><h3 class="modal-title">Connection Lost</h3></div>
+      <div class="modal-body">
+        Connection to server has been lost. Trying to reconnect...
+      </div>
+
+      <div class="modal-footer">
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
   </body>
   <!-- Latest compiled and minified JavaScript -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/libphonenumber-js/0.4.10/libphonenumber-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.8/handlebars.min.js"></script>
 
   <script src="amipack.js"></script>
   <script src="main.js"></script>

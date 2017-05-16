@@ -1,4 +1,3 @@
-
 function durFormat(val) {
   val = parseInt(val);
   var h = Math.floor(val / 3600);
@@ -13,14 +12,27 @@ function durFormat(val) {
   return out;
 }
 
-function phoneNumFormat(val) {
+function dateFormat(d) {
+  var yyyy = d.getFullYear();
+  var mm   = ('0' + (d.getMonth() + 1)).slice(-2);
+  var dd   = ('0' + d.getDate()).slice(-2);
+
+  var HH   = ('0' + d.getHours()).slice(-2);
+  var MM   = ('0' + d.getMinutes()).slice(-2);
+  var SS   = ('0' + d.getSeconds()).slice(-2);
+
+  return yyyy + '-' + mm + '-' + dd + ' ' +
+         HH + ':' + MM + ':' + SS;
+}
+
+function phoneNum(val) {
   var num = libphonenumber.parse('+' + val);
   if(num.phone) {
-    return '<span class="flag-icon flag-icon-' +
-      num.country.toLowerCase() + '"></span>' +
-      libphonenumber.format(num,'International');
+    return {"country": num.country.toLowerCase(),
+            "num": libphonenumber.format(num,'International')
+           };
   } else {
-    return val;
+    return {"country": "invalid", "num": val};
   }
 }
 
@@ -36,13 +48,21 @@ function updateDuration() {
     });
 }
 
+var row_tmpl = Handlebars.compile($("#activecall-row-tmpl").html());
+var serv_tmpl = Handlebars.compile($("#ami-server-tmpl").html());
+
 $(document).ready(function() {
 
   function connect(){
     var sock = new WebSocket('ws://' + location.host);
 
     sock.onopen = function(){
-      console.info("Onopen event.");
+      console.info("On open send status request.");
+      $(".amiserver").remove();
+      $("#activecalls tbody tr").remove();
+      $("#alertwin").modal('hide');
+      sock.send(JSON.stringify({"Action": "CoreStatus"}));
+      sock.send(JSON.stringify({"Action": "CoreShowChannels"}));
     };
 
     sock.onmessage = function(ev){
@@ -56,6 +76,7 @@ $(document).ready(function() {
 
     sock.onclose = function(ev){
       console.info("Connection closed.");
+      $("#alertwin").modal({backdrop: 'static', keyboard: false});
       setTimeout(function() { connect(); }, 3000)
     };
 
