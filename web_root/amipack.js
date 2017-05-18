@@ -3,28 +3,42 @@
  */
 var AMIPack = (function(){
   var type = 0;
+  var utils;
+  var visual;
   var data;
   var server_id;
   var server_name;
-  var container;
   var ami_type = [ 'UNKNOWN', 'PROMPT', 'ACTION', 'EVENT', 'RESPONSE' ];
-  var state_color = {Ring: "#ffcc00", Up: "#00cc00", Down: "#cccccc"};
+  var state_color = {Ring: "#ffcc00", Up: "#00cc00", Down: "#cc0000"};
   var tableid = '#activecalls';
 
-  function AMIPack(event, el){
+  function AMIPack(event, utils_class, visual_class){
     var json = JSON.parse(event);
     type = json.type;
     data = json.data;
     server_id = json.server_id;
     server_name = json.server_name;
-    container = el;
+    utils = utils_class;
+    visual = visual_class;
   }
 
-  var colorPick = function(state) {
+  /**
+   * Private
+   */
+  function colorPick(state) {
     var color = state_color[state];
     return color ? color : '#000000';
   }
 
+  function getTotalCalls(){
+    return utils.getTotalCalls();
+  }
+
+  function setTotalCalls(val){ utils.setTotalCalls(val); }
+
+  /**
+   * Public
+   */
   AMIPack.prototype.typeName = function(){
     return ami_type[type] ? ami_type[type] : 'UNKNOWN';
   }
@@ -34,7 +48,7 @@ var AMIPack = (function(){
   }
 
   AMIPack.prototype.elemId = function(){
-    return '1-' + this.header('Channel').
+    return server_id + '-' + this.header('Channel').
                 replace(/[^-_a-zA-Z0-9]/g,'-');
   }
 
@@ -45,7 +59,10 @@ var AMIPack = (function(){
   AMIPack.prototype.callsnum_update = function(i) {
     var calls = $("#amiserver-" + server_id).find('div.calls-number').first();
     var val   = parseInt(calls.text()) + i;
+    var total = visual.callsUpdate(val, server_id);
     calls.text(  val < 0 ? 0 : val );
+    setTotalCalls(total);
+    visual.updateCallsGauge("#calls-gauge-s" + server_id, total, val);
   }
 
   AMIPack.prototype.hangup = function() {
@@ -62,9 +79,14 @@ var AMIPack = (function(){
       "callnum": 0, //resp.CoreCurrentCalls,
       "startdate": resp.CoreStartupDate,
       "starttime": resp.CoreStartupTime,
+      "reloaddate": resp.CoreReloadDate,
+      "reloadtime": resp.CoreReloadTime,
       "serv_name": server_name
     };
-    $('#ami-servers-list').append(serv_tmpl(rowdata));
+    $('#ami-servers-list').append($(utils.tmplAMIServ()(rowdata)));
+    visual.addAMIServer(server_name, server_id);
+    $("#amiserver-" + server_id).find('.amiserv-details').popover({container: 'body'});
+    visual.setupCallsGauge('calls-gauge-s' + server_id);
   }
 
   AMIPack.prototype.newState = function(state) {
@@ -79,12 +101,12 @@ var AMIPack = (function(){
   }
 
   AMIPack.prototype.newChannel = function() {
-    var src = phoneNum(this.header('CallerIDNum'));
-    var dst = phoneNum(this.header('Exten'));
+    var src = utils.phoneNum(this.header('CallerIDNum'));
+    var dst = utils.phoneNum(this.header('Exten'));
 
     var rowdata = { "id": this.elemId(),
-                    "start_time": dateFormat(new Date()),
-                    "duration": durFormat(0),
+                    "start_time": utils.dateFormat(new Date()),
+                    "duration": utils.durFormat(0),
                     "country_src": src.country,
                     "country_dst": dst.country,
                     "source": src.num,
@@ -92,7 +114,7 @@ var AMIPack = (function(){
                     "server_name": server_name,
                   };
 
-    $(tableid + " tbody").append(row_tmpl(rowdata));
+    $(tableid + " tbody").append(utils.tmplActivecallsRow()(rowdata));
 
     this.callsnum_increase();
   }
@@ -107,11 +129,10 @@ var AMIPack = (function(){
         this.newState();
         break;
       case 'CoreShowChannel':
-        if($('#' + this.elemId()).length){
-          this.newState();
-        } else {
+        if($('#' + this.elemId()).length == 0){
           this.newChannel();
         }
+        this.newState();
         break;
       case 'SoftHangupRequest':
       case 'HangupRequest':
@@ -119,6 +140,8 @@ var AMIPack = (function(){
         break;
       case 'Hangup':
         this.hangup();
+        break;
+      case 'CoreShowChannelsComplete':
         break;
       default:
         //console.log('Skip event "' + event + '"');
