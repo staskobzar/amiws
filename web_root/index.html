@@ -20,7 +20,6 @@
       .calls-distribution-chart{width:200px; height:200px}
       .dest-map{width:100%;height:200px}
       .amiserv-details{cursor:pointer}
-      .calls-gauge{}
     </style>
 
     <title>Asterisk Stats</title>
@@ -123,6 +122,7 @@
             </div>
             <div class="panel-body">
               <div id="callsdistr" class="visual-chart calls-distribution-chart"></div>
+              <div id="callschart" class="visual-chart calls-chart"></div>
               <div id="callsmap" class="visual-chart dest-map"> </div>
             </div>
 
@@ -156,7 +156,6 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="http://code.highcharts.com/highcharts.js"></script>
   <script src="http://code.highcharts.com/maps/modules/map.js"></script>
-  <script src="https://code.highcharts.com/maps/modules/data.js"></script>
   <script src="https://code.highcharts.com/mapdata/custom/world.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
