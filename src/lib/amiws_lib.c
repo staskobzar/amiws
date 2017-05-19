@@ -277,9 +277,9 @@ struct amiws_config *read_conf(const char *filename)
     }
     if (token.type == YAML_SCALAR_TOKEN) {
       if (context == CXT_TKN_KEY) {
-        key = strdup(token.data.scalar.value);
+        key = strdup((const char*)token.data.scalar.value);
       } else {
-        val = strdup(token.data.scalar.value);
+        val = strdup((const char*)token.data.scalar.value);
         if (block == CXT_BLOCK_START) { set_conn_param(conn, key, val); }
         else { set_conf_param(conf, key, val); }
       }
@@ -297,12 +297,12 @@ struct amiws_config *read_conf(const char *filename)
 
 static void read_buffer(struct mbuf *io, struct mg_connection *nc)
 {
-  char *json, *buf;
+  char *json = NULL, *buf = NULL;
   int len;
 
 
   struct amiws_conn *conn = (struct amiws_conn*) nc->user_data;
-  syslog (LOG_DEBUG, "Readding buffer from server: %s", conn->name);
+  syslog (LOG_DEBUG, "Reading buffer from server: %s", conn->name);
 
   while((len = scan_amipack(io->buf, io->len)) > 0) {
 
@@ -317,10 +317,10 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
       websock_send (nc, json);
     }
 
-    free(json);
-    free(buf);
     mbuf_remove(io, len);
   }
+  if(json) free(json);
+  if(buf)  free(buf);
 }
 
 int scan_amipack( const char *p,
