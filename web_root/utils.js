@@ -58,7 +58,7 @@ var Utils = (function(){
               "num": libphonenumber.format(num,'International')
              };
     } else {
-      return {"country": "invalid", "num": val};
+      return {"country": null, "num": val};
     }
   }
 

@@ -113,6 +113,7 @@ var AMIPack = (function(){
                     "dest": dst.num,
                     "server_name": server_name,
                   };
+    if(dst.country) visual.updateMap(dst.country);
 
     $(tableid + " tbody").append(utils.tmplActivecallsRow()(rowdata));
 
