@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.63])
 AC_INIT([amiws], [1.0.0], [staskobzar@gmail.com])
 AM_INIT_AUTOMAKE([foreign parallel-tests color-tests -Wall -Werror])
 
@@ -9,8 +9,6 @@ AC_PROG_RANLIB
 
 AC_CONFIG_SRCDIR([src/amiws.c])
 AC_CONFIG_HEADERS([config.h])
-
-AC_CONFIG_MACRO_DIRS([m4])
 
 # Checks for programs.
 AC_PROG_CC
@@ -39,6 +37,7 @@ AC_CHECK_HEADER([syslog.h], [],
 # Checks for library functions.
 
 AM_PROG_AR
+AM_PROG_CC_C_O
 AC_CONFIG_FILES([Makefile
                  doc/Doxyfile
                  doc/Makefile

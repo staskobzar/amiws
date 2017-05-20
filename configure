@@ -2794,8 +2794,6 @@ fi
 ac_config_headers="$ac_config_headers config.h"
 
 
-
-
 # Checks for programs.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4821,6 +4819,7 @@ unknown)
   as_fn_error $? "could not determine $AR interface" "$LINENO" 5
   ;;
 esac
+
 
 ac_config_files="$ac_config_files Makefile doc/Doxyfile doc/Makefile src/Makefile src/lib/Makefile test/Makefile"
 

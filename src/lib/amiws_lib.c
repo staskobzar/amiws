@@ -307,9 +307,12 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
   while((len = scan_amipack(io->buf, io->len)) > 0) {
 
     if(io->len < len){
+      if(json) free(json);
+      if(buf)  free(buf);
       syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", (int)io->len, len);
       break;
     }
+
     buf = strndup(io->buf, len);
     json = amipack_to_json(buf, conn);
     if (json != NULL) {
@@ -317,10 +320,10 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
       websock_send (nc, json);
     }
 
+    if(json) free(json);
+    if(buf)  free(buf);
     mbuf_remove(io, len);
   }
-  if(json) free(json);
-  if(buf)  free(buf);
 }
 
 int scan_amipack( const char *p,
