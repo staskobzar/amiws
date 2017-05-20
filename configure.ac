@@ -36,7 +36,6 @@ AC_CHECK_HEADER([syslog.h], [],
 
 # Checks for library functions.
 
-AM_PROG_AR
 AM_PROG_CC_C_O
 AC_CONFIG_FILES([Makefile
                  doc/Doxyfile
