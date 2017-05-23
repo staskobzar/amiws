@@ -34,6 +34,7 @@ struct mg_connection *nc_ws;
 void amiws_init(struct amiws_config *conf)
 {
   char port_str[5];
+  struct mg_bind_opts bind_opts;
 
   mg_mgr_init(&mgr, NULL);
 
@@ -47,7 +48,14 @@ void amiws_init(struct amiws_config *conf)
 
   sprintf(port_str, "%d", conf->ws_port);
   syslog (LOG_INFO, "Listening Web Socket port %s", port_str);
-  nc_ws = mg_bind(&mgr, port_str, websock_ev_handler);
+
+  memset(&bind_opts, 0, sizeof(bind_opts));
+#if MG_ENABLE_SSL
+  bind_opts.ssl_cert = conf->ssl_cert;
+  bind_opts.ssl_key  = conf->ssl_key;
+#endif
+  nc_ws = mg_bind_opt(&mgr, port_str, websock_ev_handler, bind_opts);
+
   if(nc_ws == NULL) {
     syslog (LOG_ERR, "Failed to bind port %s...", port_str);
     exit(EXIT_FAILURE);
@@ -253,6 +261,10 @@ struct amiws_config *read_conf(const char *filename)
   yaml_parser_set_input_file (&parser, fh);
 
   macro_init_conf(conf);
+#if MG_ENABLE_SSL
+  conf->ssl_cert      = NULL;
+  conf->ssl_key       = NULL;
+#endif
 
   while(1) {
     if (!yaml_parser_scan(&parser, &token)) {
@@ -422,8 +434,17 @@ static void set_conf_param( struct amiws_config *conf,
 
     conf->auth_file = val;
 
+#if MG_ENABLE_SSL
+  } else if (strcmp(key, "ssl_cert") == 0) {
+
+    conf->ssl_cert = val;
+
+  } else if (strcmp(key, "ssl_key") == 0) {
+
+    conf->ssl_key = val;
+#endif
   } else {
-    fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
+    fprintf(stderr, "WARNING: >> Unknown parameter '%s: %s'.\n", key, val);
   }
 }
 
@@ -518,20 +539,13 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
   }
 
   // auth settings
-  if(conf->auth_domain != NULL || conf->auth_file != NULL) {
-    if(conf->auth_domain == NULL) {
-      err = 1;
-      fprintf(stderr, "ERROR: Auth domain parameter requires auth file to be set too.\n");
-    }
-    if(conf->auth_file == NULL) {
-      err = 1;
-      fprintf(stderr, "ERROR: Auth file parameter requires auth domain to be set too.\n");
-    }
-    if(access(conf->auth_file, F_OK|R_OK) == -1) {
-      err = 1;
-      fprintf(stderr, "ERROR: Failed to read auth file '%s'.\n", conf->auth_file);
-    }
-  }
+  if ((conf->auth_domain != NULL || conf->auth_file != NULL) &&
+      !is_valid_auth_settings(conf) ) err = 1;
+  // SSL files
+#if MG_ENABLE_SSL
+  if ((conf->ssl_key != NULL || conf->ssl_cert != NULL) &&
+      !is_valid_ssl_settings(conf) ) err = 1;
+#endif
 
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
     char address[256] = "";
@@ -565,6 +579,46 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
 
   return err ? NULL : conf;
 }
+
+static int is_valid_auth_settings(struct amiws_config *conf)
+{
+  if(conf->auth_domain == NULL) {
+    fprintf(stderr, "ERROR: Auth domain parameter requires auth file to be set too.\n");
+    return 0;
+  }
+  if(conf->auth_file == NULL) {
+    fprintf(stderr, "ERROR: Auth file parameter requires auth domain to be set too.\n");
+    return 0;
+  }
+  if(access(conf->auth_file, F_OK|R_OK) == -1) {
+    fprintf(stderr, "ERROR: Failed to read auth file '%s'.\n", conf->auth_file);
+    return 0;
+  }
+  return 1;
+}
+
+#if MG_ENABLE_SSL
+static int is_valid_ssl_settings(struct amiws_config *conf)
+{
+  if(conf->ssl_key == NULL){
+    fprintf(stderr, "ERROR: When SSL certificate is given then SSL key (ssl_key) must be set too.\n");
+    return 0;
+  }
+  if(conf->ssl_cert == NULL){
+    fprintf(stderr, "ERROR: When SSL key is given then SSL certificate (ssl_cert) must be set too.\n");
+    return 0;
+  }
+  if(access(conf->ssl_cert, F_OK|R_OK) == -1) {
+    fprintf(stderr, "ERROR: Failed to read SSL certificate file '%s'.\n", conf->ssl_cert);
+    return 0;
+  }
+  if(access(conf->ssl_key, F_OK|R_OK) == -1) {
+    fprintf(stderr, "ERROR: Failed to read SSL key file '%s'.\n", conf->ssl_key);
+    return 0;
+  }
+  return 1;
+}
+#endif
 
 static void free_conf(struct amiws_config *conf)
 {

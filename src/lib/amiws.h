@@ -80,6 +80,10 @@ struct amiws_config {
   char *web_root;
   char *auth_domain;
   char *auth_file;
+#if MG_ENABLE_SSL
+  char *ssl_cert;
+  char *ssl_key;
+#endif
 };
 
 struct amiws_conn {
@@ -147,6 +151,10 @@ static void json_scan_cb(void *callback_data,
 static struct amiws_config *valid_conf(struct amiws_config *conf);
 
 static void free_conf(struct amiws_config *conf);
+
+static int is_valid_auth_settings(struct amiws_config *conf);
+
+static int is_valid_ssl_settings(struct amiws_config *conf);
 
 static void usage();
 

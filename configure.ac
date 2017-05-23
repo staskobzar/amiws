@@ -14,6 +14,10 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
 AC_PROG_CC_STDC
 
+AC_ARG_WITH([ssl],
+    AS_HELP_STRING([--with-ssl], [With SSL support.]),
+    [with_ssl=yes])
+
 # Checks for libraries.
 #AC_CHECK_LIB([amip], [amipack_init], [],
 #             [ AC_MSG_ERROR([AMI library "amip" not found.
@@ -22,6 +26,16 @@ AC_PROG_CC_STDC
 AC_CHECK_LIB([yaml], [yaml_parser_initialize], [],
              [ AC_MSG_ERROR([YAML library not found.
         >> Install libyaml and retry.]) ])
+
+AS_IF([test "x$with_ssl" = "xyes"], [
+  AC_SEARCH_LIBS([CRYPTO_new_ex_data], [eay32 crypto], [], [
+                  AC_MSG_ERROR([crypto library not found])
+                  ])
+  AC_SEARCH_LIBS([SSL_library_init], [ssleay32 ssl], [], [
+                  AC_MSG_ERROR([openssl library not found])
+                  ])
+  AC_SUBST([AM_CPPFLAGS], [-DMG_ENABLE_SSL])
+])
 
 # Checks for header files.
 #AC_CHECK_HEADER([amip.h], [],
@@ -35,7 +49,6 @@ AC_CHECK_HEADER([syslog.h], [],
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
-
 AM_PROG_AR
 AM_PROG_CC_C_O
 AC_CONFIG_FILES([Makefile

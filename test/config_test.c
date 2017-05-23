@@ -160,18 +160,6 @@ static void config_file_test_default_vals_for_web_root(void **state)
   assert_string_equal(conf->web_root, "./web_root");
 }
 
-static void config_file_with_auth_settings(void **state)
-{
-  (void) *state;
-  struct amiws_config *conf = read_conf("fixtures/auth_settings.yml");
-  struct amiws_conn *conn = conf->head;
-
-  assert_string_equal(conf->web_root,     "/home/amiws/web_root");
-  assert_string_equal(conf->auth_domain,  "example.org");
-  assert_string_equal(conf->auth_file,    "/tmp/.htdigest");
-  assert_int_equal(conf->size,            1);
-}
-
 static void config_file_auth_no_domain (void **state)
 {
   (void) *state;
@@ -185,6 +173,22 @@ static void config_file_auth_no_file (void **state)
   struct amiws_config *conf = read_conf("fixtures/invalid_auth_no_file.yml");
   assert_null(conf);
 }
+
+#if MG_ENABLE_SSL
+static void config_file_ssl_no_key (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/invalid_ssl_no_key.yml");
+  assert_null(conf);
+}
+
+static void config_file_ssl_no_cert (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/invalid_ssl_no_cert.yml");
+  assert_null(conf);
+}
+#endif
 
 int main(int argc, const char *argv[])
 {
@@ -203,9 +207,12 @@ int main(int argc, const char *argv[])
     cmocka_unit_test(config_file_test_default_vals_connection_address),
     cmocka_unit_test(config_file_web_root_set),
     cmocka_unit_test(config_file_test_default_vals_for_web_root),
-    cmocka_unit_test(config_file_with_auth_settings),
     cmocka_unit_test(config_file_auth_no_domain),
     cmocka_unit_test(config_file_auth_no_file),
+#if MG_ENABLE_SSL
+    cmocka_unit_test(config_file_ssl_no_key),
+    cmocka_unit_test(config_file_ssl_no_cert),
+#endif
   };
   cmocka_set_message_output(CM_OUTPUT_TAP);
 

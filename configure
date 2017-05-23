@@ -631,6 +631,7 @@ AR
 EGREP
 GREP
 CPP
+AM_CPPFLAGS
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -719,6 +720,7 @@ ac_user_opts='
 enable_option_checking
 enable_silent_rules
 enable_dependency_tracking
+with_ssl
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1349,6 +1351,11 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-ssl              With SSL support.
 
 Some influential environment variables:
   CC          C compiler command
@@ -4115,6 +4122,13 @@ $as_echo "$ac_cv_prog_cc_stdc" >&6; } ;;
 esac
 
 
+
+# Check whether --with-ssl was given.
+if test "${with_ssl+set}" = set; then :
+  withval=$with_ssl; with_ssl=yes
+fi
+
+
 # Checks for libraries.
 #AC_CHECK_LIB([amip], [amipack_init], [],
 #             [ AC_MSG_ERROR([AMI library "amip" not found.
@@ -4169,6 +4183,133 @@ else
         >> Install libyaml and retry." "$LINENO" 5
 fi
 
+
+if test "x$with_ssl" = "xyes"; then :
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing CRYPTO_new_ex_data" >&5
+$as_echo_n "checking for library containing CRYPTO_new_ex_data... " >&6; }
+if ${ac_cv_search_CRYPTO_new_ex_data+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char CRYPTO_new_ex_data ();
+int
+main ()
+{
+return CRYPTO_new_ex_data ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' eay32 crypto; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_CRYPTO_new_ex_data=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_CRYPTO_new_ex_data+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_CRYPTO_new_ex_data+:} false; then :
+
+else
+  ac_cv_search_CRYPTO_new_ex_data=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_CRYPTO_new_ex_data" >&5
+$as_echo "$ac_cv_search_CRYPTO_new_ex_data" >&6; }
+ac_res=$ac_cv_search_CRYPTO_new_ex_data
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+
+                  as_fn_error $? "crypto library not found" "$LINENO" 5
+
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing SSL_library_init" >&5
+$as_echo_n "checking for library containing SSL_library_init... " >&6; }
+if ${ac_cv_search_SSL_library_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_library_init ();
+int
+main ()
+{
+return SSL_library_init ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ssleay32 ssl; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_SSL_library_init=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_SSL_library_init+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_SSL_library_init+:} false; then :
+
+else
+  ac_cv_search_SSL_library_init=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_SSL_library_init" >&5
+$as_echo "$ac_cv_search_SSL_library_init" >&6; }
+ac_res=$ac_cv_search_SSL_library_init
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+
+                  as_fn_error $? "openssl library not found" "$LINENO" 5
+
+fi
+
+  AM_CPPFLAGS=-DMG_ENABLE_SSL
+
+
+fi
 
 # Checks for header files.
 #AC_CHECK_HEADER([amip.h], [],
@@ -4585,7 +4726,6 @@ fi
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
-
 if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
   do
