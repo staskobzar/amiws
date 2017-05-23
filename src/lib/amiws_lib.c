@@ -94,7 +94,7 @@ void ami_ev_handler(struct mg_connection *nc,
 
     case MG_EV_RECV:
 
-      if ( amiparse_prompt(io->buf, &conn->ami_ver) == RV_SUCCESS ) {
+      if ( amiparse_prompt(io->buf, &conn->ami_ver) == 1 ) {
 
         syslog (LOG_INFO, "AMI version: %d.%d.%d", conn->ami_ver.major,
             conn->ami_ver.minor, conn->ami_ver.patch);
@@ -148,7 +148,7 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
       ami_pack->type, conn->id, conn->name);
 
   for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
-    len += json_printf(&out, "%Q: %Q", hdr->name->buf, hdr->value->buf);
+    len += json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
     if (hdr != ami_pack->tail) {
       len += json_printf(&out, ",");
     }
@@ -209,19 +209,19 @@ void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
 
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
 {
-  struct str *pack_str;
+  char *pack_str;
+  size_t len;
   AMIPacket *pack = (AMIPacket *) amipack_init ();
   amipack_type(pack, AMI_ACTION);
-  amipack_append (pack, Action, "Login");
-  amipack_append (pack, Username, conn->username);
-  amipack_append (pack, Secret, conn->secret);
+  amipack_append_action (pack, strdup("Login"), 5);
+  amipack_append (pack, strdup("Username"), 8, conn->username, strlen(conn->username));
+  amipack_append (pack, strdup("Secret"), 6, conn->secret, strlen(conn->secret));
 
-  pack_str = amipack_to_str (pack);
+  len = amipack_to_str(pack, &pack_str);
 
   syslog (LOG_INFO, "AMI login with user: %s to server: %s", conn->username, conn->name);
-  mg_send(nc, pack_str->buf, pack_str->len);
+  mg_send(nc, pack_str, len);
 
-  str_destroy (pack_str);
   amipack_destroy (pack);
 }
 
@@ -340,7 +340,8 @@ int scan_amipack( const char *p,
 static void send_ami_action(struct websocket_message *wm,
                             struct mg_connection *nc)
 {
-  struct str *p_str;
+  char *p_str;
+  size_t len;
   struct mg_connection *c;
   char buf[BUFSIZE] = "";
   AMIPacket *pack = (AMIPacket *) amipack_init ();
@@ -351,16 +352,16 @@ static void send_ami_action(struct websocket_message *wm,
     return;
   }
 
-  p_str = amipack_to_str(pack);
-  syslog (LOG_DEBUG, "Converted to AMI packet from JSON:\n %.*s", (int)p_str->len, p_str->buf);
+  len = amipack_to_str(pack, &p_str);
+  syslog (LOG_DEBUG, "Converted to AMI packet from JSON:\n %.*s", (int)len, p_str);
 
   // send to all AMI connection
   for (c = mg_next(nc->mgr, NULL); c != NULL; c = mg_next(nc->mgr, c)) {
     if(c->flags & MG_F_IS_WEBSOCKET) continue;
-    mg_send(c, p_str->buf, p_str->len);
+    mg_send(c, p_str, len);
   }
 
-  str_destroy(p_str);
+  free(p_str);
   amipack_destroy(pack);
 }
 
@@ -369,7 +370,6 @@ static void json_scan_cb( void *callback_data,
                           const char *path,
                           const struct json_token *token)
 {
-  char field[512], val[512];
   AMIPacket *pack = (AMIPacket*) callback_data;
   switch(token->type) {
     case JSON_TYPE_STRING:
@@ -377,12 +377,11 @@ static void json_scan_cb( void *callback_data,
     case JSON_TYPE_TRUE:
     case JSON_TYPE_FALSE:
     case JSON_TYPE_NULL:
-      strncpy(field, name, name_len);
-      strncpy(val, token->ptr, token->len);
-
+      //
       // TODO: fix memory leak on amipack_append_unknown
       //amipack_append_unknown(pack, "Action", "CoreStatus");
-      amipack_append_unknown(pack, field, val);
+      amipack_append(pack, strndup(name, name_len), name_len,
+                           strndup(token->ptr, token->len), token->len);
       break;
     default: break;
   }
@@ -479,21 +478,22 @@ static int str2int( const char *val, int len)
 
 static int auth_fail(AMIPacket *pack)
 {
-  struct str *resp;
+  char *resp;
+  size_t len;
 
   if(pack->type != AMI_RESPONSE)
     return 0;
 
-  resp = amiheader_value(pack, Response);
-  if(strncasecmp(resp->buf, "Error", resp->len) != 0) {
+  len = amiheader_find(pack, "Response", &resp);
+  if(strncasecmp(resp, "Error", len) != 0) {
     return 0;
   }
-  resp = amiheader_value(pack, Message);
-  if(strncasecmp(resp->buf, "Authentication failed", resp->len) == 0) {
-    str_destroy(resp);
+  len = amiheader_find(pack, "Message", &resp);
+  if(strncasecmp(resp, "Authentication failed", len) == 0) {
+    free(resp);
     return 1;
   }
-  str_destroy(resp);
+  free(resp);
   return 0;
 }
 
@@ -542,8 +542,13 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
 
 static void free_conf(struct amiws_config *conf)
 {
+  if(!conf) return;
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
-    free(conn);
+    if(conn->name) free(conn->name);
+    if(conn->address) free(conn->address);
+    if(conn->host) free(conn->host);
+    if(conn->username) free(conn->username);
+    if(conn->secret) free(conn->secret);
   }
   if (conf)
     free(conf);

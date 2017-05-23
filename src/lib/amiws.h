@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <yaml.h>
-#include <amip.h>
 
+#include "amipack.h"
 #include "config.h"
 #include "frozen.h"
 #include "mongoose.h"

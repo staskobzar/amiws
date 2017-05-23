@@ -4,9 +4,6 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
-/* Define to 1 if you have the `amip' library (-lamip). */
-#define HAVE_LIBAMIP 1
-
 /* Define to 1 if you have the `yaml' library (-lyaml). */
 #define HAVE_LIBYAML 1
 
@@ -34,9 +31,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-/* #undef NO_MINUS_C_MINUS_O */
-
 /* Name of package */
 #define PACKAGE "amiws"
 
@@ -51,6 +45,9 @@
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "amiws"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "1.0.0"

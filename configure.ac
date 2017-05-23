@@ -15,18 +15,18 @@ AC_PROG_CC
 AC_PROG_CC_STDC
 
 # Checks for libraries.
-AC_CHECK_LIB([amip], [amipack_init], [],
-             [ AC_MSG_ERROR([AMI library "amip" not found.
-        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
+#AC_CHECK_LIB([amip], [amipack_init], [],
+#             [ AC_MSG_ERROR([AMI library "amip" not found.
+#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
 AC_CHECK_LIB([yaml], [yaml_parser_initialize], [],
              [ AC_MSG_ERROR([YAML library not found.
         >> Install libyaml and retry.]) ])
 
 # Checks for header files.
-AC_CHECK_HEADER([amip.h], [],
-             [ AC_MSG_ERROR([AMI library header "amip.h" not found.
-        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
+#AC_CHECK_HEADER([amip.h], [],
+#             [ AC_MSG_ERROR([AMI library header "amip.h" not found.
+#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
 # Checks for syslog header files.
 AC_CHECK_HEADER([syslog.h], [],
@@ -36,6 +36,7 @@ AC_CHECK_HEADER([syslog.h], [],
 
 # Checks for library functions.
 
+AM_PROG_AR
 AM_PROG_CC_C_O
 AC_CONFIG_FILES([Makefile
                  doc/Doxyfile

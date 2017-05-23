@@ -119,5 +119,7 @@ test/site.exp
 test/test.sh
 test/config_test
 test/pack_scan
+test/amipack_create_test
+test/amipack_parse_test
 src/amiws
 
