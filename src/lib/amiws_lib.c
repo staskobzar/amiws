@@ -54,6 +54,10 @@ void amiws_init(struct amiws_config *conf)
   }
   mg_set_protocol_http_websocket(nc_ws);
   s_http_server_opts.document_root = conf->web_root;
+  if(conf->auth_file){
+    s_http_server_opts.global_auth_file = conf->auth_file;
+    s_http_server_opts.auth_domain = conf->auth_domain;
+  }
 }
 
 void amiws_connect_ami_server(struct amiws_conn *conn)
@@ -377,9 +381,6 @@ static void json_scan_cb( void *callback_data,
     case JSON_TYPE_TRUE:
     case JSON_TYPE_FALSE:
     case JSON_TYPE_NULL:
-      //
-      // TODO: fix memory leak on amipack_append_unknown
-      //amipack_append_unknown(pack, "Action", "CoreStatus");
       amipack_append(pack, strndup(name, name_len), name_len,
                            strndup(token->ptr, token->len), token->len);
       break;
@@ -412,6 +413,14 @@ static void set_conf_param( struct amiws_config *conf,
   } else if (strcmp(key, "web_root") == 0) {
 
     conf->web_root = val;
+
+  } else if (strcmp(key, "auth_domain") == 0) {
+
+    conf->auth_domain = val;
+
+  } else if (strcmp(key, "auth_file") == 0) {
+
+    conf->auth_file = val;
 
   } else {
     fprintf(stderr, "Unknown parameter '%s: %s'.\n", key, val);
@@ -507,6 +516,23 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
     free_conf(conf);
     return NULL;
   }
+
+  // auth settings
+  if(conf->auth_domain != NULL || conf->auth_file != NULL) {
+    if(conf->auth_domain == NULL) {
+      err = 1;
+      fprintf(stderr, "ERROR: Auth domain parameter requires auth file to be set too.\n");
+    }
+    if(conf->auth_file == NULL) {
+      err = 1;
+      fprintf(stderr, "ERROR: Auth file parameter requires auth domain to be set too.\n");
+    }
+    if(access(conf->auth_file, F_OK|R_OK) == -1) {
+      err = 1;
+      fprintf(stderr, "ERROR: Failed to read auth file '%s'.\n", conf->auth_file);
+    }
+  }
+
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
     char address[256] = "";
     if (conn->name == NULL) {

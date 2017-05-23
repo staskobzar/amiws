@@ -83,6 +83,9 @@ static void config_file_test_default_vals(void **state)
   assert_int_equal(conf->ws_port,      8000);
 
   assert_int_equal(conn->port, 5038);
+
+  assert_null(conf->auth_domain);
+  assert_null(conf->auth_file);
 }
 
 static void config_file_with_missing_password (void **state)
@@ -157,6 +160,32 @@ static void config_file_test_default_vals_for_web_root(void **state)
   assert_string_equal(conf->web_root, "./web_root");
 }
 
+static void config_file_with_auth_settings(void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/auth_settings.yml");
+  struct amiws_conn *conn = conf->head;
+
+  assert_string_equal(conf->web_root,     "/home/amiws/web_root");
+  assert_string_equal(conf->auth_domain,  "example.org");
+  assert_string_equal(conf->auth_file,    "/tmp/.htdigest");
+  assert_int_equal(conf->size,            1);
+}
+
+static void config_file_auth_no_domain (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/invalid_auth_no_domain.yml");
+  assert_null(conf);
+}
+
+static void config_file_auth_no_file (void **state)
+{
+  (void) *state;
+  struct amiws_config *conf = read_conf("fixtures/invalid_auth_no_file.yml");
+  assert_null(conf);
+}
+
 int main(int argc, const char *argv[])
 {
   const struct CMUnitTest tests[] = {
@@ -174,6 +203,9 @@ int main(int argc, const char *argv[])
     cmocka_unit_test(config_file_test_default_vals_connection_address),
     cmocka_unit_test(config_file_web_root_set),
     cmocka_unit_test(config_file_test_default_vals_for_web_root),
+    cmocka_unit_test(config_file_with_auth_settings),
+    cmocka_unit_test(config_file_auth_no_domain),
+    cmocka_unit_test(config_file_auth_no_file),
   };
   cmocka_set_message_output(CM_OUTPUT_TAP);
 

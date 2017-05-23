@@ -57,6 +57,8 @@
   conf->head          = NULL;                 \
   conf->tail          = NULL;                 \
   conf->web_root      = DEFAULT_WEB_ROOT;     \
+  conf->auth_domain   = NULL;                 \
+  conf->auth_file     = NULL;
 
 
 #define macro_init_conn(conn) conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn)); \
@@ -76,6 +78,8 @@ struct amiws_config {
   int log_level;
   int ws_port;
   char *web_root;
+  char *auth_domain;
+  char *auth_file;
 };
 
 struct amiws_conn {
