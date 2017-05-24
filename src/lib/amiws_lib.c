@@ -51,8 +51,12 @@ void amiws_init(struct amiws_config *conf)
 
   memset(&bind_opts, 0, sizeof(bind_opts));
 #if MG_ENABLE_SSL
-  bind_opts.ssl_cert = conf->ssl_cert;
-  bind_opts.ssl_key  = conf->ssl_key;
+  if(conf->ssl_cert){
+    syslog (LOG_INFO, "Enabling SSL on HTTP/Web-sock connection.");
+    bind_opts.ssl_cert = conf->ssl_cert;
+    bind_opts.ssl_key  = conf->ssl_key;
+    syslog (LOG_DEBUG, "SSL cert file '%s', key file '%s'", bind_opts.ssl_cert, bind_opts.ssl_key);
+  }
 #endif
   nc_ws = mg_bind_opt(&mgr, port_str, websock_ev_handler, bind_opts);
 
@@ -63,6 +67,7 @@ void amiws_init(struct amiws_config *conf)
   mg_set_protocol_http_websocket(nc_ws);
   s_http_server_opts.document_root = conf->web_root;
   if(conf->auth_file){
+    syslog (LOG_INFO, "Enabling HTTP Basic authentication.");
     s_http_server_opts.global_auth_file = conf->auth_file;
     s_http_server_opts.auth_domain = conf->auth_domain;
   }
@@ -356,7 +361,7 @@ int scan_amipack( const char *p,
 static void send_ami_action(struct websocket_message *wm,
                             struct mg_connection *nc)
 {
-  char *p_str;
+  char *p_str = NULL;
   size_t len;
   struct mg_connection *c;
   char buf[BUFSIZE] = "";
@@ -377,7 +382,7 @@ static void send_ami_action(struct websocket_message *wm,
     mg_send(c, p_str, len);
   }
 
-  free(p_str);
+  if(p_str) free(p_str);
   amipack_destroy(pack);
 }
 
