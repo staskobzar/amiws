@@ -140,7 +140,8 @@ var AMIPack = (function(){
         cur = parseFloat(cur);
         val = parseFloat(val);
         val = cur == 0 ? val : (cur + val) / 2;
-        val = val.toFixed(6);
+        // normalize to 7 chars (including dot)
+        val = val.toFixed( val > 1 ? Math.abs(6 - Math.ceil(Math.log(val))) : 6);
       }
       srv.find('div.' + key + ' .value').text(val);
     });

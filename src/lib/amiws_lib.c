@@ -328,8 +328,6 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
   while((len = scan_amipack(io->buf, io->len)) > 0) {
 
     if(io->len < len){
-      if(json) free(json);
-      if(buf)  free(buf);
       syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", (int)io->len, len);
       break;
     }
