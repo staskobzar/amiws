@@ -231,8 +231,8 @@ void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
   AMIPacket *pack = (AMIPacket *) amipack_init ();
   amipack_type(pack, AMI_ACTION);
   amipack_append_action (pack, strdup("Login"), 5);
-  amipack_append (pack, strdup("Username"), 8, conn->username, strlen(conn->username));
-  amipack_append (pack, strdup("Secret"), 6, conn->secret, strlen(conn->secret));
+  amipack_append (pack, strdup("Username"), 8, strdup(conn->username), strlen(conn->username));
+  amipack_append (pack, strdup("Secret"), 6, strdup(conn->secret), strlen(conn->secret));
 
   len = amipack_to_str(pack, &pack_str);
 
