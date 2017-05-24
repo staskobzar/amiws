@@ -35,10 +35,15 @@
       <div class="row">
 
         <div class="col-sm-3 col-md-2 hidden-xs-down bg-faded sidebar">
-          <h3>AMI servers</h3>
+          <div class="panel panel-default">
 
-          <div id="ami-servers-list" data-total-calls="0"></div>
+            <div class="panel-heading"> <h3 class="panel-title"> AMI servers</h3> </div>
 
+            <div class="panel-body" id="ami-servers-list" data-total-calls="0"></div>
+
+          </div>
+
+        </div>
           <script id="ami-server-tmpl" type="text/x-handlebars-template">
             <div id="amiserver-{{id}}" class="amiserver col-lg-12">
               <div class="panel panel-primary">
@@ -53,6 +58,32 @@
                     <div class="col-xs-6 text-right">
                       <div class="calls-number">{{callnum}}</div>
                       <div>Calls</div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="panel-body">
+                  <div class="row">
+<!--
+Variable: RTPAUDIOQOS.
+Value: ssrc=1109690231;themssrc=0;lp=1;rxjitter=0.000000;rxcount=0;txjitter=0.000000;txcount=850;rlp=0;rtt=0.000000.
+-->
+                    <div class="col-xs-3 text-center">
+                      <div>0.0000</div>
+                      <div><small>jitter</small></div>
+                    </div>
+                    <div class="col-xs-3 text-center">
+                      <div>0</div>
+                      <div><small>lp</small></div>
+                    </div>
+                    <div class="col-xs-3 text-center">
+                      <div>11</div>
+                      <div><small>rlp</small></div>
+                    </div>
+                    <div class="col-xs-3 text-center">
+                      <div>0.0000</div>
+                      <div><small>rtt</small></div>
                     </div>
 
                   </div>
@@ -77,7 +108,6 @@
             </div>
           </script>
 
-        </div>
 
         <main class="col-sm-5 offset-sm-3 col-md-5 offset-md-2 pt-3">
 
