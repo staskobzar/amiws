@@ -64,28 +64,19 @@
                 </div>
 
                 <div class="panel-body">
-                  <div class="row">
-<!--
-Variable: RTPAUDIOQOS.
-Value: ssrc=1109690231;themssrc=0;lp=1;rxjitter=0.000000;rxcount=0;txjitter=0.000000;txcount=850;rlp=0;rtt=0.000000.
--->
-                    <div class="col-xs-3 text-center">
-                      <div>0.0000</div>
-                      <div><small>jitter</small></div>
-                    </div>
-                    <div class="col-xs-3 text-center">
-                      <div>0</div>
-                      <div><small>lp</small></div>
-                    </div>
-                    <div class="col-xs-3 text-center">
-                      <div>11</div>
-                      <div><small>rlp</small></div>
-                    </div>
-                    <div class="col-xs-3 text-center">
-                      <div>0.0000</div>
-                      <div><small>rtt</small></div>
-                    </div>
-
+                  <div class="row small text-center">
+                    <div class="col-md-3 lp" data-toggle="tooltip" title="Lost packets">
+                      <div class="value">0</div><div class="bg-primary">lp </div></div>
+                    <div class="col-md-3 rlp" data-toggle="tooltip" title="Remote lost packets">
+                      <div class="value">0</div><div class="bg-primary">rlp </div></div>
+                    <div class="col-md-6 rtt" data-toggle="tooltip" title="Round trip time/RTT">
+                      <div class="value">0.000000</div><div class="bg-primary">rtt</div></div>
+                  </div>
+                  <div class="row small text-center">
+                    <div class="col-md-6 rxjitter" data-toggle="tooltip" title="Reciever jitter">
+                      <div class="value">0.000000</div><div class="bg-primary">rxjitter</div></div>
+                    <div class="col-md-6 txjitter" data-toggle="tooltip" title="Reported transmitted jitter">
+                      <div class="value">0.000000</div><div class="bg-primary">txjitter</div></div>
                   </div>
                 </div>
 

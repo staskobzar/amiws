@@ -40,7 +40,7 @@ int main(int argc, const char *argv[])
       option_index = 0;
   char *conf_file = NULL;
   struct amiws_config *conf = NULL;
-free(conf_file);
+
   // parsing argument parameters
   while(1) {
     option_index = 0;

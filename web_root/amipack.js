@@ -86,6 +86,8 @@ var AMIPack = (function(){
     $('#ami-servers-list').append($(utils.tmplAMIServ()(rowdata)));
     visual.addAMIServer(server_name, server_id);
     $("#amiserver-" + server_id).find('.amiserv-details').popover({container: 'body'});
+    $("#amiserver-" + server_id).find('[data-toggle="tooltip"]')
+        .tooltip({placement: 'top'});
     visual.setupCallsGauge('calls-gauge-s' + server_id);
   }
 
@@ -120,6 +122,30 @@ var AMIPack = (function(){
     this.callsnum_increase();
   }
 
+  AMIPack.prototype.setAudioQoS = function() {
+    var qos = new Object();
+    var srv = $("#amiserver-" + server_id);
+    this.header('Value').split(';').forEach(function(el){
+      var key = el.split('=')[0];
+      var val = el.split('=')[1];
+      var el  = srv.find('div.' + key + ' .value').first();
+      var cur = el.text();
+      if(['lp', 'rlp'].includes(key)){
+        // integer values
+        cur = parseInt(cur);
+        val = parseInt(val);
+        val = cur == 0 ? val : Math.round((cur + val) / 2);
+      } else {
+        // float values
+        cur = parseFloat(cur);
+        val = parseFloat(val);
+        val = cur == 0 ? val : (cur + val) / 2;
+        val = val.toFixed(6);
+      }
+      srv.find('div.' + key + ' .value').text(val);
+    });
+  }
+
   AMIPack.prototype.eventProc = function() {
     var event = this.header('Event');
     switch(event){
@@ -143,6 +169,11 @@ var AMIPack = (function(){
         this.hangup();
         break;
       case 'CoreShowChannelsComplete':
+        break;
+      case 'VarSet':
+        if(this.header('Variable') == 'RTPAUDIOQOS'){
+          this.setAudioQoS();
+        }
         break;
       default:
         //console.log('Skip event "' + event + '"');
