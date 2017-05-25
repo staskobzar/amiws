@@ -1,0 +1,61 @@
+#
+# amiws -- Library with functions for read/create AMI packets
+# Copyright (C) 2017, Stas Kobzar <staskobzar@modulis.ca>
+#
+# This file is part of amiws.
+#
+# amiws is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# amiws is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with amiws.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Log facility id. Numeric value of the syslog (See sys/syslog.h)
+# Other examples: 
+# LOG_KERNEL 0
+# LOG_LOCAL0 128
+# LOG_LOCAL1 136
+# LOG_LOCAL2 144 etc...
+#
+# DEFAULT value is 40 (LOG_SYSLOG).
+log_facility  : 160   # LOG_LOCAL4
+
+# Log level priority. From syslog:
+#	LOG_EMERG	  0	/* system is unusable */
+#	LOG_ALERT	  1	/* action must be taken immediately */
+#	LOG_CRIT	  2	/* critical conditions */
+#	LOG_ERR		  3	/* error conditions */
+#	LOG_WARNING	4	/* warning conditions */
+#	LOG_NOTICE	5	/* normal but significant condition */
+#	LOG_INFO	  6	/* informational */
+#	LOG_DEBUG	  7	/* debug-level messages */
+#
+# DEFAULT value is LOG_INFO
+log_level     : 7     # LOG_DEBUG
+
+# Web-Socket and HTTP port to listening.
+#
+# DEFAULT value is 8000
+ws_port       : 8080
+web_root      : /var/www/amiws/web_root
+auth_domain   : example.com
+auth_file     : /tmp/.auth
+ssl_cert      : /tmp/server.pem
+ssl_key       : /tmp/server.key
+
+# list of AMI hosts
+amihosts:
+  - name: lug02.etsmtl.ca
+    port: 5038
+    host: 10.230.12.32
+    username: admin
+    secret: ulaval
+

@@ -1,4 +1,3 @@
-doc_DATA = html-local
-
-html-local: Doxyfile
-	$(DOXYGEN)
+clean-local:
+	@echo "Removing doc html directory."
+	@rm -rf html

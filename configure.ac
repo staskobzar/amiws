@@ -1,5 +1,22 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+#
+# amiws -- Library with functions for read/create AMI packets
+# Copyright (C) 2017, Stas Kobzar <staskobzar@modulis.ca>
+#
+# This file is part of amiws.
+#
+# amiws is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# amiws is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with amiws.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 AC_PREREQ([2.63])
 AC_INIT([amiws], [1.0.0], [staskobzar@gmail.com])
@@ -19,10 +36,6 @@ AC_ARG_WITH([ssl],
     [with_ssl=yes])
 
 # Checks for libraries.
-#AC_CHECK_LIB([amip], [amipack_init], [],
-#             [ AC_MSG_ERROR([AMI library "amip" not found.
-#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
-
 AC_CHECK_LIB([yaml], [yaml_parser_initialize], [],
              [ AC_MSG_ERROR([YAML library not found.
         >> Install libyaml and retry.]) ])
@@ -38,9 +51,6 @@ AS_IF([test "x$with_ssl" = "xyes"], [
 ])
 
 # Checks for header files.
-#AC_CHECK_HEADER([amip.h], [],
-#             [ AC_MSG_ERROR([AMI library header "amip.h" not found.
-#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
 # Checks for syslog header files.
 AC_CHECK_HEADER([syslog.h], [],
@@ -63,3 +73,4 @@ AC_REQUIRE_AUX_FILE([tap-driver.sh])
 AC_PROG_AWK
 
 AC_OUTPUT
+

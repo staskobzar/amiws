@@ -1,6 +1,6 @@
 /**
  * amiws -- Library with functions for read/create AMI packets
- * Copyright (C) 2016, Stas Kobzar <staskobzar@modulis.ca>
+ * Copyright (C) 2017, Stas Kobzar <staskobzar@modulis.ca>
  *
  * This file is part of amiws.
  *

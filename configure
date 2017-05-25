@@ -4130,10 +4130,6 @@ fi
 
 
 # Checks for libraries.
-#AC_CHECK_LIB([amip], [amipack_init], [],
-#             [ AC_MSG_ERROR([AMI library "amip" not found.
-#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for yaml_parser_initialize in -lyaml" >&5
 $as_echo_n "checking for yaml_parser_initialize in -lyaml... " >&6; }
@@ -4312,9 +4308,6 @@ fi
 fi
 
 # Checks for header files.
-#AC_CHECK_HEADER([amip.h], [],
-#             [ AC_MSG_ERROR([AMI library header "amip.h" not found.
-#        >> Install it from "https://github.com/staskobzar/libamip" and retry.]) ])
 
 # Checks for syslog header files.
 ac_ext=c
@@ -6404,4 +6397,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
 
