@@ -2,4 +2,6 @@
 
 ## Requirements
 * libyaml - to read configuration in YAML formatte
+* openssl - only if compiled with ssl support
+
 
