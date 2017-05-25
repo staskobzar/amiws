@@ -76,9 +76,24 @@ void amiws_init(struct amiws_config *conf)
 void amiws_connect_ami_server(struct amiws_conn *conn)
 {
   struct mg_connection *mgcon;
+  struct mg_connect_opts opts;
   syslog (LOG_DEBUG, "Connecting to %s -> %s", conn->name, conn->address);
-  mgcon = mg_connect(&mgr, conn->address, ami_ev_handler);
-  mgcon->user_data = (void*) conn;
+
+  memset(&opts, 0, sizeof(opts));
+#if MG_ENABLE_SSL
+  if(conn->ssl_key && conn->ssl_cert) {
+    opts.ssl_key = conn->ssl_key;
+    opts.ssl_cert = conn->ssl_cert;
+  syslog (LOG_DEBUG, "SSL is enabled for '%s'. [key: %s, cert: %s]",
+      conn->name, conn->ssl_key, conn->ssl_cert);
+  }
+#endif
+  mgcon = mg_connect_opt(&mgr, conn->address, ami_ev_handler, opts);
+  if(mgcon == NULL){
+    syslog (LOG_ERR, "Failed to connect server %s", conn->address);
+  } else {
+    mgcon->user_data = (void*) conn;
+  }
 }
 
 void amiws_destroy()
@@ -161,8 +176,9 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
     syslog (LOG_ERR, "Authentication failed.");
   }
 
-  len += json_printf(&out, "{ type: %d, server_id: %d, server_name: %Q, data: {",
-      ami_pack->type, conn->id, conn->name);
+  len += json_printf(&out,
+      "{ type: %d, server_id: %d, server_name: %Q, ssl: %B, data: {",
+      ami_pack->type, conn->id, conn->name, conn->is_ssl);
 
   for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
     len += json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
@@ -281,6 +297,10 @@ struct amiws_config *read_conf(const char *filename)
     if (token.type == YAML_VALUE_TOKEN) context = CXT_TKN_VALUE;
     if (token.type == YAML_BLOCK_ENTRY_TOKEN) {
       macro_init_conn(conn);
+#if MG_ENABLE_SSL
+      conn->ssl_cert      = NULL;
+      conn->ssl_key       = NULL;
+#endif
       block = CXT_BLOCK_START;
     }
     if (token.type == YAML_BLOCK_END_TOKEN && block == CXT_BLOCK_START) {
@@ -477,13 +497,15 @@ static void set_conn_param( struct amiws_conn *conn,
 
     conn->secret = val;
 
-  } else if (strcmp(key, "amihosts") == 0) {
+#if MG_ENABLE_SSL
+  } else if (strcmp(key, "ssl_key") == 0) {
 
-    fprintf(stderr, "INFO: Parsing hosts block.\n");
+    conn->ssl_key = val;
 
-  } else if (strcmp(key, "amihosts") == 0) {
+  } else if (strcmp(key, "ssl_cert") == 0) {
 
-    conn->secret = val;
+    conn->ssl_cert = val;
+#endif
 
   } else {
     fprintf(stderr, "ERROR: Unknown parameter '%s: %s'.\n", key, val);
@@ -571,6 +593,12 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
       fprintf(stderr, "ERROR: Missing 'secret' parameter for host %s.\n", conn->name);
       err = 1;
     }
+#if MG_ENABLE_SSL
+    if (!err && (conn->ssl_key != NULL || conn->ssl_cert != NULL)){
+      conn->is_ssl = is_valid_ssl_conn_settings(conn);
+      err = !is_valid_ssl_conn_settings(conn);
+    }
+#endif
     if(!err) {
       sprintf(address, "tcp://%s:%d", conn->host, conn->port);
       conn->address = strdup(address);
@@ -621,7 +649,32 @@ static int is_valid_ssl_settings(struct amiws_config *conf)
   }
   return 1;
 }
-#endif
+
+static int is_valid_ssl_conn_settings(struct amiws_conn *conn)
+{
+  if(conn->ssl_key == NULL){
+    fprintf(stderr, "ERROR: When SSL certificate is given for connection '%s' then SSL key (ssl_key) must be set too.\n",
+        conn->name);
+    return 0;
+  }
+  if(conn->ssl_cert == NULL){
+    fprintf(stderr, "ERROR: When SSL key is given for connection '%s' then SSL certificate (ssl_cert) must be set too.\n",
+        conn->name);
+    return 0;
+  }
+  if(access(conn->ssl_cert, F_OK|R_OK) == -1) {
+    fprintf(stderr, "ERROR: Failed to read SSL certificate file '%s' for server '%s'.\n",
+        conn->ssl_cert, conn->name);
+    return 0;
+  }
+  if(access(conn->ssl_key, F_OK|R_OK) == -1) {
+    fprintf(stderr, "ERROR: Failed to read SSL key file '%s' for server '%s'.\n",
+        conn->ssl_key, conn->name);
+    return 0;
+  }
+  return 1;
+}
+#endif // end of MG_ENABLE_SSL
 
 static void free_conf(struct amiws_config *conf)
 {

@@ -20,7 +20,7 @@
       .calls-distribution-chart{width:200px; height:200px}
       .dest-map{width:100%;height:200px}
       .amiserv-details{cursor:pointer}
-      .ac-panel-body{min-height: 70%; overflow-y: scroll}
+      .ac-panel-body{height: 70%; overflow-y: scroll}
     </style>
 
     <title>Asterisk Stats</title>
@@ -54,6 +54,7 @@
 
                     <div class="col-xs-3">
                       <i class="fa fa-tasks fa-2x"></i>
+                      <i class="fa {{lock}}"></i>
                     </div>
                     <div id="calls-gauge-s{{id}}" class="calls-gauge col-xs-3"></div>
                     <div class="col-xs-6 text-right">

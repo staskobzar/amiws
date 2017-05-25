@@ -68,6 +68,7 @@
   conn->host = NULL;      \
   conn->username = NULL;  \
   conn->secret = NULL;    \
+  conn->is_ssl = 0;       \
 
 
 struct amiws_config {
@@ -95,6 +96,11 @@ struct amiws_conn {
   char *username;
   char *secret;
   AMIVer ami_ver;
+#if MG_ENABLE_SSL
+  char *ssl_cert;
+  char *ssl_key;
+#endif
+  int is_ssl;
   struct amiws_conn *next;
 };
 
@@ -154,7 +160,11 @@ static void free_conf(struct amiws_config *conf);
 
 static int is_valid_auth_settings(struct amiws_config *conf);
 
+#if MG_ENABLE_SSL
 static int is_valid_ssl_settings(struct amiws_config *conf);
+
+static int is_valid_ssl_conn_settings(struct amiws_conn *conn);
+#endif
 
 static void usage();
 

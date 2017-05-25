@@ -8,6 +8,7 @@ var AMIPack = (function(){
   var data;
   var server_id;
   var server_name;
+  var ami_is_ssl;
   var ami_type = [ 'UNKNOWN', 'PROMPT', 'ACTION', 'EVENT', 'RESPONSE' ];
   var state_color = {Ring: "#ffcc00", Up: "#00cc00", Down: "#cc0000"};
   var tableid = '#activecalls';
@@ -18,6 +19,7 @@ var AMIPack = (function(){
     data = json.data;
     server_id = json.server_id;
     server_name = json.server_name;
+    ami_is_ssl = json.ssl;
     utils = utils_class;
     visual = visual_class;
   }
@@ -81,7 +83,8 @@ var AMIPack = (function(){
       "starttime": resp.CoreStartupTime,
       "reloaddate": resp.CoreReloadDate,
       "reloadtime": resp.CoreReloadTime,
-      "serv_name": server_name
+      "serv_name": server_name,
+      "lock": ami_is_ssl ? 'fa-lock' : '',
     };
     $('#ami-servers-list').append($(utils.tmplAMIServ()(rowdata)));
     visual.addAMIServer(server_name, server_id);
