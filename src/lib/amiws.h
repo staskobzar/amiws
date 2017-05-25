@@ -166,6 +166,4 @@ static int is_valid_ssl_settings(struct amiws_config *conf);
 static int is_valid_ssl_conn_settings(struct amiws_conn *conn);
 #endif
 
-static void usage();
-
 #endif

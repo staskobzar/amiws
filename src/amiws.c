@@ -1,6 +1,6 @@
 /**
  * amiws -- Library with functions for read/create AMI packets
- * Copyright (C) 2016, Stas Kobzar <staskobzar@modulis.ca>
+ * Copyright (C) 2017, Stas Kobzar <staskobzar@modulis.ca>
  *
  * This file is part of amiws.
  *
@@ -27,24 +27,36 @@
 #include <getopt.h>
 #include "amiws.h"
 
+#define DEFAULT_PID_FILE    "/tmp/amiws.pid"
+#define DEFAULT_WORK_DIR    "/tmp"
+
 static const struct option options[] = {
-  "help", 0,  NULL, 'h',
-  "file", 1,  NULL, 'f',
+  "help",     0,  NULL, 'h',
+  "file",     1,  NULL, 'f',
+  "daemon",   0,  NULL, 'd',
+  "pidfile",  1,  NULL, 'p',
+  "wdir",     1,  NULL, 'D',
   /* sentinel */
-  NULL,   0,  NULL, 0
+  NULL,       0,  NULL, 0
 };
+
+static void usage();
+static void daemonize(const char *pidfile, const char *wdir);
 
 int main(int argc, const char *argv[])
 {
   int c,
-      option_index = 0;
+      option_index = 0,
+      daemon       = 0;
   char *conf_file = NULL;
+  char *pidfile   = DEFAULT_PID_FILE;
+  char *wdir      = DEFAULT_WORK_DIR;
   struct amiws_config *conf = NULL;
 
   // parsing argument parameters
   while(1) {
     option_index = 0;
-    c = getopt_long (argc, (char**)argv, "hf:", options, &option_index);
+    c = getopt_long (argc, (char**)argv, "hdf:p:D:", options, &option_index);
     if(c == -1) break; // end of options list
     switch(c) {
       case 'h':
@@ -52,9 +64,13 @@ int main(int argc, const char *argv[])
         exit(EXIT_SUCCESS);
         break;
 
-      case 'f':
-        conf_file = optarg;
-        break;
+      case 'f': conf_file = optarg; break;
+
+      case 'd': daemon = 1; break;
+
+      case 'p': pidfile = optarg; break;
+
+      case 'D': wdir = optarg; break;
 
       default:
         fprintf (stderr, "ERROR: Invalid option -%c.\n", c);
@@ -71,10 +87,75 @@ int main(int argc, const char *argv[])
   atexit (amiws_destroy);
   amiws_init(conf);
 
+  if (daemon == 1) daemonize(pidfile, wdir);
+
   for(;;) amiws_loop();
 
   return 0;
 }
+
+
+static void daemonize(const char *pidfile,
+                      const char *wdir)
+{
+  pid_t pid, sid;
+  char pidstr[12];
+  int pfiledesc;
+
+  syslog (LOG_INFO, "Daemonizing amiws process.");
+  syslog (LOG_DEBUG, "Working directory: '%s'.", wdir);
+  syslog (LOG_DEBUG, "PID file: '%s'.", pidfile);
+
+  pid = fork();
+  if (pid < 0) {
+    syslog(LOG_ERR, "Failed to fork process.");
+    exit(EXIT_FAILURE);
+  }
+
+  if (pid > 0) { // parent process
+    syslog(LOG_DEBUG, "Daemon is created.");
+    exit(EXIT_SUCCESS);
+  }
+
+  /* child proc */
+
+  umask(0);
+
+  sid = setsid();
+  if (sid < 0) {
+    syslog(LOG_DEBUG, "Daemon child failed to create SID.");
+    exit(EXIT_FAILURE);
+  }
+  syslog(LOG_DEBUG, "Process session ID is %d", sid);
+
+  if (chdir(wdir) < 0) {
+    syslog(LOG_DEBUG, "Can not change to the working directory '%s'.", wdir);
+    exit(EXIT_FAILURE);
+  }
+  syslog(LOG_DEBUG, "Working directory changed to %s", wdir);
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+
+  /* write PID file */
+  pfiledesc = open(pidfile, O_RDWR|O_CREAT, 0600);
+  if (pfiledesc < 0) {
+    syslog(LOG_DEBUG, "Failed to open/create PID file '%s'", pidfile);
+    exit(EXIT_FAILURE);
+  }
+  syslog(LOG_DEBUG, "Openned file %s to write PID", pidfile);
+
+  if (lockf(pfiledesc, F_TLOCK, 0) < 0) {
+    syslog(LOG_DEBUG, "Failed to lock PID file '%s'", pidfile);
+    exit(EXIT_FAILURE);
+  }
+
+  sprintf(pidstr, "%d\n", getpid());
+  write(pfiledesc, pidstr, strlen(pidstr));
+  close(pfiledesc);
+}
+
 
 static void usage()
 {
@@ -82,8 +163,11 @@ static void usage()
   printf("Asterisk Management Interface (AMI) to WebSocket converter.\n\n");
 
   printf("Options:\n");
-  printf("-h, --help            Printf this help message.\n");
-  printf("-f, --file FILENAME   Configuration file. By default '/etc/amiws.yaml'\n");
+  printf("-h, --help              Printf this help message.\n");
+  printf("-f, --file FILENAME     Configuration file. By default '/etc/amiws.yaml'\n");
+  printf("-d, --daemon            Daemonize process.\n");
+  printf("-p, --pidfile FILENAME  PID file when run as daemon. By default '/tmp/amiws.pid'\n");
+  printf("-D, --wdir PATH         Working directory when run as daemon. By default '/tmp'\n");
 
   printf("\n");
   printf( PACKAGE_STRING " Copyright (C) 2017  " PACKAGE_BUGREPORT "\n"
