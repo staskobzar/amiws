@@ -1,0 +1,35 @@
+#
+# amiws -- Library with functions for read/create AMI packets
+# Copyright (C) 2017, Stas Kobzar <staskobzar@modulis.ca>
+#
+# Sample configuration file. See file amiws.annotated.yaml
+# for details.
+#
+log_facility  : 40
+log_level     : 6
+ws_port       : 8000
+web_root      : /var/www/amiws/web_root
+auth_domain   : example.com
+auth_file     : /var/www/.htaccess
+ssl_cert      : /tmp/server.pem
+ssl_key       : /tmp/server.key
+
+# List of AMI servers
+amihosts:
+  - name: ast01.example.com
+    port: 5038
+    host: 10.1.0.100
+    username: admin
+    secret: secret
+  - name: ast02.example.com
+    host: 10.1.0.200
+    username: admin
+    secret: secret
+  - name: ssl.ami.company.com
+    port: 5039
+    host: 10.0.0.5
+    username: admin
+    secret: secret
+    ssl_cert: /etc/ssl/asterisk.pem
+    ssl_key: /etc/ssl/asterisk.key
+
