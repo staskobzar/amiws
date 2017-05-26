@@ -1,0 +1,11 @@
+language: c
+sudo: required
+dist: trusty
+os:
+  - linux
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install cmake -y
+  - bash .travis-install-cmocka.sh
+
+script: ./bootstrap && ./configure && make && make check
