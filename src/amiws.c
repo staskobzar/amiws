@@ -157,7 +157,9 @@ static void daemonize(const char *pidfile,
   }
 
   sprintf(pidstr, "%d\n", getpid());
-  write(pfiledesc, pidstr, strlen(pidstr));
+  if(write(pfiledesc, pidstr, strlen(pidstr)) < 0){
+    syslog(LOG_ERR, "Failed to write to PID file.");
+  }
   close(pfiledesc);
 }
 
