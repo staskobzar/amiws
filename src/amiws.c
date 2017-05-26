@@ -27,7 +27,9 @@
 #include <getopt.h>
 #include "amiws.h"
 
+/*! Default PID file when daemonizing */
 #define DEFAULT_PID_FILE    "/tmp/amiws.pid"
+/*! Default working directory when daemonizing */
 #define DEFAULT_WORK_DIR    "/tmp"
 
 static const struct option options[] = {
@@ -43,6 +45,9 @@ static const struct option options[] = {
 static void usage();
 static void daemonize(const char *pidfile, const char *wdir);
 
+/**
+ * Main amiws enter point.
+ */
 int main(int argc, const char *argv[])
 {
   int c,

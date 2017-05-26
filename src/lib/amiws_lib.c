@@ -73,6 +73,7 @@ void amiws_init(struct amiws_config *conf)
   }
 }
 
+
 void amiws_connect_ami_server(struct amiws_conn *conn)
 {
   struct mg_connection *mgcon;
@@ -96,16 +97,19 @@ void amiws_connect_ami_server(struct amiws_conn *conn)
   }
 }
 
+
 void amiws_destroy()
 {
   syslog (LOG_INFO, "Stop %s", PACKAGE);
   mg_mgr_free(&mgr);
 }
 
+
 void amiws_loop()
 {
   mg_mgr_poll(&mgr, POLL_SLEEP);
 }
+
 
 void ami_ev_handler(struct mg_connection *nc,
                     int ev,
@@ -160,6 +164,7 @@ void ami_ev_handler(struct mg_connection *nc,
   }
 }
 
+
 char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
 {
   AMIPacket *ami_pack;
@@ -194,6 +199,7 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
   return buf;
 }
 
+
 void websock_send (struct mg_connection *nc, const char *json)
 {
   struct mg_connection *c;
@@ -206,6 +212,7 @@ void websock_send (struct mg_connection *nc, const char *json)
     }
   }
 }
+
 
 void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
 {
@@ -240,6 +247,7 @@ void websock_ev_handler (struct mg_connection *nc, int ev, void *ev_data)
   }
 }
 
+
 void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
 {
   char *pack_str;
@@ -257,6 +265,7 @@ void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
 
   amipack_destroy (pack);
 }
+
 
 struct amiws_config *read_conf(const char *filename)
 {
@@ -336,6 +345,7 @@ struct amiws_config *read_conf(const char *filename)
   return valid_conf(conf);
 }
 
+
 static void read_buffer(struct mbuf *io, struct mg_connection *nc)
 {
   char *json = NULL, *buf = NULL;
@@ -365,6 +375,7 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
   }
 }
 
+
 int scan_amipack( const char *p,
                   size_t len)
 {
@@ -375,6 +386,7 @@ int scan_amipack( const char *p,
   }
   return found ? i + 3 : 0;
 }
+
 
 static void send_ami_action(struct websocket_message *wm,
                             struct mg_connection *nc)
@@ -404,6 +416,7 @@ static void send_ami_action(struct websocket_message *wm,
   amipack_destroy(pack);
 }
 
+
 static void json_scan_cb( void *callback_data,
                           const char *name, size_t name_len,
                           const char *path,
@@ -422,6 +435,7 @@ static void json_scan_cb( void *callback_data,
     default: break;
   }
 }
+
 
 static void set_conf_param( struct amiws_config *conf,
                             char *key,
@@ -471,6 +485,7 @@ static void set_conf_param( struct amiws_config *conf,
   }
 }
 
+
 static void set_conn_param( struct amiws_conn *conn,
                             char *key,
                             char *val)
@@ -512,6 +527,7 @@ static void set_conn_param( struct amiws_conn *conn,
   }
 }
 
+
 static int str2int( const char *val, int len)
 {
   int res = 0, i = 0, iv = 0;
@@ -530,6 +546,7 @@ static int str2int( const char *val, int len)
 
   return res;
 }
+
 
 static int auth_fail(AMIPacket *pack)
 {
@@ -551,6 +568,7 @@ static int auth_fail(AMIPacket *pack)
   free(resp);
   return 0;
 }
+
 
 static struct amiws_config *valid_conf(struct amiws_config *conf)
 {
@@ -611,6 +629,7 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
   return err ? NULL : conf;
 }
 
+
 static int is_valid_auth_settings(struct amiws_config *conf)
 {
   if(conf->auth_domain == NULL) {
@@ -627,6 +646,7 @@ static int is_valid_auth_settings(struct amiws_config *conf)
   }
   return 1;
 }
+
 
 #if MG_ENABLE_SSL
 static int is_valid_ssl_settings(struct amiws_config *conf)
@@ -649,6 +669,7 @@ static int is_valid_ssl_settings(struct amiws_config *conf)
   }
   return 1;
 }
+
 
 static int is_valid_ssl_conn_settings(struct amiws_conn *conn)
 {
@@ -676,6 +697,7 @@ static int is_valid_ssl_conn_settings(struct amiws_conn *conn)
 }
 #endif // end of MG_ENABLE_SSL
 
+
 static void free_conf(struct amiws_config *conf)
 {
   if(!conf) return;
@@ -689,3 +711,4 @@ static void free_conf(struct amiws_config *conf)
   if (conf)
     free(conf);
 }
+

@@ -166,7 +166,7 @@ int amipack_list_append (AMIPacket *pack, AMIHeader *header);
  * length in packet exists otherwise -1. Will return only first found
  * header value.
  * @param pack      AMI packet structure pointer
- * @param header    Header name
+ * @param name      Header name
  * @param value     String where the found value will be stored.
  * @return -1 or length of the header value
  */

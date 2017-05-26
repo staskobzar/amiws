@@ -21,7 +21,7 @@
  */
 
 /**
- * @file parse_prompt.c
+ * @file amipack_parse_prompt.c
  * @brief AMI (Asterisk Management Interface) prompt packet parser.
  *
  * @author Stas Kobzar <stas.kobzar@modulis.ca>

@@ -31,7 +31,7 @@
 
 /**
  * Commands to run when known header parsed.
- * @param flag    Header type
+ * @param name    Header type
  */
 #define SET_HEADER(name)  len = cur - tok; \
                           hdr_name = strdup(name); \
@@ -40,7 +40,7 @@
 /**
  * Commands to run on Command AMI response header.
  * @param offset  Header name offset
- * @param flag    Header type
+ * @param name    Header type
  */
 #define CMD_HEADER(offset, name) len = cur - tok - offset; tok += offset; \
                           while(*tok == ' ') { tok++; len--; } \
