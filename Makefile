@@ -155,9 +155,9 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in ar-lib \
-	compile config.guess config.sub depcomp install-sh ltmain.sh \
-	missing tap-driver.sh
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in COPYING \
+	ar-lib compile config.guess config.sub depcomp install-sh \
+	ltmain.sh missing tap-driver.sh
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -202,7 +202,7 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CPPFLAGS = -DMG_ENABLE_SSL
+AM_CPPFLAGS = 
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
@@ -230,7 +230,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lssl -lcrypto -lyaml 
+LIBS = -lyaml 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
 MKDIR_P = /bin/mkdir -p
