@@ -56,12 +56,12 @@ dkms.conf
 
 # http://www.gnu.org/software/autoconf
 
-/autoscan.log
-/autoscan-*.log
-/configure.scan
-*.Po
-*.log
-src/.deps
+#/autoscan.log
+#/autoscan-*.log
+#/configure.scan
+#*.Po
+#*.log
+#src/.deps
 
 # https://www.gnu.org/software/libtool/
 
