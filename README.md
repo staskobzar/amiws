@@ -56,6 +56,8 @@ They do not need to me installed. *mongoose* and *frozen* are already included. 
 make && make install
 ```
 
+In case of problems, try to run script ```./bootstrap```.
+
 To enable SSL support:
 ```
 ./configure --with-ssl
@@ -71,6 +73,9 @@ To run unit tests (requires cmocka):
 ```
 make check
 ```
+
+This repo also provides init scripts for [System V](https://github.com/staskobzar/amiws/blob/master/etc/amiws.sysv.init) 
+and [systemctl](https://github.com/staskobzar/amiws/blob/master/etc/amiws.service) in "etc/" directory.
 
 ### Configuration
 

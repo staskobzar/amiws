@@ -1,0 +1,107 @@
+#!/bin/sh
+#
+#       /etc/rc.d/init.d/amiws
+#
+#       amiws - Asterisk Manager Iterface (AMI) to web-socket proxy
+#
+# chkconfig:   345 56 50
+# description: AMI to websock proxy amiws
+
+### BEGIN INIT INFO
+# Provides:       amiws
+# Required-Start: $network $rsyslog
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start: 3 4 5
+# Default-Stop:  0 1 2 6
+# Short-Description: start and stop amiws
+# Description: amiws - Asterisk Manager Iterface (AMI) to web-socket proxy
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog="amiws"
+app="/usr/local/bin/$prog"
+lock_file="/var/lock/subsys/$prog"
+conf_file="/etc/amiws.yaml"
+proguser=root
+WORKDIR="/var/run"
+PIDFILE="$WORKDIR/$prog.pid"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+start() {
+    [ -x $exec ] || exit 5
+
+    echo -n $"Starting $prog: "
+    daemon --user $proguser $app --file $conf_file --pidfile $PIDFILE --wdir $WORKDIR --daemon
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch $lock_file
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -INT
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lock_file
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    echo -n $"Reloading $prog: "
+    killproc $prog -HUP
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+        exit 2
+esac
+
+exit $?

@@ -1,0 +1,15 @@
+[Unit]
+Description=amiws - Asterisk Manager Iterface (AMI) to web-socket proxy
+
+[Service]
+Type=forking
+PIDFile=/var/run/amiws.pid
+ExecStart=/usr/local/bin/amiws \
+	--file /etc/amiws.yaml \
+	--wdir /var/run \
+	--pidfile /var/run/amiws.pid \
+	--daemon
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
