@@ -210,6 +210,12 @@ struct amiws_config *read_conf(const char *filename);
  */
 int scan_amipack(const char *pack, size_t len);
 
+/**
+ * Destroy configuration structure.
+ * @param conf      Configuration structure.
+ */
+void free_conf(struct amiws_config *conf);
+
 /* private methods */
 
 static void read_buffer(struct mbuf *io, struct mg_connection *nc);
@@ -232,8 +238,6 @@ static void json_scan_cb(void *callback_data,
                           const struct json_token *token);
 
 static struct amiws_config *valid_conf(struct amiws_config *conf);
-
-static void free_conf(struct amiws_config *conf);
 
 static int is_valid_auth_settings(struct amiws_config *conf);
 

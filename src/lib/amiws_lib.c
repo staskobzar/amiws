@@ -703,7 +703,7 @@ static int is_valid_ssl_conn_settings(struct amiws_conn *conn)
 #endif // end of MG_ENABLE_SSL
 
 
-static void free_conf(struct amiws_config *conf)
+void free_conf(struct amiws_config *conf)
 {
   if(!conf) return;
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
@@ -712,8 +712,21 @@ static void free_conf(struct amiws_config *conf)
     if(conn->host) free(conn->host);
     if(conn->username) free(conn->username);
     if(conn->secret) free(conn->secret);
+#if MG_ENABLE_SSL
+    if(conn->ssl_cert) free(conn->ssl_cert);
+    if(conn->ssl_key) free(conn->ssl_cert);
+#endif
   }
-  if (conf)
+
+  if (conf){
+    if(conf->web_root) free(conf->web_root);
+    if(conf->auth_domain) free(conf->auth_domain);
+    if(conf->auth_file) free(conf->auth_file);
+#if MG_ENABLE_SSL
+    if(conf->ssl_cert) free(conn->ssl_cert);
+    if(conf->ssl_key) free(conn->ssl_cert);
+#endif
     free(conf);
+  }
 }
 

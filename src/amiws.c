@@ -25,6 +25,7 @@
  * @author Stas Kobzar <stas.kobzar@modulis.ca>
  */
 #include <getopt.h>
+#include <signal.h>
 #include "amiws.h"
 
 /*! Default PID file when daemonizing */
@@ -41,9 +42,14 @@ static const struct option options[] = {
   /* sentinel */
   NULL,       0,  NULL, 0
 };
+static int pidfd = -1;
+static char *conf_file = NULL;
+static char *pidfile   = DEFAULT_PID_FILE;
+static struct amiws_config *conf = NULL;
 
 static void usage();
 static void daemonize(const char *pidfile, const char *wdir);
+static void handle_signal(int sig);
 
 /**
  * Main amiws enter point.
@@ -53,10 +59,7 @@ int main(int argc, const char *argv[])
   int c,
       option_index = 0,
       daemon       = 0;
-  char *conf_file = NULL;
-  char *pidfile   = DEFAULT_PID_FILE;
   char *wdir      = DEFAULT_WORK_DIR;
-  struct amiws_config *conf = NULL;
 
   // parsing argument parameters
   while(1) {
@@ -91,7 +94,9 @@ int main(int argc, const char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  atexit (amiws_destroy);
+  signal(SIGINT, handle_signal);
+  signal(SIGHUP, handle_signal);
+
   amiws_init(conf);
 
   for(;;) amiws_loop();
@@ -105,7 +110,6 @@ static void daemonize(const char *pidfile,
 {
   pid_t pid, sid;
   char pidstr[12];
-  int pfiledesc;
 
   syslog (LOG_INFO, "Daemonizing amiws process.");
   syslog (LOG_DEBUG, "Working directory: '%s'.", wdir);
@@ -123,7 +127,6 @@ static void daemonize(const char *pidfile,
   }
 
   /* child proc */
-
   umask(0);
 
   sid = setsid();
@@ -133,6 +136,9 @@ static void daemonize(const char *pidfile,
   }
   syslog(LOG_DEBUG, "Process session ID is %d", sid);
 
+  /* Ignore signal sent from child to parent process */
+  signal(SIGCHLD, SIG_IGN);
+
   if (chdir(wdir) < 0) {
     syslog(LOG_DEBUG, "Can not change to the working directory '%s'.", wdir);
     exit(EXIT_FAILURE);
@@ -140,27 +146,58 @@ static void daemonize(const char *pidfile,
   syslog(LOG_DEBUG, "Working directory changed to %s", wdir);
 
   /* write PID file */
-  pfiledesc = open(pidfile, O_RDWR|O_CREAT, 0600);
-  if (pfiledesc < 0) {
+  pidfd = open(pidfile, O_RDWR|O_CREAT, 0600);
+  if (pidfd < 0) {
     syslog(LOG_DEBUG, "Failed to open/create PID file '%s'", pidfile);
     exit(EXIT_FAILURE);
   }
   syslog(LOG_DEBUG, "Openned file %s to write PID", pidfile);
 
-  if (lockf(pfiledesc, F_TLOCK, 0) < 0) {
+  if (lockf(pidfd, F_TLOCK, 0) < 0) {
     syslog(LOG_DEBUG, "Failed to lock PID file '%s'", pidfile);
     exit(EXIT_FAILURE);
   }
 
   sprintf(pidstr, "%d\n", getpid());
-  if(write(pfiledesc, pidstr, strlen(pidstr)) < 0){
+  if(write(pidfd, pidstr, strlen(pidstr)) < 0){
     syslog(LOG_ERR, "Failed to write to PID file.");
   }
-  close(pfiledesc);
+  close(pidfd);
 
   close(STDIN_FILENO);
   close(STDOUT_FILENO);
   close(STDERR_FILENO);
+}
+
+
+static void handle_signal(int sig)
+{
+  switch(sig)
+  {
+    case SIGHUP:
+      syslog(LOG_WARNING, "Received SIGHUP signal.");
+      break;
+    case SIGINT:
+    case SIGTERM:
+      syslog(LOG_INFO, "Exiting application.");
+        if (pidfd != -1) {
+        lockf(pidfd, F_ULOCK, 0);
+        close(pidfd);
+      }
+      /* Try to delete pidfile */
+      if (pidfile != NULL) {
+        unlink(pidfile);
+      }
+      amiws_destroy();
+      free_conf(conf);
+      /* Reset signal handling to default behavior */
+      signal(SIGINT, SIG_DFL);
+      exit(EXIT_SUCCESS);
+      break;
+    default:
+      syslog(LOG_WARNING, "Unhandled signal %s", strsignal(sig));
+      break;
+  }
 }
 
 
