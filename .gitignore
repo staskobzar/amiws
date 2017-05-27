@@ -59,15 +59,12 @@ dkms.conf
 /autoscan.log
 /autoscan-*.log
 /configure.scan
-/stamp-h1
 *.Po
 *.log
 Makefile
 src/.deps
 
 # https://www.gnu.org/software/libtool/
-
-/ltmain.sh
 
 # http://www.gnu.org/software/texinfo
 
@@ -101,7 +98,6 @@ test/site.bak
 confesSfsP/
 *.tar.gz
 Gemfile.lock
-doc/Doxyfile
 test/site.exp
 test/test.sh
 test/config_test
