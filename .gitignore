@@ -62,7 +62,6 @@ dkms.conf
 /aclocal.m4
 /config.guess
 /config.status
-/config.h.in
 /config.sub
 /configure.scan
 /stamp-h1
