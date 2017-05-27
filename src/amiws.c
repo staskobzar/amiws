@@ -84,6 +84,8 @@ int main(int argc, const char *argv[])
     }
   }
 
+  if (daemon == 1) daemonize(pidfile, wdir);
+
   if ((conf = read_conf(conf_file == NULL ? DEFAULT_CONF_FILE : conf_file)) == NULL) {
     fprintf (stderr, "ERROR: Failed to read config.\n");
     exit(EXIT_FAILURE);
@@ -91,8 +93,6 @@ int main(int argc, const char *argv[])
 
   atexit (amiws_destroy);
   amiws_init(conf);
-
-  if (daemon == 1) daemonize(pidfile, wdir);
 
   for(;;) amiws_loop();
 
@@ -139,10 +139,6 @@ static void daemonize(const char *pidfile,
   }
   syslog(LOG_DEBUG, "Working directory changed to %s", wdir);
 
-  close(STDIN_FILENO);
-  close(STDOUT_FILENO);
-  close(STDERR_FILENO);
-
   /* write PID file */
   pfiledesc = open(pidfile, O_RDWR|O_CREAT, 0600);
   if (pfiledesc < 0) {
@@ -161,6 +157,10 @@ static void daemonize(const char *pidfile,
     syslog(LOG_ERR, "Failed to write to PID file.");
   }
   close(pfiledesc);
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
 }
 
 

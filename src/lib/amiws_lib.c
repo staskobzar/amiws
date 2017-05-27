@@ -556,16 +556,21 @@ static int auth_fail(AMIPacket *pack)
   if(pack->type != AMI_RESPONSE)
     return 0;
 
-  len = amiheader_find(pack, "Response", &resp);
+  if((len = amiheader_find(pack, "Response", &resp)) == -1){
+    return 0;
+  }
+
   if(strncasecmp(resp, "Error", len) != 0) {
     return 0;
   }
-  len = amiheader_find(pack, "Message", &resp);
+
+  if((len = amiheader_find(pack, "Message", &resp)) == -1) {
+    return 0;
+  }
+
   if(strncasecmp(resp, "Authentication failed", len) == 0) {
-    free(resp);
     return 1;
   }
-  free(resp);
   return 0;
 }
 
