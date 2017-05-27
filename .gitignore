@@ -56,12 +56,8 @@ dkms.conf
 
 # http://www.gnu.org/software/autoconf
 
-/autom4te.cache
 /autoscan.log
 /autoscan-*.log
-/config.guess
-/config.status
-/config.sub
 /configure.scan
 /stamp-h1
 *.Po
