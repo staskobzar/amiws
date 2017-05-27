@@ -51,10 +51,8 @@ dkms.conf
 # http://www.gnu.org/software/automake
 
 Makefile.in
-/ar-lib
 /mdate-sh
 /py-compile
-/test-driver
 /ylwrap
 
 # http://www.gnu.org/software/autoconf
@@ -63,15 +61,11 @@ Makefile.in
 /autoscan.log
 /autoscan-*.log
 /aclocal.m4
-/compile
 /config.guess
 /config.status
 /config.h.in
 /config.sub
 /configure.scan
-/depcomp
-/install-sh
-/missing
 /stamp-h1
 *.Po
 *.log
