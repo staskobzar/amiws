@@ -50,7 +50,6 @@ Mkfile.old
 dkms.conf
 # http://www.gnu.org/software/automake
 
-Makefile.in
 /mdate-sh
 /py-compile
 /ylwrap
