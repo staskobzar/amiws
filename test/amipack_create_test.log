@@ -1,0 +1,17 @@
+1..8
+ok 1 - create_pack_with_no_header
+PASS: amipack_create_test 1 - create_pack_with_no_header
+ok 2 - create_pack_with_single_header
+PASS: amipack_create_test 2 - create_pack_with_single_header
+ok 3 - create_pack_with_two_headers
+PASS: amipack_create_test 3 - create_pack_with_two_headers
+ok 4 - create_pack_with_three_headers
+PASS: amipack_create_test 4 - create_pack_with_three_headers
+ok 5 - create_pack_with_multi_headers
+PASS: amipack_create_test 5 - create_pack_with_multi_headers
+ok 6 - create_pack_with_empty_header
+PASS: amipack_create_test 6 - create_pack_with_empty_header
+ok 7 - create_pack_with_empty_last_header
+PASS: amipack_create_test 7 - create_pack_with_empty_last_header
+ok 8 - pack_find_headers
+PASS: amipack_create_test 8 - pack_find_headers

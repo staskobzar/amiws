@@ -1,0 +1,48 @@
+ERROR: file "/the/file/that_does_not.exists" does not exists or can not be read.
+ERROR: Invalid ws_port: '8a998'.
+ERROR: Unknown parameter 'amihosts: name = "gw05.mor"; port = 5038; host = "10.168.1.100"; username = "admin"; secret = "passw0rd";'.
+ERROR: Missing 'secret' parameter for host gw05.mor.
+ERROR: Missing 'name' parameter for host.
+ERROR: Missing 'host' parameter for gw05.mor.
+ERROR: Missing 'username' parameter for gw05.mor.
+ERROR: Auth domain parameter requires auth file to be set too.
+ERROR: Auth file parameter requires auth domain to be set too.
+ERROR: When SSL certificate is given then SSL key (ssl_key) must be set too.
+ERROR: When SSL key is given then SSL certificate (ssl_cert) must be set too.
+1..18
+ok 1 - config_file_does_not_exists
+PASS: config_test 1 - config_file_does_not_exists
+ok 2 - config_file_with_invalid_int_value
+PASS: config_test 2 - config_file_with_invalid_int_value
+ok 3 - config_file_with_single_host
+PASS: config_test 3 - config_file_with_single_host
+ok 4 - config_file_with_multiple_hosts
+PASS: config_test 4 - config_file_with_multiple_hosts
+ok 5 - config_file_test_default_vals
+PASS: config_test 5 - config_file_test_default_vals
+ok 6 - config_file_with_missing_password
+PASS: config_test 6 - config_file_with_missing_password
+ok 7 - config_file_with_missing_name
+PASS: config_test 7 - config_file_with_missing_name
+ok 8 - config_file_with_missing_host
+PASS: config_test 8 - config_file_with_missing_host
+ok 9 - config_file_with_missing_username
+PASS: config_test 9 - config_file_with_missing_username
+ok 10 - config_file_with_single_host_connection_address
+PASS: config_test 10 - config_file_with_single_host_connection_address
+ok 11 - config_file_with_multiple_hosts_connection_address
+PASS: config_test 11 - config_file_with_multiple_hosts_connection_address
+ok 12 - config_file_test_default_vals_connection_address
+PASS: config_test 12 - config_file_test_default_vals_connection_address
+ok 13 - config_file_web_root_set
+PASS: config_test 13 - config_file_web_root_set
+ok 14 - config_file_test_default_vals_for_web_root
+PASS: config_test 14 - config_file_test_default_vals_for_web_root
+ok 15 - config_file_auth_no_domain
+PASS: config_test 15 - config_file_auth_no_domain
+ok 16 - config_file_auth_no_file
+PASS: config_test 16 - config_file_auth_no_file
+ok 17 - config_file_ssl_no_key
+PASS: config_test 17 - config_file_ssl_no_key
+ok 18 - config_file_ssl_no_cert
+PASS: config_test 18 - config_file_ssl_no_cert

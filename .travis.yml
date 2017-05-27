@@ -8,4 +8,4 @@ before_install:
   - sudo apt-get install cmake -y
   - bash .travis-install-cmocka.sh
 
-script: ./bootstrap && ./configure && make && make check
+script: ./configure --with-ssl && make && make check

@@ -714,17 +714,17 @@ void free_conf(struct amiws_config *conf)
     if(conn->secret) free(conn->secret);
 #if MG_ENABLE_SSL
     if(conn->ssl_cert) free(conn->ssl_cert);
-    if(conn->ssl_key) free(conn->ssl_cert);
+    if(conn->ssl_key) free(conn->ssl_key);
 #endif
   }
 
   if (conf){
-    if(conf->web_root) free(conf->web_root);
+    //if(conf->web_root) free(conf->web_root);
     if(conf->auth_domain) free(conf->auth_domain);
     if(conf->auth_file) free(conf->auth_file);
 #if MG_ENABLE_SSL
-    if(conf->ssl_cert) free(conn->ssl_cert);
-    if(conf->ssl_key) free(conn->ssl_cert);
+    if(conf->ssl_cert) free(conf->ssl_cert);
+    if(conf->ssl_key) free(conf->ssl_key);
 #endif
     free(conf);
   }

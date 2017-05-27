@@ -42,6 +42,7 @@ static const struct option options[] = {
   /* sentinel */
   NULL,       0,  NULL, 0
 };
+
 static int pidfd = -1;
 static char *conf_file = NULL;
 static char *pidfile   = DEFAULT_PID_FILE;
