@@ -61,7 +61,6 @@ dkms.conf
 /configure.scan
 *.Po
 *.log
-Makefile
 src/.deps
 
 # https://www.gnu.org/software/libtool/
