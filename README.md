@@ -130,4 +130,24 @@ _AMI message types_:
 
 AMI description in details can be found in [Asterisk wiki](https://wiki.asterisk.org/wiki/display/AST/Home).
 
+### SSL/TLS transport
+SSL/TLS transport usage is described in this blog article:
+http://staskobzar.blogspot.ca/2017/05/amiws-asterisk-manager-iterface-to-web.html
 
+Some more information can be found in annotated configuration file.
+
+### Digest Authentication
+HTTP content can be protected with username/password. When this option is enabled, then anyone trying access web-page, will have to provide username and password to proceed.
+
+Configuration paramers to set are:
+```
+auth_domain   : example.com
+auth_file     : /var/www/.htaccess
+```
+
+Parameter *auth_file* is a path to the file with username, password and domain. This file can be generated with utility "htdigest" which is the part of Apache httpd server package. For example:
+```
+$ htdigest -c /var/www/.htaccess example.com admin
+```
+
+Second argument, domain "example.com", must be the same as set in parameter *auth_domain*. 
