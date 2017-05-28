@@ -130,6 +130,14 @@ _AMI message types_:
 
 AMI description in details can be found in [Asterisk wiki](https://wiki.asterisk.org/wiki/display/AST/Home).
 
+*amiws* also accepts JSON messages and send them back to all Asterisk servers:
+```javascript
+sock.send(JSON.stringify({"Action": "CoreStatus", "ActionID": "12345"}));
+```
+Beware that this will send same Action to all AMI servers!
+
+Keep in mind this when you deploy *amiws* within public Internet and protect access to it.
+
 ### SSL/TLS transport
 SSL/TLS transport usage is described in this blog article:
 http://staskobzar.blogspot.ca/2017/05/amiws-asterisk-manager-iterface-to-web.html
