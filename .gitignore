@@ -103,5 +103,7 @@ test/config_test
 test/pack_scan
 test/amipack_create_test
 test/amipack_parse_test
+test/amipack_parse_queue_test
+test/*.log
 src/amiws
 
