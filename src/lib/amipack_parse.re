@@ -55,6 +55,7 @@ enum yycond_pack {
   yyckey,
   yycvalue,
   yyccommand,
+  yycqueue
 };
 
 AMIPacket *amiparse_pack (const char *pack_str)
@@ -94,6 +95,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
   OUTPUT            = 'Output';
 
   <*> *     {
+              printf("====== UNKNOWN ERROR =====\n");
               if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;

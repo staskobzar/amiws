@@ -91,6 +91,8 @@ typedef struct AMIQueue_ {
   int callsabandoned;
   float sl;   /*!< Service level (% of calls answered within X seconds) */
   int sl_sec;
+  int members_size;
+  int callers_size;
 
   // Members
   // Callers

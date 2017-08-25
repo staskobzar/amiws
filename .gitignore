@@ -59,9 +59,9 @@ dkms.conf
 #/autoscan.log
 #/autoscan-*.log
 #/configure.scan
-#*.Po
-#*.log
-#src/.deps
+*.Po
+*.log
+src/.deps
 
 # https://www.gnu.org/software/libtool/
 
@@ -104,6 +104,5 @@ test/pack_scan
 test/amipack_create_test
 test/amipack_parse_test
 test/amipack_parse_queue_test
-test/*.log
 src/amiws
 
