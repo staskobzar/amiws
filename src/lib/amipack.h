@@ -50,7 +50,7 @@
 
 /*! AMI packet types. */
 enum pack_type {
-  AMI_UNKNOWN, AMI_PROMPT, AMI_ACTION, AMI_EVENT, AMI_RESPONSE
+  AMI_UNKNOWN, AMI_PROMPT, AMI_ACTION, AMI_EVENT, AMI_RESPONSE, AMI_QUEUES
 };
 
 /*!
@@ -77,6 +77,26 @@ typedef struct AMIHeader_ {
 } AMIHeader;
 
 /*!
+ * AMI queue structure.
+ * Action "Queues" returns none standard AMI response.
+ */
+typedef struct AMIQueue_ {
+  int calls;
+  int maxlen; /*!<Maximum number of people waiting in the queue (0 for unlimited).*/
+  char *strategy;
+  int holdtime;
+  int talktime;
+  int weight;
+  int callscompleted;
+  int callsabandoned;
+  float sl;   /*!< Service level (% of calls answered within X seconds) */
+  int sl_sec;
+
+  // Members
+  // Callers
+} AMIQueue;
+
+/*!
  * AMI packet structure.
  */
 typedef struct AMIPacket_ {
@@ -89,6 +109,8 @@ typedef struct AMIPacket_ {
 
   AMIHeader       *head;  /*!< Linked list head pointer to AMI header. */
   AMIHeader       *tail;  /*!< Linked list tail pointer to AMI header. */
+
+  AMIQueue        *queue; /*!< Queues response structure. */
 
 } AMIPacket;
 

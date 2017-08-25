@@ -32,7 +32,7 @@
 #include "amipack.h"
 
 static const char *pack_type_name[] = {
-  "AMI_UNKNOWN", "AMI_PROMPT", "AMI_ACTION", "AMI_EVENT", "AMI_RESPONSE"
+  "AMI_UNKNOWN", "AMI_PROMPT", "AMI_ACTION", "AMI_EVENT", "AMI_RESPONSE", "AMI_QUEUES"
 };
 
 
