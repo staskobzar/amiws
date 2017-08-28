@@ -55,7 +55,9 @@ enum yycond_pack {
   yyckey,
   yycvalue,
   yyccommand,
-  yycqueue
+  yycqueue,
+  yycqmembers,
+  yycqcallers
 };
 
 AMIPacket *amiparse_pack (const char *pack_str)
@@ -106,7 +108,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_destroy (pack);
               return NULL;
             }
-  <key,value,queue> CRLF CRLF { goto done; }
+  <key,value,queue,qmembers,qcallers> CRLF CRLF { goto done; }
 
   <key> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
               printf("Queue name: %.*s\n", (int)(tq2 - tq1), tq1);
@@ -184,10 +186,20 @@ AMIPacket *amiparse_pack (const char *pack_str)
               printf("Queue calls unanswered: %.*s\n", (int)(tq6 - tq5), tq5);
               goto yyc_queue;
           }
-  <queue> "SL:" @tq1 [0-9\.]+ @tq2 "% within " @tq3 [0-9]+ @tq4 "s" {
+  <queue> "SL:" @tq1 [0-9\.]+ @tq2 "% within " @tq3 [0-9]+ @tq4 "s" CRLF {
               printf("Queue service level: %.*s%%\n", (int)(tq2 - tq1), tq1);
               printf("Queue service level time period: %.*s\n", (int)(tq4 - tq3), tq3);
               goto yyc_queue;
+          }
+  <queue> "   No Members" CRLF {
+              printf("==NO MEMBERS==\n");
+              pack->queue->members_size = 0;
+              goto yyc_queue;
+          }
+  <queue> "   No Callers" CRLF CRLF {
+              pack->queue->callers_size = 0;
+              printf("==NO CALLERS==\n");
+              goto done;
           }
 */
 

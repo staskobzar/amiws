@@ -31,6 +31,8 @@
 
 #include "amipack.h"
 
+#define STRATEGY_SIZE 32
+
 static const char *pack_type_name[] = {
   "AMI_UNKNOWN", "AMI_PROMPT", "AMI_ACTION", "AMI_EVENT", "AMI_RESPONSE", "AMI_QUEUES"
 };
@@ -45,9 +47,32 @@ AMIPacket *amipack_init()
   pack->head = NULL;
   pack->tail = NULL;
 
+  // queues
+  pack->queue = amipack_queue_init();
+
   return pack;
 }
 
+static AMIQueue *amipack_queue_init()
+{
+  AMIQueue *queue = (AMIQueue*) malloc(sizeof(AMIQueue));
+  assert (queue != NULL && "Failed to allocate memory for queue");
+  queue->calls = 0;
+  queue->maxlen = 0;
+  queue->strategy = (char*) malloc(STRATEGY_SIZE);
+  assert (queue->strategy != NULL && "Failed to allocate memory for queue memeber 'strategy'");
+  queue->holdtime = 0;
+  queue->talktime = 0;
+  queue->weight = 0;
+  queue->callscompleted = 0;
+  queue->callsabandoned = 0;
+  queue->sl = 0.0f;
+  queue->sl_sec = 0;
+  queue->members_size = -1;
+  queue->callers_size = -1;
+
+  return queue;
+}
 
 void amiheader_destroy (AMIHeader *hdr)
 {
@@ -69,7 +94,7 @@ AMIHeader *amiheader_create(char *name,
                             size_t value_size)
 {
   AMIHeader *header = (AMIHeader *) malloc (sizeof (AMIHeader));
-  assert ( header != NULL );
+  assert ( header != NULL && "Failed to allocate memory for header");
 
   // add header name
   header->name = name;
@@ -91,6 +116,13 @@ void amipack_destroy (AMIPacket *pack)
 
     hnext = hdr->next;
     amiheader_destroy (hdr);
+
+  }
+
+  if (pack->queue) {
+
+    free(pack->queue);
+    pack->queue = NULL;
 
   }
 

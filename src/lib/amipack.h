@@ -124,6 +124,12 @@ typedef struct AMIPacket_ {
 AMIPacket *amipack_init();
 
 /**
+ * Initiate Queue member
+ * @return AMIQueue pointer to the new structure
+ */
+static AMIQueue *amipack_queue_init();
+
+/**
  * Destroy AMI packet and free memory.
  * @param pack    AMI header to destroy
  */
