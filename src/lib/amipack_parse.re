@@ -67,8 +67,12 @@ AMIPacket *amiparse_pack (const char *pack_str)
   int c = yyckey;
   int len = 0;
 
+  /*!stags:re2c format = "char *@@;\n"; */
+
   const char *tok = marker;
   char *hdr_name;
+  // stags
+  char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
 
 /*!re2c
   re2c:define:YYCTYPE  = "unsigned char";
@@ -81,6 +85,8 @@ AMIPacket *amiparse_pack (const char *pack_str)
   re2c:define:YYSETCONDITION = "c = @@;";
   re2c:define:YYSETCONDITION:naked = 1;
   re2c:yyfill:enable = 0;
+
+  re2c:tags:expression     = "@@";
 
   CRLF              = "\r\n";
   END_COMMAND       = "--END COMMAND--";
@@ -100,8 +106,15 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_destroy (pack);
               return NULL;
             }
-  <key,value> CRLF CRLF { goto done; }
+  <key,value,queue> CRLF CRLF { goto done; }
 
+  <key> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
+              printf("Queue name: %.*s\n", (int)(tq2 - tq1), tq1);
+              printf("Queue calls: %.*s\n", (int)(tq4 - tq3), tq3);
+              printf("Queue max calls: %.*s\n", (int)(tq6 - tq5), tq5);
+              amipack_type (pack, AMI_QUEUES);
+              goto yyc_queue;
+            }
   <key> ":" " "* { tok = cur; goto yyc_value; }
   <key> ":" " "* CRLF / [a-zA-Z] {
               tok = cur;
@@ -158,6 +171,24 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_append (pack, strdup("Output"), 6, val, len);
               goto done;
             }
+  <queue> "in '" @tq1 [^']+ @tq2 "' strategy (" @tq3 [0-9]+ @tq4 "s holdtime, " @tq5 [0-9]+ @tq6 "s talktime), " {
+              printf("====QUEUE=====\n");
+              printf("Queue strategy: %.*s\n", (int)(tq2 - tq1), tq1);
+              printf("Queue holdtime: %.*ss\n", (int)(tq4 - tq3), tq3);
+              printf("Queue talktime: %.*ss\n", (int)(tq6 - tq5), tq5);
+              goto yyc_queue;
+          }
+  <queue> "W:" @tq1 [0-9]+ @tq2 ", C:" @tq3 [0-9]+ @tq4 ", A:" @tq5 [0-9]+ @tq6 ", " {
+              printf("Queue wieght: %.*s\n", (int)(tq2 - tq1), tq1);
+              printf("Queue calls answered: %.*s\n", (int)(tq4 - tq3), tq3);
+              printf("Queue calls unanswered: %.*s\n", (int)(tq6 - tq5), tq5);
+              goto yyc_queue;
+          }
+  <queue> "SL:" @tq1 [0-9\.]+ @tq2 "% within " @tq3 [0-9]+ @tq4 "s" {
+              printf("Queue service level: %.*s%%\n", (int)(tq2 - tq1), tq1);
+              printf("Queue service level time period: %.*s\n", (int)(tq4 - tq3), tq3);
+              goto yyc_queue;
+          }
 */
 
 done:
