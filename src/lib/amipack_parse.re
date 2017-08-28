@@ -56,25 +56,24 @@ enum yycond_pack {
   yycvalue,
   yyccommand,
   yycqueue,
-  yycqmembers,
-  yycqcallers
 };
 
 AMIPacket *amiparse_pack (const char *pack_str)
 {
   AMIPacket *pack = amipack_init ();
+  AMIQueue  *queue = pack->queue;
   const char *marker = pack_str;
   const char *cur    = marker;
   const char *ctxmarker;
   int c = yyckey;
   int len = 0;
 
-  /*!stags:re2c format = "char *@@;\n"; */
+  /*!stags:re2c format = "const char *@@;\n"; */
 
   const char *tok = marker;
   char *hdr_name;
   // stags
-  char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
+  const char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
 
 /*!re2c
   re2c:define:YYCTYPE  = "unsigned char";
@@ -108,12 +107,12 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_destroy (pack);
               return NULL;
             }
-  <key,value,queue,qmembers,qcallers> CRLF CRLF { goto done; }
+  <key,value,queue> CRLF CRLF { goto done; }
 
   <key> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
-              printf("Queue name: %.*s\n", (int)(tq2 - tq1), tq1);
-              printf("Queue calls: %.*s\n", (int)(tq4 - tq3), tq3);
-              printf("Queue max calls: %.*s\n", (int)(tq6 - tq5), tq5);
+              queue->name = strndup(tq1, (int)(tq2 - tq1));
+              queue->calls = (int)strtol(tq3, NULL, 10);
+              queue->maxlen = (int)strtol(tq5, NULL, 10);
               amipack_type (pack, AMI_QUEUES);
               goto yyc_queue;
             }
@@ -174,21 +173,20 @@ AMIPacket *amiparse_pack (const char *pack_str)
               goto done;
             }
   <queue> "in '" @tq1 [^']+ @tq2 "' strategy (" @tq3 [0-9]+ @tq4 "s holdtime, " @tq5 [0-9]+ @tq6 "s talktime), " {
-              printf("====QUEUE=====\n");
-              printf("Queue strategy: %.*s\n", (int)(tq2 - tq1), tq1);
-              printf("Queue holdtime: %.*ss\n", (int)(tq4 - tq3), tq3);
-              printf("Queue talktime: %.*ss\n", (int)(tq6 - tq5), tq5);
+              queue->strategy = strndup(tq1, (int)(tq2 - tq1));
+              queue->holdtime = (int)strtol(tq3, NULL, 10);
+              queue->talktime = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
   <queue> "W:" @tq1 [0-9]+ @tq2 ", C:" @tq3 [0-9]+ @tq4 ", A:" @tq5 [0-9]+ @tq6 ", " {
-              printf("Queue wieght: %.*s\n", (int)(tq2 - tq1), tq1);
-              printf("Queue calls answered: %.*s\n", (int)(tq4 - tq3), tq3);
-              printf("Queue calls unanswered: %.*s\n", (int)(tq6 - tq5), tq5);
+              queue->weight = (int)strtol(tq1, NULL, 10);
+              queue->callscompleted = (int)strtol(tq3, NULL, 10);
+              queue->callsabandoned = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
   <queue> "SL:" @tq1 [0-9\.]+ @tq2 "% within " @tq3 [0-9]+ @tq4 "s" CRLF {
-              printf("Queue service level: %.*s%%\n", (int)(tq2 - tq1), tq1);
-              printf("Queue service level time period: %.*s\n", (int)(tq4 - tq3), tq3);
+              queue->sl = strndup(tq1, (int)(tq2 - tq1));
+              queue->sl_sec = (int)strtol(tq3, NULL, 10);
               goto yyc_queue;
           }
   <queue> "   No Members" CRLF {
@@ -201,6 +199,10 @@ AMIPacket *amiparse_pack (const char *pack_str)
               printf("==NO CALLERS==\n");
               goto done;
           }
+  <queue> "   Members: " CRLF {goto yyc_queue;}
+  <queue> "      " [a-zA-Z] [^@]+ "@" [^ ] " " .* CRLF {queue->members_size++; goto yyc_queue;}
+  <queue> "   Caller: " CRLF {goto yyc_queue;}
+  <queue> "      " [0-1]+ ". " [^ ]+ "(wait: " [0-9]+ ":" [0-9]+ ", prio: " [0-9]+ ")" CRLF {queue->members_size++; goto yyc_queue;}
 */
 
 done:

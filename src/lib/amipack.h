@@ -81,6 +81,7 @@ typedef struct AMIHeader_ {
  * Action "Queues" returns none standard AMI response.
  */
 typedef struct AMIQueue_ {
+  char *name;
   int calls;
   int maxlen; /*!<Maximum number of people waiting in the queue (0 for unlimited).*/
   char *strategy;
@@ -89,7 +90,7 @@ typedef struct AMIQueue_ {
   int weight;
   int callscompleted;
   int callsabandoned;
-  float sl;   /*!< Service level (% of calls answered within X seconds) */
+  char *sl;   /*!< Service level (% of calls answered within X seconds) */
   int sl_sec;
   int members_size;
   int callers_size;
@@ -128,6 +129,12 @@ AMIPacket *amipack_init();
  * @return AMIQueue pointer to the new structure
  */
 static AMIQueue *amipack_queue_init();
+
+/**
+ * Destroy Queue structrue.
+ * @param pack    AMI header to destroy
+ */
+static void amipack_queue_destroy(AMIQueue *queue);
 
 /**
  * Destroy AMI packet and free memory.
