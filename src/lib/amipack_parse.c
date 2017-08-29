@@ -78,7 +78,7 @@ const char *yyt3;
 
 
   const char *tok = marker;
-  char *hdr_name;
+  char *hdr_name = NULL;
   // stags
   const char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
 
@@ -132,7 +132,7 @@ yy4:
 	default:	goto yy3;
 	}
 yy5:
-#line 152 "src/lib/amipack_parse.re"
+#line 151 "src/lib/amipack_parse.re"
 	{
               len = cur - tok;
               hdr_name = strndup(tok, len);
@@ -150,12 +150,11 @@ yy7:
 	++cur;
 #line 106 "src/lib/amipack_parse.re"
 	{
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
-#line 159 "src/lib/amipack_parse.c"
+#line 158 "src/lib/amipack_parse.c"
 yy9:
 	yyaccept = 1;
 	yych = *(marker = ++cur);
@@ -165,9 +164,9 @@ yy9:
 	default:	goto yy16;
 	}
 yy10:
-#line 121 "src/lib/amipack_parse.re"
+#line 120 "src/lib/amipack_parse.re"
 	{ tok = cur; goto yyc_value; }
-#line 171 "src/lib/amipack_parse.c"
+#line 170 "src/lib/amipack_parse.c"
 yy11:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
@@ -383,9 +382,9 @@ yy34:
 	yych = *(marker = ++cur);
 	goto yy4;
 yy35:
-#line 112 "src/lib/amipack_parse.re"
+#line 111 "src/lib/amipack_parse.re"
 	{ goto done; }
-#line 389 "src/lib/amipack_parse.c"
+#line 388 "src/lib/amipack_parse.c"
 yy36:
 	yych = *++cur;
 	switch (yych) {
@@ -398,13 +397,13 @@ yy37:
 	goto yy17;
 yy38:
 	cur -= 1;
-#line 122 "src/lib/amipack_parse.re"
+#line 121 "src/lib/amipack_parse.re"
 	{
               tok = cur;
               amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
               goto yyc_key;
             }
-#line 408 "src/lib/amipack_parse.c"
+#line 407 "src/lib/amipack_parse.c"
 yy39:
 	yych = *++cur;
 	switch (yych) {
@@ -498,13 +497,13 @@ yy44:
 	yych = *(marker = ++cur);
 	goto yy17;
 yy45:
-#line 127 "src/lib/amipack_parse.re"
+#line 126 "src/lib/amipack_parse.re"
 	{
               tok = cur;
               amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
               goto done;
             }
-#line 508 "src/lib/amipack_parse.c"
+#line 507 "src/lib/amipack_parse.c"
 yy46:
 	yych = *++cur;
 	switch (yych) {
@@ -527,12 +526,12 @@ yy49:
 	yych = *(marker = ++cur);
 	goto yy4;
 yy50:
-#line 147 "src/lib/amipack_parse.re"
+#line 146 "src/lib/amipack_parse.re"
 	{
               amipack_type (pack, AMI_EVENT);
               SET_HEADER("Event");
             }
-#line 536 "src/lib/amipack_parse.c"
+#line 535 "src/lib/amipack_parse.c"
 yy51:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
@@ -566,12 +565,12 @@ yy54:
 	yych = *(marker = ++cur);
 	goto yy4;
 yy55:
-#line 143 "src/lib/amipack_parse.re"
+#line 142 "src/lib/amipack_parse.re"
 	{
               amipack_type (pack, AMI_ACTION);
               SET_HEADER("Action");
             }
-#line 575 "src/lib/amipack_parse.c"
+#line 574 "src/lib/amipack_parse.c"
 yy56:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
@@ -618,12 +617,12 @@ yy61:
 	default:	goto yy4;
 	}
 yy62:
-#line 139 "src/lib/amipack_parse.re"
+#line 138 "src/lib/amipack_parse.re"
 	{
               amipack_type (pack, AMI_RESPONSE);
               SET_HEADER("Response");
             }
-#line 627 "src/lib/amipack_parse.c"
+#line 626 "src/lib/amipack_parse.c"
 yy63:
 	yych = *++cur;
 	switch (yych) {
@@ -820,7 +819,7 @@ yy93:
 	yych = *(marker = ++cur);
 	goto yy17;
 yy94:
-#line 132 "src/lib/amipack_parse.re"
+#line 131 "src/lib/amipack_parse.re"
 	{
               len = cur - tok;
               tok = cur;
@@ -828,7 +827,7 @@ yy94:
               amipack_append(pack, strdup("Response"), 8, strdup("Follows"), 7);
               goto yyc_command;
             }
-#line 832 "src/lib/amipack_parse.c"
+#line 831 "src/lib/amipack_parse.c"
 yy95:
 	yych = *++cur;
 	switch (yych) {
@@ -931,7 +930,7 @@ yy100:
 	tq2 = yyt2 - 5;
 	tq4 = yyt3 - 12;
 	tq6 = cur - 2;
-#line 114 "src/lib/amipack_parse.re"
+#line 113 "src/lib/amipack_parse.re"
 	{
               queue->name = strndup(tq1, (int)(tq2 - tq1));
               queue->calls = (int)strtol(tq3, NULL, 10);
@@ -939,7 +938,7 @@ yy100:
               amipack_type (pack, AMI_QUEUES);
               goto yyc_queue;
             }
-#line 943 "src/lib/amipack_parse.c"
+#line 942 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_value:
 	yych = *cur;
@@ -956,25 +955,24 @@ yy104:
 	default:	goto yy104;
 	}
 yy106:
-#line 159 "src/lib/amipack_parse.re"
+#line 158 "src/lib/amipack_parse.re"
 	{
               len = cur - tok;
               char *val = strndup(tok, len);
               amipack_append(pack, hdr_name, strlen(hdr_name), val, len);
               goto yyc_value;
             }
-#line 967 "src/lib/amipack_parse.c"
+#line 966 "src/lib/amipack_parse.c"
 yy107:
 	++cur;
 yy108:
 #line 106 "src/lib/amipack_parse.re"
 	{
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
-#line 978 "src/lib/amipack_parse.c"
+#line 976 "src/lib/amipack_parse.c"
 yy109:
 	yych = *(marker = ++cur);
 	switch (yych) {
@@ -1051,14 +1049,14 @@ yy112:
 yy113:
 	++cur;
 	cur -= 1;
-#line 158 "src/lib/amipack_parse.re"
+#line 157 "src/lib/amipack_parse.re"
 	{ tok = cur; goto yyc_key; }
-#line 1057 "src/lib/amipack_parse.c"
+#line 1055 "src/lib/amipack_parse.c"
 yy115:
 	++cur;
-#line 112 "src/lib/amipack_parse.re"
+#line 111 "src/lib/amipack_parse.re"
 	{ goto done; }
-#line 1062 "src/lib/amipack_parse.c"
+#line 1060 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_command:
 	yych = *cur;
@@ -1083,9 +1081,9 @@ yy120:
 yy121:
 	++cur;
 yy122:
-#line 170 "src/lib/amipack_parse.re"
+#line 169 "src/lib/amipack_parse.re"
 	{ goto yyc_command; }
-#line 1089 "src/lib/amipack_parse.c"
+#line 1087 "src/lib/amipack_parse.c"
 yy123:
 	yych = *++cur;
 	switch (yych) {
@@ -1341,9 +1339,9 @@ yy163:
 	}
 yy165:
 	++cur;
-#line 168 "src/lib/amipack_parse.re"
+#line 167 "src/lib/amipack_parse.re"
 	{ CMD_HEADER(8, "Message"); }
-#line 1347 "src/lib/amipack_parse.c"
+#line 1345 "src/lib/amipack_parse.c"
 yy167:
 	yych = *++cur;
 	switch (yych) {
@@ -1359,9 +1357,9 @@ yy169:
 	}
 yy170:
 	++cur;
-#line 167 "src/lib/amipack_parse.re"
+#line 166 "src/lib/amipack_parse.re"
 	{ CMD_HEADER(9, "ActionID"); }
-#line 1365 "src/lib/amipack_parse.c"
+#line 1363 "src/lib/amipack_parse.c"
 yy172:
 	yych = *++cur;
 	switch (yych) {
@@ -1377,9 +1375,9 @@ yy174:
 	}
 yy175:
 	++cur;
-#line 166 "src/lib/amipack_parse.re"
+#line 165 "src/lib/amipack_parse.re"
 	{ CMD_HEADER(10, "Privilege"); }
-#line 1383 "src/lib/amipack_parse.c"
+#line 1381 "src/lib/amipack_parse.c"
 yy177:
 	yych = *++cur;
 	switch (yych) {
@@ -1421,14 +1419,14 @@ yy183:
 	goto yy122;
 yy184:
 	++cur;
-#line 171 "src/lib/amipack_parse.re"
+#line 170 "src/lib/amipack_parse.re"
 	{
               len = cur - tok - 19; // output minus command end tag
               char *val = strndup(tok, len);
               amipack_append (pack, strdup("Output"), 6, val, len);
               goto done;
             }
-#line 1432 "src/lib/amipack_parse.c"
+#line 1430 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_queue:
 	yych = *cur;
@@ -1444,12 +1442,11 @@ yy188:
 yy189:
 #line 106 "src/lib/amipack_parse.re"
 	{
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
-#line 1453 "src/lib/amipack_parse.c"
+#line 1450 "src/lib/amipack_parse.c"
 yy190:
 	yych = *(marker = ++cur);
 	switch (yych) {
@@ -2031,20 +2028,18 @@ yy274:
 	}
 yy275:
 	++cur;
-#line 208 "src/lib/amipack_parse.re"
+#line 206 "src/lib/amipack_parse.re"
 	{
-              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qcallers;
           }
-#line 2040 "src/lib/amipack_parse.c"
+#line 2036 "src/lib/amipack_parse.c"
 yy277:
 	++cur;
-#line 204 "src/lib/amipack_parse.re"
+#line 203 "src/lib/amipack_parse.re"
 	{
-              queue->members = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qmembers;
           }
-#line 2048 "src/lib/amipack_parse.c"
+#line 2043 "src/lib/amipack_parse.c"
 yy279:
 	yych = *++cur;
 	switch (yych) {
@@ -2093,12 +2088,12 @@ yy285:
 	}
 yy286:
 	++cur;
-#line 196 "src/lib/amipack_parse.re"
+#line 195 "src/lib/amipack_parse.re"
 	{
               queue->members_size = 0;
               goto yyc_queue;
           }
-#line 2102 "src/lib/amipack_parse.c"
+#line 2097 "src/lib/amipack_parse.c"
 yy288:
 	yych = *++cur;
 	switch (yych) {
@@ -2113,14 +2108,14 @@ yy289:
 	tq2 = yyt2 - 4;
 	tq4 = yyt3 - 4;
 	tq6 = cur - 2;
-#line 185 "src/lib/amipack_parse.re"
+#line 184 "src/lib/amipack_parse.re"
 	{
               queue->weight = (int)strtol(tq1, NULL, 10);
               queue->callscompleted = (int)strtol(tq3, NULL, 10);
               queue->callsabandoned = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
-#line 2124 "src/lib/amipack_parse.c"
+#line 2119 "src/lib/amipack_parse.c"
 yy291:
 	yych = *++cur;
 	switch (yych) {
@@ -2147,25 +2142,25 @@ yy294:
 	}
 yy295:
 	++cur;
-#line 200 "src/lib/amipack_parse.re"
+#line 199 "src/lib/amipack_parse.re"
 	{
               queue->callers_size = 0;
               goto done;
           }
-#line 2156 "src/lib/amipack_parse.c"
+#line 2151 "src/lib/amipack_parse.c"
 yy297:
 	++cur;
 	tq1 = yyt1;
 	tq3 = yyt2;
-	tq2 = yyt2 - 9;
+	tq2 = yyt2 - 8;
 	tq4 = cur - 3;
-#line 191 "src/lib/amipack_parse.re"
+#line 190 "src/lib/amipack_parse.re"
 	{
               queue->sl = strndup(tq1, (int)(tq2 - tq1));
               queue->sl_sec = (int)strtol(tq3, NULL, 10);
               goto yyc_queue;
           }
-#line 2169 "src/lib/amipack_parse.c"
+#line 2164 "src/lib/amipack_parse.c"
 yy299:
 	yych = *++cur;
 	switch (yych) {
@@ -2378,14 +2373,14 @@ yy328:
 	tq2 = yyt2 - 12;
 	tq4 = yyt3 - 12;
 	tq6 = cur - 13;
-#line 179 "src/lib/amipack_parse.re"
+#line 178 "src/lib/amipack_parse.re"
 	{
               queue->strategy = strndup(tq1, (int)(tq2 - tq1));
               queue->holdtime = (int)strtol(tq3, NULL, 10);
               queue->talktime = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
-#line 2389 "src/lib/amipack_parse.c"
+#line 2384 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_qmembers:
 	yych = *cur;
@@ -2398,12 +2393,11 @@ yy332:
 yy333:
 #line 106 "src/lib/amipack_parse.re"
 	{
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
-#line 2407 "src/lib/amipack_parse.c"
+#line 2401 "src/lib/amipack_parse.c"
 yy334:
 	yych = *(marker = ++cur);
 	switch (yych) {
@@ -2543,14 +2537,12 @@ yy359:
 	++cur;
 	tq1 = yyt1;
 	tq2 = cur - 2;
-#line 213 "src/lib/amipack_parse.re"
+#line 210 "src/lib/amipack_parse.re"
 	{
               queue->members_size++;
-              //queue->members = strndup(tq1, (int)(tq2 - tq1));
-              //queue->members++;
               goto yyc_qmembers;
           }
-#line 2554 "src/lib/amipack_parse.c"
+#line 2546 "src/lib/amipack_parse.c"
 yy361:
 	yych = *++cur;
 	switch (yych) {
@@ -2601,12 +2593,11 @@ yy368:
 	}
 yy369:
 	++cur;
-#line 223 "src/lib/amipack_parse.re"
+#line 218 "src/lib/amipack_parse.re"
 	{
-              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qcallers;
           }
-#line 2610 "src/lib/amipack_parse.c"
+#line 2601 "src/lib/amipack_parse.c"
 yy371:
 	yych = *++cur;
 	switch (yych) {
@@ -2627,12 +2618,12 @@ yy373:
 	}
 yy374:
 	++cur;
-#line 219 "src/lib/amipack_parse.re"
+#line 214 "src/lib/amipack_parse.re"
 	{
               queue->callers_size = 0;
               goto done;
           }
-#line 2636 "src/lib/amipack_parse.c"
+#line 2627 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_qcallers:
 	yych = *cur;
@@ -2646,12 +2637,11 @@ yy378:
 yy379:
 #line 106 "src/lib/amipack_parse.re"
 	{
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
-#line 2655 "src/lib/amipack_parse.c"
+#line 2645 "src/lib/amipack_parse.c"
 yy380:
 	yych = *++cur;
 	switch (yych) {
@@ -2666,9 +2656,9 @@ yy381:
 	}
 yy382:
 	++cur;
-#line 232 "src/lib/amipack_parse.re"
+#line 226 "src/lib/amipack_parse.re"
 	{goto done;}
-#line 2672 "src/lib/amipack_parse.c"
+#line 2662 "src/lib/amipack_parse.c"
 yy384:
 	yych = *++cur;
 	switch (yych) {
@@ -2749,14 +2739,14 @@ yy395:
 	}
 yy397:
 	++cur;
-#line 228 "src/lib/amipack_parse.re"
+#line 222 "src/lib/amipack_parse.re"
 	{
               queue->callers_size++;
               goto yyc_qcallers;
           }
-#line 2758 "src/lib/amipack_parse.c"
+#line 2748 "src/lib/amipack_parse.c"
 }
-#line 233 "src/lib/amipack_parse.re"
+#line 227 "src/lib/amipack_parse.re"
 
 
 done:

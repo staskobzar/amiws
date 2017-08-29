@@ -73,7 +73,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
   /*!stags:re2c format = "const char *@@;\n"; */
 
   const char *tok = marker;
-  char *hdr_name;
+  char *hdr_name = NULL;
   // stags
   const char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
 
@@ -104,8 +104,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
   OUTPUT            = 'Output';
 
   <*> *     {
-              printf("====== UNKNOWN ERROR =====\n");
-              if (hdr_name) free (hdr_name);
+              //if (hdr_name) free (hdr_name);
               amipack_destroy (pack);
               return NULL;
             }
@@ -188,7 +187,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
               queue->callsabandoned = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
-  <queue> "SL:" @tq1 [0-9\.]+ @tq2 "% within " @tq3 [0-9]+ @tq4 "s" CRLF {
+  <queue> "SL:" @tq1 [0-9\.]+ "%" @tq2 " within " @tq3 [0-9]+ @tq4 "s" CRLF {
               queue->sl = strndup(tq1, (int)(tq2 - tq1));
               queue->sl_sec = (int)strtol(tq3, NULL, 10);
               goto yyc_queue;
@@ -202,18 +201,14 @@ AMIPacket *amiparse_pack (const char *pack_str)
               goto done;
           }
   <queue> "   Members: " CRLF {
-              queue->members = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qmembers;
           }
   <queue> "   Callers: " CRLF {
-              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qcallers;
           }
 
   <qmembers> "      " @tq1 [^@]+ "@" .* @tq2 CRLF {
               queue->members_size++;
-              //queue->members = strndup(tq1, (int)(tq2 - tq1));
-              //queue->members++;
               goto yyc_qmembers;
           }
   <qmembers> "   No Callers" CRLF CRLF {
@@ -221,7 +216,6 @@ AMIPacket *amiparse_pack (const char *pack_str)
               goto done;
           }
   <qmembers> "   Callers: " CRLF {
-              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
               goto yyc_qcallers;
           }
 

@@ -170,29 +170,50 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
   AMIPacket *ami_pack;
   char    *buf          = (char *) malloc(BUFSIZE);
   struct  json_out out  = JSON_OUT_BUF(buf, BUFSIZE);
-  int     len           = 0;
 
-  if( (ami_pack = amiparse_pack(ami_pack_str)) == NULL ) {
-    amipack_destroy(ami_pack);
+  if ( (ami_pack = amiparse_pack(ami_pack_str)) == NULL ) {
     syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
     return NULL;
   }
+  if (ami_pack->type == AMI_UNKNOWN) {
+    amipack_destroy(ami_pack);
+    syslog (LOG_ERR, "Invalid packet: %s", ami_pack_str);
+    return NULL;
+  }
+
   if (auth_fail(ami_pack)) {
     syslog (LOG_ERR, "Authentication failed.");
   }
 
-  len += json_printf(&out,
+  json_printf(&out,
       "{ type: %d, server_id: %d, server_name: %Q, ssl: %B, data: {",
       ami_pack->type, conn->id, conn->name, conn->is_ssl);
 
-  for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
-    len += json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
-    if (hdr != ami_pack->tail) {
-      len += json_printf(&out, ",");
+  if (ami_pack->type == AMI_QUEUES) {
+    AMIQueue *queue = ami_pack->queue;
+    json_printf(&out, "QueueName: %Q,", queue->name);
+    json_printf(&out, "Calls: %d,", queue->calls);
+    json_printf(&out, "Maxlen: %d,", queue->maxlen);
+    json_printf(&out, "Strategy: %Q,", queue->strategy);
+    json_printf(&out, "Holdtime: %d,", queue->holdtime);
+    json_printf(&out, "Talktime: %d,", queue->talktime);
+    json_printf(&out, "Weight: %d,", queue->weight);
+    json_printf(&out, "CallsCompleted: %d,", queue->callscompleted);
+    json_printf(&out, "CallsAbandoned: %d,", queue->callsabandoned);
+    json_printf(&out, "ServiceLevel: %Q,", queue->sl);
+    json_printf(&out, "ServiceLevelPeriod: %d,", queue->sl_sec);
+    json_printf(&out, "MembersCount: %d,", queue->members_size);
+    json_printf(&out, "CallersCount: %d", queue->callers_size);
+  } else {
+    for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
+      json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
+      if (hdr != ami_pack->tail) {
+        json_printf(&out, ",");
+      }
     }
   }
 
-  len += json_printf(&out, "}}", 1);
+  json_printf(&out, "}}", 1);
 
   amipack_destroy(ami_pack);
 
@@ -357,7 +378,7 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
 
   while((len = scan_amipack(io->buf, io->len)) > 0) {
 
-    if(io->len < len){
+    if (io->len < len) {
       syslog (LOG_DEBUG, "io->len(%d) < len(%d). Skip to align.", (int)io->len, len);
       break;
     }

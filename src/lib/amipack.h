@@ -98,9 +98,6 @@ typedef struct AMIQueue_ {
   int members_size;
   int callers_size;
 
-  char **members;
-  char **callers;
-
 } AMIQueue;
 
 /*!

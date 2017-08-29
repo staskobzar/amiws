@@ -149,7 +149,7 @@ static void parse_pack_queue_service_level (void **state)
   assert_int_equal (AMI_QUEUES, pack->type);
   assert_non_null(pack->queue);
   queue = pack->queue;
-  assert_string_equal(queue->sl, "4.00546");
+  assert_string_equal(queue->sl, "4.00546%");
   assert_int_equal (queue->sl_sec, 58);
   amipack_destroy (pack);
 }
