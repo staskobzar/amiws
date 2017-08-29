@@ -56,6 +56,8 @@ enum yycond_pack {
   yycvalue,
   yyccommand,
   yycqueue,
+  yycqmembers,
+  yycqcallers
 };
 
 AMIPacket *amiparse_pack (const char *pack_str)
@@ -107,7 +109,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_destroy (pack);
               return NULL;
             }
-  <key,value,queue> CRLF CRLF { goto done; }
+  <key,value> CRLF CRLF { goto done; }
 
   <key> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
               queue->name = strndup(tq1, (int)(tq2 - tq1));
@@ -172,6 +174,8 @@ AMIPacket *amiparse_pack (const char *pack_str)
               amipack_append (pack, strdup("Output"), 6, val, len);
               goto done;
             }
+
+
   <queue> "in '" @tq1 [^']+ @tq2 "' strategy (" @tq3 [0-9]+ @tq4 "s holdtime, " @tq5 [0-9]+ @tq6 "s talktime), " {
               queue->strategy = strndup(tq1, (int)(tq2 - tq1));
               queue->holdtime = (int)strtol(tq3, NULL, 10);
@@ -190,19 +194,42 @@ AMIPacket *amiparse_pack (const char *pack_str)
               goto yyc_queue;
           }
   <queue> "   No Members" CRLF {
-              printf("==NO MEMBERS==\n");
-              pack->queue->members_size = 0;
+              queue->members_size = 0;
               goto yyc_queue;
           }
   <queue> "   No Callers" CRLF CRLF {
-              pack->queue->callers_size = 0;
-              printf("==NO CALLERS==\n");
+              queue->callers_size = 0;
               goto done;
           }
-  <queue> "   Members: " CRLF {goto yyc_queue;}
-  <queue> "      " [a-zA-Z] [^@]+ "@" [^ ] " " .* CRLF {queue->members_size++; goto yyc_queue;}
-  <queue> "   Caller: " CRLF {goto yyc_queue;}
-  <queue> "      " [0-1]+ ". " [^ ]+ "(wait: " [0-9]+ ":" [0-9]+ ", prio: " [0-9]+ ")" CRLF {queue->members_size++; goto yyc_queue;}
+  <queue> "   Members: " CRLF {
+              queue->members = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
+              goto yyc_qmembers;
+          }
+  <queue> "   Callers: " CRLF {
+              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
+              goto yyc_qcallers;
+          }
+
+  <qmembers> "      " @tq1 [^@]+ "@" .* @tq2 CRLF {
+              queue->members_size++;
+              //queue->members = strndup(tq1, (int)(tq2 - tq1));
+              //queue->members++;
+              goto yyc_qmembers;
+          }
+  <qmembers> "   No Callers" CRLF CRLF {
+              queue->callers_size = 0;
+              goto done;
+          }
+  <qmembers> "   Callers: " CRLF {
+              queue->callers = calloc(QUEUE_LIST_LEN, QUEUE_ITEM_LEN);
+              goto yyc_qcallers;
+          }
+
+  <qcallers> "      " [0-9]+ ". " .* CRLF {
+              queue->callers_size++;
+              goto yyc_qcallers;
+          }
+  <qcallers> CRLF {goto done;}
 */
 
 done:

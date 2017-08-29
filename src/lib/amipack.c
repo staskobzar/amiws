@@ -69,6 +69,9 @@ static AMIQueue *amipack_queue_init()
   queue->members_size = 0;
   queue->callers_size = 0;
 
+  queue->members = NULL;
+  queue->callers = NULL;
+
   return queue;
 }
 
@@ -77,6 +80,8 @@ static void amipack_queue_destroy(AMIQueue *queue)
     if (queue->name) free(queue->name);
     if (queue->strategy) free(queue->strategy);
     if (queue->sl) free(queue->sl);
+    if (queue->members) free(queue->members);
+    if (queue->callers) free(queue->callers);
     free(queue);
     queue = NULL;
 }

@@ -214,6 +214,48 @@ static void parse_pack_queue_with_no_members_and_three_callers (void **state)
 {
   (void)*state;
   // pending
+  AMIPacket *pack;
+  AMIQueue *queue;
+  const char inpack[] = "janet_373 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 0s\r\n"
+      "   No Members\r\n"
+      "   Callers: \r\n"
+      "      1. SIP/router01-0001e28a (wait: 5:06, prio: 0)\r\n"
+      "      2. SIP/router01-0001e32a (wait: 1:04, prio: 0)\r\n"
+      "      3. SIP/router01-0001e333 (wait: 0:41, prio: 0)\r\n"
+      "\r\n";
+
+  pack = amiparse_pack (inpack);
+  assert_int_equal (AMI_QUEUES, pack->type);
+  assert_non_null(pack->queue);
+  queue = pack->queue;
+  assert_int_equal (queue->members_size, 0);
+  assert_int_equal (queue->callers_size, 3);
+  amipack_destroy (pack);
+}
+
+static void parse_pack_queue_with_two_members_and_three_callers (void **state)
+{
+  (void)*state;
+  // pending
+  AMIPacket *pack;
+  AMIQueue *queue;
+  const char inpack[] = "janet_373 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 0s\r\n"
+      "   Members: \r\n"
+      "      228@proforce.modulis.clusterpbx.ca (Local/228@from-queue/n from Local/228@from-queue/n) (ringinuse disabled) (realtime) (paused) (Not in use) has taken no calls yet\r\n"
+      "      5147308585@proforce.modulis.clusterpbx.c (Local/5147308585@from-queue/n from Local/5147308585@from-queue/n) (ringinuse disabled) (realtime) (paused) (Not in use) has taken no calls yet\r\n"
+      "   Callers: \r\n"
+      "      1. SIP/router01-0001e28a (wait: 5:06, prio: 0)\r\n"
+      "      2. SIP/router01-0001e32a (wait: 1:04, prio: 0)\r\n"
+      "      3. SIP/router01-0001e333 (wait: 0:41, prio: 0)\r\n"
+      "\r\n";
+
+  pack = amiparse_pack (inpack);
+  assert_int_equal (AMI_QUEUES, pack->type);
+  assert_non_null(pack->queue);
+  queue = pack->queue;
+  assert_int_equal (queue->members_size, 2);
+  assert_int_equal (queue->callers_size, 3);
+  amipack_destroy (pack);
 }
 
 int main(void)
@@ -230,6 +272,8 @@ int main(void)
     cmocka_unit_test (parse_pack_queue_service_level),
     cmocka_unit_test (parse_pack_queue_with_no_members_and_no_callers),
     cmocka_unit_test (parse_pack_queue_with_two_members_and_no_callers),
+    cmocka_unit_test (parse_pack_queue_with_no_members_and_three_callers),
+    cmocka_unit_test (parse_pack_queue_with_two_members_and_three_callers),
   };
 
   cmocka_set_message_output(CM_OUTPUT_TAP);

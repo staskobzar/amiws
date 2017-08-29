@@ -33,6 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define QUEUE_LIST_LEN 64
+#define QUEUE_ITEM_LEN 512
+
 /*!
  * Return length of the packet as string representation.
  * All headers length + CRLF stanza (2 bytes)
@@ -95,8 +98,9 @@ typedef struct AMIQueue_ {
   int members_size;
   int callers_size;
 
-  // Members
-  // Callers
+  char **members;
+  char **callers;
+
 } AMIQueue;
 
 /*!
