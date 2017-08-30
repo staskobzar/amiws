@@ -33,11 +33,11 @@
  * Commands to run when known header parsed.
  * @param name    Header type
  */
-/*
-#define SET_HEADER(name)  len = cur - tok; \
-                          hdr_name = strdup(name); \
-                          goto yyc_key;
-*/
+#define SET_HEADER(name, pos_start, pos_end)                    \
+              amipack_append(pack, strdup(name), strlen(name),  \
+                strndup(pos_start, (int)(pos_end - pos_start)), \
+                (int)(pos_end - pos_start));                    \
+              goto yyc_header;
 /**
  * Commands to run on Command AMI response header.
  * @param offset  Header name offset
@@ -105,7 +105,6 @@ AMIPacket *amiparse_pack (const char *pack_str)
   OUTPUT            = 'Output';
 
   <*> *     {
-              printf("---- PARSING ERROR ----\n");
               amipack_destroy (pack);
               return NULL;
             }
@@ -128,27 +127,18 @@ AMIPacket *amiparse_pack (const char *pack_str)
             }
   <header> RESPONSE ":" " "* @th1 [^\r]+ @th2 CRLF  {
               amipack_type (pack, AMI_RESPONSE);
-              amipack_append(pack, strdup("Response"), 8, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
-              goto yyc_header;
+              SET_HEADER("Response", th1, th2);
             }
   <header> ACTION ":" " "* @th1 [^\r]+ @th2 CRLF {
               amipack_type (pack, AMI_ACTION);
-              amipack_append(pack, strdup("Action"), 6, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
-              goto yyc_header;
+              SET_HEADER("Action", th1, th2);
             }
   <header> EVENT ":" " "* @th1 [^\r]+ @th2 CRLF {
               amipack_type (pack, AMI_EVENT);
-              amipack_append(pack, strdup("Event"), 5, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
-              goto yyc_header;
+              SET_HEADER("Event", th1, th2);
             }
 
-  <header> @th1 [^: ]+ @th2 ":" " "* CRLF CRLF {
-              amipack_append(pack,
-                             strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
-                             strdup(""), 0);
-              goto done;
-            }
-  <header> @th1 [^: ]+ @th2 ":" " "* @th3 [^\r]+ @th4 CRLF {
+  <header> @th1 [^: ]+ @th2 ":" " "* @th3 .* @th4 CRLF {
               amipack_append(pack,
                              strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
                              strndup(th3, (int)(th4 - th3)), (int)(th4 - th3));
@@ -218,6 +208,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
               goto yyc_qcallers;
           }
   <qcallers> CRLF {goto done;}
+
 */
 
 done:
