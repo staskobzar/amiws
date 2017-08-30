@@ -33,10 +33,11 @@
  * Commands to run when known header parsed.
  * @param name    Header type
  */
+/*
 #define SET_HEADER(name)  len = cur - tok; \
                           hdr_name = strdup(name); \
                           goto yyc_key;
-
+*/
 /**
  * Commands to run on Command AMI response header.
  * @param offset  Header name offset
@@ -52,8 +53,7 @@
 // introducing types:re2c for AMI packet
 /*! re2c parcing conditions. */
 enum yycond_pack {
-  yyckey,
-  yycvalue,
+  yycheader,
   yyccommand,
   yycqueue,
   yycqmembers,
@@ -67,7 +67,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
   const char *marker = pack_str;
   const char *cur    = marker;
   const char *ctxmarker;
-  int c = yyckey;
+  int c = yycheader;
   int len = 0;
 
   /*!stags:re2c format = "const char *@@;\n"; */
@@ -76,6 +76,7 @@ AMIPacket *amiparse_pack (const char *pack_str)
   char *hdr_name = NULL;
   // stags
   const char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
+  const char *th1, *th2, *th3, *th4;
 
 /*!re2c
   re2c:define:YYCTYPE  = "unsigned char";
@@ -104,63 +105,56 @@ AMIPacket *amiparse_pack (const char *pack_str)
   OUTPUT            = 'Output';
 
   <*> *     {
-              //if (hdr_name) free (hdr_name);
+              printf("---- PARSING ERROR ----\n");
               amipack_destroy (pack);
               return NULL;
             }
-  <key,value> CRLF CRLF { goto done; }
 
-  <key> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
+  <header> CRLF { goto done; }
+
+  <header> @tq1 [^ ]+ @tq2 " has " @tq3 [0-9]+ @tq4 " calls (max " @tq5 [0-9a-z]+ @tq6 ") " {
               queue->name = strndup(tq1, (int)(tq2 - tq1));
               queue->calls = (int)strtol(tq3, NULL, 10);
               queue->maxlen = (int)strtol(tq5, NULL, 10);
               amipack_type (pack, AMI_QUEUES);
               goto yyc_queue;
             }
-  <key> ":" " "* { tok = cur; goto yyc_value; }
-  <key> ":" " "* CRLF / [a-zA-Z] {
-              tok = cur;
-              amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
-              goto yyc_key;
-            }
-  <key> ":" " "* CRLF CRLF {
-              tok = cur;
-              amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
-              goto done;
-            }
-  <key> RESPONSE ":" " "* 'Follows' CRLF {
+  <header> RESPONSE ":" " "* 'Follows' CRLF {
               len = cur - tok;
               tok = cur;
               amipack_type (pack, AMI_RESPONSE);
               amipack_append(pack, strdup("Response"), 8, strdup("Follows"), 7);
               goto yyc_command;
             }
-  <key> RESPONSE  {
+  <header> RESPONSE ":" " "* @th1 [^\r]+ @th2 CRLF  {
               amipack_type (pack, AMI_RESPONSE);
-              SET_HEADER("Response");
+              amipack_append(pack, strdup("Response"), 8, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
             }
-  <key> ACTION {
+  <header> ACTION ":" " "* @th1 [^\r]+ @th2 CRLF {
               amipack_type (pack, AMI_ACTION);
-              SET_HEADER("Action");
+              amipack_append(pack, strdup("Action"), 6, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
             }
-  <key> EVENT  {
+  <header> EVENT ":" " "* @th1 [^\r]+ @th2 CRLF {
               amipack_type (pack, AMI_EVENT);
-              SET_HEADER("Event");
+              amipack_append(pack, strdup("Event"), 5, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
             }
 
-  <key> [^: ]+ {
-              len = cur - tok;
-              hdr_name = strndup(tok, len);
-              goto yyc_key;
+  <header> @th1 [^: ]+ @th2 ":" " "* CRLF CRLF {
+              amipack_append(pack,
+                             strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
+                             strdup(""), 0);
+              goto done;
+            }
+  <header> @th1 [^: ]+ @th2 ":" " "* @th3 [^\r]+ @th4 CRLF {
+              amipack_append(pack,
+                             strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
+                             strndup(th3, (int)(th4 - th3)), (int)(th4 - th3));
+              goto yyc_header;
             }
 
-  <value> CRLF / [a-zA-Z] { tok = cur; goto yyc_key; }
-  <value> [^\r\n]* {
-              len = cur - tok;
-              char *val = strndup(tok, len);
-              amipack_append(pack, hdr_name, strlen(hdr_name), val, len);
-              goto yyc_value;
-            }
 
   <command> PRIVILEGE ":" .* CRLF { CMD_HEADER(10, "Privilege"); }
   <command> ACTIONID ":" .* CRLF  { CMD_HEADER(9, "ActionID"); }

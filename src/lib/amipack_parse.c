@@ -35,10 +35,11 @@
  * Commands to run when known header parsed.
  * @param name    Header type
  */
+/*
 #define SET_HEADER(name)  len = cur - tok; \
                           hdr_name = strdup(name); \
                           goto yyc_key;
-
+*/
 /**
  * Commands to run on Command AMI response header.
  * @param offset  Header name offset
@@ -54,8 +55,7 @@
 // introducing types:re2c for AMI packet
 /*! re2c parcing conditions. */
 enum yycond_pack {
-  yyckey,
-  yycvalue,
+  yycheader,
   yyccommand,
   yycqueue,
   yycqmembers,
@@ -69,55 +69,57 @@ AMIPacket *amiparse_pack (const char *pack_str)
   const char *marker = pack_str;
   const char *cur    = marker;
   const char *ctxmarker;
-  int c = yyckey;
+  int c = yycheader;
   int len = 0;
 
   const char *yyt1;
 const char *yyt2;
 const char *yyt3;
+const char *yyt4;
+const char *yyt5;
 
 
   const char *tok = marker;
   char *hdr_name = NULL;
   // stags
   const char *tq1, *tq2, *tq3, *tq4, *tq5, *tq6;
+  const char *th1, *th2, *th3, *th4;
 
 
-#line 87 "src/lib/amipack_parse.c"
+#line 90 "src/lib/amipack_parse.c"
 {
 	unsigned char yych;
 	unsigned int yyaccept = 0;
 	switch (c) {
-	case yyckey: goto yyc_key;
-	case yycvalue: goto yyc_value;
+	case yycheader: goto yyc_header;
 	case yyccommand: goto yyc_command;
 	case yycqueue: goto yyc_queue;
 	case yycqmembers: goto yyc_qmembers;
 	case yycqcallers: goto yyc_qcallers;
 	}
 /* *********************************** */
-yyc_key:
+yyc_header:
 	yych = *cur;
 	switch (yych) {
 	case '\r':
 		yyt1 = cur;
-		goto yy6;
-	case ' ':	goto yy7;
+		goto yy5;
+	case ' ':	goto yy6;
 	case ':':
 		yyt1 = cur;
-		goto yy9;
+		goto yy7;
 	case 'A':
 	case 'a':
 		yyt1 = cur;
-		goto yy11;
+		goto yy8;
 	case 'E':
 	case 'e':
 		yyt1 = cur;
-		goto yy12;
+		goto yy9;
 	case 'R':
 	case 'r':
 		yyt1 = cur;
-		goto yy13;
+		goto yy10;
 	default:
 		yyt1 = cur;
 		goto yy3;
@@ -125,422 +127,324 @@ yyc_key:
 yy3:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
+	goto yy12;
 yy4:
-	switch (yych) {
-	case ' ':	goto yy14;
-	case ':':	goto yy16;
-	default:	goto yy3;
-	}
-yy5:
-#line 151 "src/lib/amipack_parse.re"
+#line 107 "src/lib/amipack_parse.re"
 	{
-              len = cur - tok;
-              hdr_name = strndup(tok, len);
-              goto yyc_key;
-            }
-#line 142 "src/lib/amipack_parse.c"
-yy6:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case '\n':	goto yy18;
-	default:	goto yy4;
-	}
-yy7:
-	++cur;
-#line 106 "src/lib/amipack_parse.re"
-	{
-              //if (hdr_name) free (hdr_name);
+              printf("---- PARSING ERROR ----\n");
               amipack_destroy (pack);
               return NULL;
             }
-#line 158 "src/lib/amipack_parse.c"
-yy9:
-	yyaccept = 1;
+#line 139 "src/lib/amipack_parse.c"
+yy5:
+	yyaccept = 0;
 	yych = *(marker = ++cur);
 	switch (yych) {
-	case '\r':	goto yy19;
-	case ' ':	goto yy20;
-	default:	goto yy16;
+	case '\n':	goto yy16;
+	default:	goto yy12;
 	}
-yy10:
-#line 120 "src/lib/amipack_parse.re"
-	{ tok = cur; goto yyc_value; }
-#line 170 "src/lib/amipack_parse.c"
-yy11:
+yy6:
+	++cur;
+	goto yy4;
+yy7:
+	yyaccept = 0;
+	yych = *(marker = ++cur);
+	goto yy19;
+yy8:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
 	switch (yych) {
 	case 'C':
-	case 'c':	goto yy21;
-	default:	goto yy4;
+	case 'c':	goto yy20;
+	default:	goto yy12;
 	}
-yy12:
+yy9:
 	yyaccept = 0;
 	yych = *(marker = ++cur);
 	switch (yych) {
 	case 'V':
-	case 'v':	goto yy22;
-	default:	goto yy4;
+	case 'v':	goto yy21;
+	default:	goto yy12;
+	}
+yy10:
+	yyaccept = 0;
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case 'E':
+	case 'e':	goto yy22;
+	default:	goto yy12;
+	}
+yy11:
+	yych = *++cur;
+yy12:
+	switch (yych) {
+	case ' ':	goto yy13;
+	case ':':
+		yyt4 = cur;
+		goto yy15;
+	default:	goto yy11;
 	}
 yy13:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+	yych = *++cur;
 	switch (yych) {
-	case 'E':
-	case 'e':	goto yy23;
-	default:	goto yy4;
+	case 'h':	goto yy23;
+	default:	goto yy14;
 	}
 yy14:
-	yych = *++cur;
-	switch (yych) {
-	case 'h':	goto yy24;
-	default:	goto yy15;
-	}
-yy15:
 	cur = marker;
 	switch (yyaccept) {
-	case 0: 	goto yy5;
-	case 1: 	goto yy10;
-	case 2: 	goto yy35;
-	case 3: 	goto yy38;
-	case 4: 	goto yy45;
-	case 5: 	goto yy50;
-	case 6: 	goto yy55;
-	case 7: 	goto yy62;
-	default:	goto yy94;
+	case 0: 	goto yy4;
+	case 1: 	goto yy17;
+	case 2: 	goto yy46;
+	case 3: 	goto yy57;
+	case 4: 	goto yy98;
+	case 5: 	goto yy106;
+	case 6: 	goto yy137;
+	case 7: 	goto yy188;
+	default:	goto yy208;
+	}
+yy15:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy26;
+	case ' ':
+		yyt5 = cur;
+		goto yy27;
+	default:
+		yyt5 = cur;
+		goto yy24;
 	}
 yy16:
-	yych = *++cur;
-yy17:
-	switch (yych) {
-	case ' ':	goto yy14;
-	default:	goto yy16;
-	}
-yy18:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case '\r':	goto yy25;
-	default:	goto yy4;
-	}
-yy19:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy26;
-	default:	goto yy17;
-	}
-yy20:
 	yyaccept = 1;
 	yych = *(marker = ++cur);
+	goto yy12;
+yy17:
+#line 113 "src/lib/amipack_parse.re"
+	{ goto done; }
+#line 225 "src/lib/amipack_parse.c"
+yy18:
+	yych = *++cur;
+yy19:
 	switch (yych) {
-	case 'h':	goto yy24;
-	default:	goto yy29;
+	case ' ':	goto yy13;
+	default:	goto yy18;
 	}
-yy21:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+yy20:
+	yych = *++cur;
 	switch (yych) {
 	case 'T':
-	case 't':	goto yy30;
-	default:	goto yy4;
+	case 't':	goto yy28;
+	default:	goto yy12;
 	}
-yy22:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+yy21:
+	yych = *++cur;
 	switch (yych) {
 	case 'E':
-	case 'e':	goto yy31;
-	default:	goto yy4;
+	case 'e':	goto yy29;
+	default:	goto yy12;
 	}
-yy23:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+yy22:
+	yych = *++cur;
 	switch (yych) {
 	case 'S':
-	case 's':	goto yy32;
-	default:	goto yy4;
+	case 's':	goto yy30;
+	default:	goto yy12;
+	}
+yy23:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy31;
+	default:	goto yy14;
 	}
 yy24:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy33;
-	default:	goto yy15;
-	}
-yy25:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case '\n':	goto yy34;
-	default:	goto yy4;
+	case '\r':	goto yy32;
+	case ' ':	goto yy33;
+	default:	goto yy24;
 	}
 yy26:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy36;
-	case 'A':
-	case 'B':
-	case 'C':
-	case 'D':
-	case 'E':
-	case 'F':
-	case 'G':
-	case 'H':
-	case 'I':
-	case 'J':
-	case 'K':
-	case 'L':
-	case 'M':
-	case 'N':
-	case 'O':
-	case 'P':
-	case 'Q':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'U':
-	case 'V':
-	case 'W':
-	case 'X':
-	case 'Y':
-	case 'Z':
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':	goto yy37;
-	default:	goto yy17;
+	case '\n':	goto yy34;
+	default:	goto yy19;
 	}
 yy27:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy39;
-	default:	goto yy15;
+	case 'h':
+		yyt5 = cur;
+		goto yy40;
+	default:	goto yy39;
 	}
 yy28:
-	yyaccept = 1;
-	yych = *(marker = ++cur);
-yy29:
-	switch (yych) {
-	case '\r':	goto yy27;
-	case ' ':	goto yy28;
-	default:	goto yy10;
-	}
-yy30:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+	yych = *++cur;
 	switch (yych) {
 	case 'I':
-	case 'i':	goto yy40;
-	default:	goto yy4;
+	case 'i':	goto yy41;
+	default:	goto yy12;
 	}
-yy31:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+yy29:
+	yych = *++cur;
 	switch (yych) {
 	case 'N':
-	case 'n':	goto yy41;
-	default:	goto yy4;
+	case 'n':	goto yy42;
+	default:	goto yy12;
 	}
-yy32:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+yy30:
+	yych = *++cur;
 	switch (yych) {
 	case 'P':
-	case 'p':	goto yy42;
-	default:	goto yy4;
+	case 'p':	goto yy43;
+	default:	goto yy12;
+	}
+yy31:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy44;
+	default:	goto yy14;
+	}
+yy32:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy45;
+	default:	goto yy19;
 	}
 yy33:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy43;
-	default:	goto yy15;
+	case 'h':	goto yy40;
+	default:	goto yy36;
 	}
 yy34:
-	yyaccept = 2;
-	yych = *(marker = ++cur);
-	goto yy4;
-yy35:
-#line 111 "src/lib/amipack_parse.re"
-	{ goto done; }
-#line 388 "src/lib/amipack_parse.c"
-yy36:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy44;
-	default:	goto yy17;
+	case '\r':	goto yy48;
+	default:	goto yy19;
+	}
+yy35:
+	yych = *++cur;
+yy36:
+	switch (yych) {
+	case '\r':	goto yy47;
+	default:	goto yy35;
 	}
 yy37:
-	yyaccept = 3;
-	yych = *(marker = ++cur);
-	goto yy17;
-yy38:
-	cur -= 1;
-#line 121 "src/lib/amipack_parse.re"
-	{
-              tok = cur;
-              amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
-              goto yyc_key;
-            }
-#line 407 "src/lib/amipack_parse.c"
-yy39:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy46;
-	case 'A':
-	case 'B':
-	case 'C':
-	case 'D':
-	case 'E':
-	case 'F':
-	case 'G':
-	case 'H':
-	case 'I':
-	case 'J':
-	case 'K':
-	case 'L':
-	case 'M':
-	case 'N':
-	case 'O':
-	case 'P':
-	case 'Q':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'U':
-	case 'V':
-	case 'W':
-	case 'X':
-	case 'Y':
-	case 'Z':
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':	goto yy47;
-	default:	goto yy15;
+	case '\n':	goto yy49;
+	default:	goto yy14;
+	}
+yy38:
+	yych = *++cur;
+yy39:
+	switch (yych) {
+	case '\r':	goto yy37;
+	case ' ':
+		yyt5 = cur;
+		goto yy38;
+	default:
+		yyt5 = cur;
+		goto yy35;
 	}
 yy40:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+	yych = *++cur;
 	switch (yych) {
-	case 'O':
-	case 'o':	goto yy48;
-	default:	goto yy4;
+	case 'a':	goto yy50;
+	default:	goto yy36;
 	}
 yy41:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case 'T':
-	case 't':	goto yy49;
-	default:	goto yy4;
-	}
-yy42:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
+	yych = *++cur;
 	switch (yych) {
 	case 'O':
 	case 'o':	goto yy51;
-	default:	goto yy4;
+	default:	goto yy12;
+	}
+yy42:
+	yych = *++cur;
+	switch (yych) {
+	case 'T':
+	case 't':	goto yy52;
+	default:	goto yy12;
 	}
 yy43:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy52;
-	default:	goto yy15;
+	case 'O':
+	case 'o':	goto yy53;
+	default:	goto yy12;
 	}
 yy44:
-	yyaccept = 4;
-	yych = *(marker = ++cur);
-	goto yy17;
-yy45:
-#line 126 "src/lib/amipack_parse.re"
-	{
-              tok = cur;
-              amipack_append(pack, hdr_name, strlen(hdr_name), strdup(""), 0);
-              goto done;
-            }
-#line 507 "src/lib/amipack_parse.c"
-yy46:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy53;
-	default:	goto yy15;
+	case ' ':	goto yy54;
+	default:	goto yy14;
 	}
-yy47:
-	++cur;
-	goto yy38;
-yy48:
-	yyaccept = 0;
+yy45:
+	yyaccept = 2;
 	yych = *(marker = ++cur);
+	goto yy19;
+yy46:
+	th1 = yyt1;
+	th2 = yyt4;
+	th3 = yyt5;
+	th4 = cur - 2;
+#line 151 "src/lib/amipack_parse.re"
+	{
+              amipack_append(pack,
+                             strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
+                             strndup(th3, (int)(th4 - th3)), (int)(th4 - th3));
+              goto yyc_header;
+            }
+#line 400 "src/lib/amipack_parse.c"
+yy47:
+	yych = *++cur;
 	switch (yych) {
-	case 'N':
-	case 'n':	goto yy54;
-	default:	goto yy4;
+	case '\n':	goto yy55;
+	default:	goto yy14;
+	}
+yy48:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy56;
+	default:	goto yy19;
 	}
 yy49:
-	yyaccept = 5;
-	yych = *(marker = ++cur);
-	goto yy4;
-yy50:
-#line 146 "src/lib/amipack_parse.re"
-	{
-              amipack_type (pack, AMI_EVENT);
-              SET_HEADER("Event");
-            }
-#line 535 "src/lib/amipack_parse.c"
-yy51:
-	yyaccept = 0;
+	yyaccept = 2;
 	yych = *(marker = ++cur);
 	switch (yych) {
+	case '\r':	goto yy58;
+	default:	goto yy46;
+	}
+yy50:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy59;
+	default:	goto yy36;
+	}
+yy51:
+	yych = *++cur;
+	switch (yych) {
 	case 'N':
-	case 'n':	goto yy56;
-	default:	goto yy4;
+	case 'n':	goto yy60;
+	default:	goto yy12;
 	}
 yy52:
+	yych = *++cur;
+	switch (yych) {
+	case ':':
+		yyt4 = cur;
+		goto yy61;
+	default:	goto yy12;
+	}
+yy53:
+	yych = *++cur;
+	switch (yych) {
+	case 'N':
+	case 'n':	goto yy62;
+	default:	goto yy12;
+	}
+yy54:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -554,35 +458,69 @@ yy52:
 	case '8':
 	case '9':
 		yyt2 = cur;
-		goto yy57;
-	default:	goto yy15;
+		goto yy63;
+	default:	goto yy14;
 	}
-yy53:
-	++cur;
-	goto yy45;
-yy54:
-	yyaccept = 6;
-	yych = *(marker = ++cur);
-	goto yy4;
 yy55:
-#line 142 "src/lib/amipack_parse.re"
-	{
-              amipack_type (pack, AMI_ACTION);
-              SET_HEADER("Action");
-            }
-#line 574 "src/lib/amipack_parse.c"
+	++cur;
+	goto yy46;
 yy56:
-	yyaccept = 0;
+	yyaccept = 3;
 	yych = *(marker = ++cur);
-	switch (yych) {
-	case 'S':
-	case 's':	goto yy59;
-	default:	goto yy4;
-	}
+	goto yy19;
 yy57:
+	th1 = yyt1;
+	th2 = yyt4;
+#line 145 "src/lib/amipack_parse.re"
+	{
+              amipack_append(pack,
+                             strndup(th1, (int)(th2 - th1)), (int)(th2 - th1),
+                             strdup(""), 0);
+              goto done;
+            }
+#line 482 "src/lib/amipack_parse.c"
+yy58:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy60;
+	case '\n':	goto yy65;
+	default:	goto yy14;
+	}
+yy59:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy66;
+	default:	goto yy36;
+	}
+yy60:
+	yych = *++cur;
+	switch (yych) {
+	case ':':
+		yyt4 = cur;
+		goto yy67;
+	default:	goto yy12;
+	}
+yy61:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy26;
+	case ' ':
+		yyt5 = cur;
+		goto yy70;
+	default:
+		yyt5 = cur;
+		goto yy68;
+	}
+yy62:
+	yych = *++cur;
+	switch (yych) {
+	case 'S':
+	case 's':	goto yy71;
+	default:	goto yy12;
+	}
+yy63:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy72;
 	case '0':
 	case '1':
 	case '2':
@@ -592,234 +530,818 @@ yy57:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy57;
-	default:	goto yy15;
-	}
-yy59:
-	yyaccept = 0;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case 'E':
-	case 'e':	goto yy61;
-	default:	goto yy4;
-	}
-yy60:
-	yych = *++cur;
-	switch (yych) {
-	case 'c':	goto yy63;
-	default:	goto yy15;
-	}
-yy61:
-	yyaccept = 7;
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case ':':	goto yy64;
-	default:	goto yy4;
-	}
-yy62:
-#line 138 "src/lib/amipack_parse.re"
-	{
-              amipack_type (pack, AMI_RESPONSE);
-              SET_HEADER("Response");
-            }
-#line 626 "src/lib/amipack_parse.c"
-yy63:
-	yych = *++cur;
-	switch (yych) {
-	case 'a':	goto yy65;
-	default:	goto yy15;
-	}
-yy64:
-	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy66;
-	case 'F':
-	case 'f':	goto yy67;
-	default:	goto yy16;
+	case '9':	goto yy63;
+	default:	goto yy14;
 	}
 yy65:
-	yych = *++cur;
-	switch (yych) {
-	case 'l':	goto yy68;
-	default:	goto yy15;
-	}
+	++cur;
+	goto yy57;
 yy66:
 	yych = *++cur;
 	switch (yych) {
-	case 'h':	goto yy24;
-	default:	goto yy70;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		yyt2 = cur;
+		goto yy73;
+	default:	goto yy36;
 	}
 yy67:
 	yych = *++cur;
 	switch (yych) {
-	case 'O':
-	case 'o':	goto yy72;
-	default:	goto yy17;
+	case '\r':	goto yy26;
+	case ' ':
+		yyt5 = cur;
+		goto yy77;
+	default:
+		yyt5 = cur;
+		goto yy75;
 	}
 yy68:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy73;
-	default:	goto yy15;
+	case '\r':	goto yy78;
+	case ' ':	goto yy79;
+	default:	goto yy68;
 	}
-yy69:
-	yych = *++cur;
 yy70:
+	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy69;
-	case 'F':
-	case 'f':	goto yy71;
-	default:	goto yy15;
+	case 'h':
+		yyt5 = cur;
+		goto yy85;
+	default:	goto yy84;
 	}
 yy71:
 	yych = *++cur;
 	switch (yych) {
-	case 'O':
-	case 'o':	goto yy74;
-	default:	goto yy15;
+	case 'E':
+	case 'e':	goto yy86;
+	default:	goto yy12;
 	}
 yy72:
 	yych = *++cur;
 	switch (yych) {
-	case 'L':
-	case 'l':	goto yy75;
-	default:	goto yy17;
+	case 'c':	goto yy87;
+	default:	goto yy14;
 	}
 yy73:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy76;
-	default:	goto yy15;
-	}
-yy74:
-	yych = *++cur;
-	switch (yych) {
-	case 'L':
-	case 'l':	goto yy77;
-	default:	goto yy15;
+	case '\r':	goto yy47;
+	case ' ':	goto yy88;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':	goto yy73;
+	default:	goto yy35;
 	}
 yy75:
 	yych = *++cur;
 	switch (yych) {
-	case 'L':
-	case 'l':	goto yy78;
-	default:	goto yy17;
-	}
-yy76:
-	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy79;
-	default:	goto yy15;
+	case '\r':	goto yy89;
+	case ' ':	goto yy90;
+	default:	goto yy75;
 	}
 yy77:
 	yych = *++cur;
 	switch (yych) {
-	case 'L':
-	case 'l':	goto yy80;
-	default:	goto yy15;
+	case 'h':
+		yyt5 = cur;
+		goto yy96;
+	default:	goto yy95;
 	}
 yy78:
 	yych = *++cur;
 	switch (yych) {
-	case 'O':
-	case 'o':	goto yy81;
-	default:	goto yy17;
+	case '\n':	goto yy97;
+	default:	goto yy19;
 	}
 yy79:
 	yych = *++cur;
 	switch (yych) {
-	case '(':	goto yy82;
-	default:	goto yy15;
+	case 'h':	goto yy85;
+	default:	goto yy81;
 	}
 yy80:
 	yych = *++cur;
-	switch (yych) {
-	case 'O':
-	case 'o':	goto yy83;
-	default:	goto yy15;
-	}
 yy81:
-	yych = *++cur;
 	switch (yych) {
-	case 'W':
-	case 'w':	goto yy84;
-	default:	goto yy17;
+	case '\r':	goto yy99;
+	default:	goto yy80;
 	}
 yy82:
 	yych = *++cur;
 	switch (yych) {
-	case 'm':	goto yy85;
-	default:	goto yy15;
+	case '\n':	goto yy100;
+	default:	goto yy14;
 	}
 yy83:
 	yych = *++cur;
-	switch (yych) {
-	case 'W':
-	case 'w':	goto yy86;
-	default:	goto yy15;
-	}
 yy84:
-	yych = *++cur;
 	switch (yych) {
-	case 'S':
-	case 's':	goto yy87;
-	default:	goto yy17;
+	case '\r':	goto yy82;
+	case ' ':
+		yyt5 = cur;
+		goto yy83;
+	default:
+		yyt5 = cur;
+		goto yy80;
 	}
 yy85:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy88;
-	default:	goto yy15;
+	case 'a':	goto yy101;
+	default:	goto yy81;
 	}
 yy86:
 	yych = *++cur;
 	switch (yych) {
-	case 'S':
-	case 's':	goto yy89;
-	default:	goto yy15;
+	case ':':
+		yyt4 = cur;
+		goto yy102;
+	default:	goto yy12;
 	}
 yy87:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy90;
-	default:	goto yy17;
+	case 'a':	goto yy103;
+	default:	goto yy14;
 	}
 yy88:
 	yych = *++cur;
 	switch (yych) {
-	case 'x':	goto yy91;
-	default:	goto yy15;
+	case 'c':	goto yy104;
+	default:	goto yy36;
 	}
 yy89:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy92;
-	default:	goto yy15;
+	case '\n':	goto yy105;
+	default:	goto yy19;
 	}
 yy90:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy93;
-	default:	goto yy17;
+	case 'h':	goto yy96;
+	default:	goto yy92;
 	}
 yy91:
 	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy95;
-	default:	goto yy15;
-	}
 yy92:
-	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy96;
-	default:	goto yy15;
+	case '\r':	goto yy107;
+	default:	goto yy91;
 	}
 yy93:
-	yyaccept = 8;
-	yych = *(marker = ++cur);
-	goto yy17;
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy108;
+	default:	goto yy14;
+	}
 yy94:
-#line 131 "src/lib/amipack_parse.re"
+	yych = *++cur;
+yy95:
+	switch (yych) {
+	case '\r':	goto yy93;
+	case ' ':
+		yyt5 = cur;
+		goto yy94;
+	default:
+		yyt5 = cur;
+		goto yy91;
+	}
+yy96:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy109;
+	default:	goto yy92;
+	}
+yy97:
+	yyaccept = 4;
+	yych = *(marker = ++cur);
+	goto yy19;
+yy98:
+	th1 = yyt5;
+	th2 = cur - 2;
+#line 139 "src/lib/amipack_parse.re"
+	{
+              amipack_type (pack, AMI_EVENT);
+              amipack_append(pack, strdup("Event"), 5, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
+            }
+#line 747 "src/lib/amipack_parse.c"
+yy99:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy110;
+	default:	goto yy14;
+	}
+yy100:
+	yyaccept = 4;
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case '\r':	goto yy58;
+	default:	goto yy98;
+	}
+yy101:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy111;
+	default:	goto yy81;
+	}
+yy102:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy26;
+	case ' ':
+		yyt5 = cur;
+		goto yy114;
+	case 'F':
+	case 'f':
+		yyt5 = cur;
+		goto yy115;
+	default:
+		yyt5 = cur;
+		goto yy112;
+	}
+yy103:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy116;
+	default:	goto yy14;
+	}
+yy104:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy117;
+	default:	goto yy36;
+	}
+yy105:
+	yyaccept = 5;
+	yych = *(marker = ++cur);
+	goto yy19;
+yy106:
+	th1 = yyt5;
+	th2 = cur - 2;
+#line 134 "src/lib/amipack_parse.re"
+	{
+              amipack_type (pack, AMI_ACTION);
+              amipack_append(pack, strdup("Action"), 6, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
+            }
+#line 807 "src/lib/amipack_parse.c"
+yy107:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy118;
+	default:	goto yy14;
+	}
+yy108:
+	yyaccept = 5;
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case '\r':	goto yy58;
+	default:	goto yy106;
+	}
+yy109:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy119;
+	default:	goto yy92;
+	}
+yy110:
+	++cur;
+	goto yy98;
+yy111:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy120;
+	default:	goto yy81;
+	}
+yy112:
+	yych = *++cur;
+yy113:
+	switch (yych) {
+	case '\r':	goto yy121;
+	case ' ':	goto yy122;
+	default:	goto yy112;
+	}
+yy114:
+	yych = *++cur;
+	switch (yych) {
+	case 'h':
+		yyt5 = cur;
+		goto yy129;
+	default:	goto yy127;
+	}
+yy115:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':
+	case 'o':	goto yy130;
+	default:	goto yy113;
+	}
+yy116:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy131;
+	default:	goto yy14;
+	}
+yy117:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy132;
+	default:	goto yy36;
+	}
+yy118:
+	++cur;
+	goto yy106;
+yy119:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy133;
+	default:	goto yy92;
+	}
+yy120:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		yyt2 = cur;
+		goto yy134;
+	default:	goto yy81;
+	}
+yy121:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy136;
+	default:	goto yy19;
+	}
+yy122:
+	yych = *++cur;
+	switch (yych) {
+	case 'h':	goto yy129;
+	default:	goto yy124;
+	}
+yy123:
+	yych = *++cur;
+yy124:
+	switch (yych) {
+	case '\r':	goto yy138;
+	default:	goto yy123;
+	}
+yy125:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy139;
+	default:	goto yy14;
+	}
+yy126:
+	yych = *++cur;
+yy127:
+	switch (yych) {
+	case '\r':	goto yy125;
+	case ' ':
+		yyt5 = cur;
+		goto yy126;
+	case 'F':
+	case 'f':
+		yyt5 = cur;
+		goto yy128;
+	default:
+		yyt5 = cur;
+		goto yy123;
+	}
+yy128:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':
+	case 'o':	goto yy140;
+	default:	goto yy124;
+	}
+yy129:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy141;
+	default:	goto yy124;
+	}
+yy130:
+	yych = *++cur;
+	switch (yych) {
+	case 'L':
+	case 'l':	goto yy142;
+	default:	goto yy113;
+	}
+yy131:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy143;
+	default:	goto yy14;
+	}
+yy132:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy144;
+	default:	goto yy36;
+	}
+yy133:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		yyt2 = cur;
+		goto yy145;
+	default:	goto yy92;
+	}
+yy134:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy99;
+	case ' ':	goto yy147;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':	goto yy134;
+	default:	goto yy80;
+	}
+yy136:
+	yyaccept = 6;
+	yych = *(marker = ++cur);
+	goto yy19;
+yy137:
+	th1 = yyt5;
+	th2 = cur - 2;
+#line 129 "src/lib/amipack_parse.re"
+	{
+              amipack_type (pack, AMI_RESPONSE);
+              amipack_append(pack, strdup("Response"), 8, strndup(th1, (int)(th2 - th1)), (int)(th2 - th1));
+              goto yyc_header;
+            }
+#line 1017 "src/lib/amipack_parse.c"
+yy138:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy148;
+	default:	goto yy14;
+	}
+yy139:
+	yyaccept = 6;
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case '\r':	goto yy58;
+	default:	goto yy137;
+	}
+yy140:
+	yych = *++cur;
+	switch (yych) {
+	case 'L':
+	case 'l':	goto yy149;
+	default:	goto yy124;
+	}
+yy141:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy150;
+	default:	goto yy124;
+	}
+yy142:
+	yych = *++cur;
+	switch (yych) {
+	case 'L':
+	case 'l':	goto yy151;
+	default:	goto yy113;
+	}
+yy143:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy152;
+	default:	goto yy14;
+	}
+yy144:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy153;
+	default:	goto yy36;
+	}
+yy145:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy107;
+	case ' ':	goto yy154;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':	goto yy145;
+	default:	goto yy91;
+	}
+yy147:
+	yych = *++cur;
+	switch (yych) {
+	case 'c':	goto yy155;
+	default:	goto yy81;
+	}
+yy148:
+	++cur;
+	goto yy137;
+yy149:
+	yych = *++cur;
+	switch (yych) {
+	case 'L':
+	case 'l':	goto yy156;
+	default:	goto yy124;
+	}
+yy150:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy157;
+	default:	goto yy124;
+	}
+yy151:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':
+	case 'o':	goto yy158;
+	default:	goto yy113;
+	}
+yy152:
+	yych = *++cur;
+	switch (yych) {
+	case '(':	goto yy159;
+	default:	goto yy14;
+	}
+yy153:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy160;
+	default:	goto yy36;
+	}
+yy154:
+	yych = *++cur;
+	switch (yych) {
+	case 'c':	goto yy161;
+	default:	goto yy92;
+	}
+yy155:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy162;
+	default:	goto yy81;
+	}
+yy156:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':
+	case 'o':	goto yy163;
+	default:	goto yy124;
+	}
+yy157:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		yyt2 = cur;
+		goto yy164;
+	default:	goto yy124;
+	}
+yy158:
+	yych = *++cur;
+	switch (yych) {
+	case 'W':
+	case 'w':	goto yy166;
+	default:	goto yy113;
+	}
+yy159:
+	yych = *++cur;
+	switch (yych) {
+	case 'm':	goto yy167;
+	default:	goto yy14;
+	}
+yy160:
+	yych = *++cur;
+	switch (yych) {
+	case '(':	goto yy168;
+	default:	goto yy36;
+	}
+yy161:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy169;
+	default:	goto yy92;
+	}
+yy162:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy170;
+	default:	goto yy81;
+	}
+yy163:
+	yych = *++cur;
+	switch (yych) {
+	case 'W':
+	case 'w':	goto yy171;
+	default:	goto yy124;
+	}
+yy164:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy138;
+	case ' ':	goto yy172;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':	goto yy164;
+	default:	goto yy123;
+	}
+yy166:
+	yych = *++cur;
+	switch (yych) {
+	case 'S':
+	case 's':	goto yy173;
+	default:	goto yy113;
+	}
+yy167:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy174;
+	default:	goto yy14;
+	}
+yy168:
+	yych = *++cur;
+	switch (yych) {
+	case 'm':	goto yy175;
+	default:	goto yy36;
+	}
+yy169:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy176;
+	default:	goto yy92;
+	}
+yy170:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy177;
+	default:	goto yy81;
+	}
+yy171:
+	yych = *++cur;
+	switch (yych) {
+	case 'S':
+	case 's':	goto yy178;
+	default:	goto yy124;
+	}
+yy172:
+	yych = *++cur;
+	switch (yych) {
+	case 'c':	goto yy179;
+	default:	goto yy124;
+	}
+yy173:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy180;
+	default:	goto yy113;
+	}
+yy174:
+	yych = *++cur;
+	switch (yych) {
+	case 'x':	goto yy181;
+	default:	goto yy14;
+	}
+yy175:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy182;
+	default:	goto yy36;
+	}
+yy176:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy183;
+	default:	goto yy92;
+	}
+yy177:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy184;
+	default:	goto yy81;
+	}
+yy178:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy185;
+	default:	goto yy123;
+	}
+yy179:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy186;
+	default:	goto yy124;
+	}
+yy180:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy187;
+	default:	goto yy19;
+	}
+yy181:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy189;
+	default:	goto yy14;
+	}
+yy182:
+	yych = *++cur;
+	switch (yych) {
+	case 'x':	goto yy190;
+	default:	goto yy36;
+	}
+yy183:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy191;
+	default:	goto yy92;
+	}
+yy184:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy192;
+	default:	goto yy81;
+	}
+yy185:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy193;
+	default:	goto yy14;
+	}
+yy186:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy194;
+	default:	goto yy124;
+	}
+yy187:
+	yyaccept = 7;
+	yych = *(marker = ++cur);
+	goto yy19;
+yy188:
+#line 122 "src/lib/amipack_parse.re"
 	{
               len = cur - tok;
               tok = cur;
@@ -827,8 +1349,8 @@ yy94:
               amipack_append(pack, strdup("Response"), 8, strdup("Follows"), 7);
               goto yyc_command;
             }
-#line 831 "src/lib/amipack_parse.c"
-yy95:
+#line 1353 "src/lib/amipack_parse.c"
+yy189:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -868,16 +1390,40 @@ yy95:
 	case 'y':
 	case 'z':
 		yyt3 = cur;
-		goto yy97;
-	default:	goto yy15;
+		goto yy195;
+	default:	goto yy14;
 	}
-yy96:
-	++cur;
-	goto yy94;
-yy97:
+yy190:
 	yych = *++cur;
 	switch (yych) {
-	case ')':	goto yy99;
+	case ' ':	goto yy197;
+	default:	goto yy36;
+	}
+yy191:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy198;
+	default:	goto yy92;
+	}
+yy192:
+	yych = *++cur;
+	switch (yych) {
+	case '(':	goto yy199;
+	default:	goto yy81;
+	}
+yy193:
+	++cur;
+	goto yy188;
+yy194:
+	yych = *++cur;
+	switch (yych) {
+	case 'l':	goto yy200;
+	default:	goto yy124;
+	}
+yy195:
+	yych = *++cur;
+	switch (yych) {
+	case ')':	goto yy201;
 	case '0':
 	case '1':
 	case '2':
@@ -913,578 +1459,8 @@ yy97:
 	case 'w':
 	case 'x':
 	case 'y':
-	case 'z':	goto yy97;
-	default:	goto yy15;
-	}
-yy99:
-	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy100;
-	default:	goto yy15;
-	}
-yy100:
-	++cur;
-	tq1 = yyt1;
-	tq3 = yyt2;
-	tq5 = yyt3;
-	tq2 = yyt2 - 5;
-	tq4 = yyt3 - 12;
-	tq6 = cur - 2;
-#line 113 "src/lib/amipack_parse.re"
-	{
-              queue->name = strndup(tq1, (int)(tq2 - tq1));
-              queue->calls = (int)strtol(tq3, NULL, 10);
-              queue->maxlen = (int)strtol(tq5, NULL, 10);
-              amipack_type (pack, AMI_QUEUES);
-              goto yyc_queue;
-            }
-#line 942 "src/lib/amipack_parse.c"
-/* *********************************** */
-yyc_value:
-	yych = *cur;
-	switch (yych) {
-	case '\n':	goto yy107;
-	case '\r':	goto yy109;
-	default:	goto yy104;
-	}
-yy104:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':
-	case '\r':	goto yy106;
-	default:	goto yy104;
-	}
-yy106:
-#line 158 "src/lib/amipack_parse.re"
-	{
-              len = cur - tok;
-              char *val = strndup(tok, len);
-              amipack_append(pack, hdr_name, strlen(hdr_name), val, len);
-              goto yyc_value;
-            }
-#line 966 "src/lib/amipack_parse.c"
-yy107:
-	++cur;
-yy108:
-#line 106 "src/lib/amipack_parse.re"
-	{
-              //if (hdr_name) free (hdr_name);
-              amipack_destroy (pack);
-              return NULL;
-            }
-#line 976 "src/lib/amipack_parse.c"
-yy109:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case '\n':	goto yy110;
-	default:	goto yy108;
-	}
-yy110:
-	yych = *++cur;
-	switch (yych) {
-	case '\r':	goto yy112;
-	case 'A':
-	case 'B':
-	case 'C':
-	case 'D':
-	case 'E':
-	case 'F':
-	case 'G':
-	case 'H':
-	case 'I':
-	case 'J':
-	case 'K':
-	case 'L':
-	case 'M':
-	case 'N':
-	case 'O':
-	case 'P':
-	case 'Q':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'U':
-	case 'V':
-	case 'W':
-	case 'X':
-	case 'Y':
-	case 'Z':
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':	goto yy113;
-	default:	goto yy111;
-	}
-yy111:
-	cur = marker;
-	goto yy108;
-yy112:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy115;
-	default:	goto yy111;
-	}
-yy113:
-	++cur;
-	cur -= 1;
-#line 157 "src/lib/amipack_parse.re"
-	{ tok = cur; goto yyc_key; }
-#line 1055 "src/lib/amipack_parse.c"
-yy115:
-	++cur;
-#line 111 "src/lib/amipack_parse.re"
-	{ goto done; }
-#line 1060 "src/lib/amipack_parse.c"
-/* *********************************** */
-yyc_command:
-	yych = *cur;
-	switch (yych) {
-	case '\n':	goto yy121;
-	case '-':	goto yy123;
-	case 'A':
-	case 'a':	goto yy124;
-	case 'M':
-	case 'm':	goto yy125;
-	case 'P':
-	case 'p':	goto yy126;
-	default:	goto yy119;
-	}
-yy119:
-	yych = *++cur;
-yy120:
-	switch (yych) {
-	case '\n':	goto yy121;
-	default:	goto yy119;
-	}
-yy121:
-	++cur;
-yy122:
-#line 169 "src/lib/amipack_parse.re"
-	{ goto yyc_command; }
-#line 1087 "src/lib/amipack_parse.c"
-yy123:
-	yych = *++cur;
-	switch (yych) {
-	case '-':	goto yy127;
-	default:	goto yy120;
-	}
-yy124:
-	yych = *++cur;
-	switch (yych) {
-	case 'C':
-	case 'c':	goto yy128;
-	default:	goto yy120;
-	}
-yy125:
-	yych = *++cur;
-	switch (yych) {
-	case 'E':
-	case 'e':	goto yy129;
-	default:	goto yy120;
-	}
-yy126:
-	yych = *++cur;
-	switch (yych) {
-	case 'R':
-	case 'r':	goto yy130;
-	default:	goto yy120;
-	}
-yy127:
-	yych = *++cur;
-	switch (yych) {
-	case 'E':	goto yy131;
-	default:	goto yy120;
-	}
-yy128:
-	yych = *++cur;
-	switch (yych) {
-	case 'T':
-	case 't':	goto yy132;
-	default:	goto yy120;
-	}
-yy129:
-	yych = *++cur;
-	switch (yych) {
-	case 'S':
-	case 's':	goto yy133;
-	default:	goto yy120;
-	}
-yy130:
-	yych = *++cur;
-	switch (yych) {
-	case 'I':
-	case 'i':	goto yy134;
-	default:	goto yy120;
-	}
-yy131:
-	yych = *++cur;
-	switch (yych) {
-	case 'N':	goto yy135;
-	default:	goto yy120;
-	}
-yy132:
-	yych = *++cur;
-	switch (yych) {
-	case 'I':
-	case 'i':	goto yy136;
-	default:	goto yy120;
-	}
-yy133:
-	yych = *++cur;
-	switch (yych) {
-	case 'S':
-	case 's':	goto yy137;
-	default:	goto yy120;
-	}
-yy134:
-	yych = *++cur;
-	switch (yych) {
-	case 'V':
-	case 'v':	goto yy138;
-	default:	goto yy120;
-	}
-yy135:
-	yych = *++cur;
-	switch (yych) {
-	case 'D':	goto yy139;
-	default:	goto yy120;
-	}
-yy136:
-	yych = *++cur;
-	switch (yych) {
-	case 'O':
-	case 'o':	goto yy140;
-	default:	goto yy120;
-	}
-yy137:
-	yych = *++cur;
-	switch (yych) {
-	case 'A':
-	case 'a':	goto yy141;
-	default:	goto yy120;
-	}
-yy138:
-	yych = *++cur;
-	switch (yych) {
-	case 'I':
-	case 'i':	goto yy142;
-	default:	goto yy120;
-	}
-yy139:
-	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy143;
-	default:	goto yy120;
-	}
-yy140:
-	yych = *++cur;
-	switch (yych) {
-	case 'N':
-	case 'n':	goto yy144;
-	default:	goto yy120;
-	}
-yy141:
-	yych = *++cur;
-	switch (yych) {
-	case 'G':
-	case 'g':	goto yy145;
-	default:	goto yy120;
-	}
-yy142:
-	yych = *++cur;
-	switch (yych) {
-	case 'L':
-	case 'l':	goto yy146;
-	default:	goto yy120;
-	}
-yy143:
-	yych = *++cur;
-	switch (yych) {
-	case 'C':	goto yy147;
-	default:	goto yy120;
-	}
-yy144:
-	yych = *++cur;
-	switch (yych) {
-	case 'I':
-	case 'i':	goto yy148;
-	default:	goto yy120;
-	}
-yy145:
-	yych = *++cur;
-	switch (yych) {
-	case 'E':
-	case 'e':	goto yy149;
-	default:	goto yy120;
-	}
-yy146:
-	yych = *++cur;
-	switch (yych) {
-	case 'E':
-	case 'e':	goto yy150;
-	default:	goto yy120;
-	}
-yy147:
-	yych = *++cur;
-	switch (yych) {
-	case 'O':	goto yy151;
-	default:	goto yy120;
-	}
-yy148:
-	yych = *++cur;
-	switch (yych) {
-	case 'D':
-	case 'd':	goto yy152;
-	default:	goto yy120;
-	}
-yy149:
-	yych = *++cur;
-	switch (yych) {
-	case ':':	goto yy153;
-	default:	goto yy120;
-	}
-yy150:
-	yych = *++cur;
-	switch (yych) {
-	case 'G':
-	case 'g':	goto yy155;
-	default:	goto yy120;
-	}
-yy151:
-	yych = *++cur;
-	switch (yych) {
-	case 'M':	goto yy156;
-	default:	goto yy120;
-	}
-yy152:
-	yych = *++cur;
-	switch (yych) {
-	case ':':	goto yy157;
-	default:	goto yy120;
-	}
-yy153:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy121;
-	case '\r':	goto yy159;
-	default:	goto yy153;
-	}
-yy155:
-	yych = *++cur;
-	switch (yych) {
-	case 'E':
-	case 'e':	goto yy161;
-	default:	goto yy120;
-	}
-yy156:
-	yych = *++cur;
-	switch (yych) {
-	case 'M':	goto yy162;
-	default:	goto yy120;
-	}
-yy157:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy121;
-	case '\r':	goto yy163;
-	default:	goto yy157;
-	}
-yy159:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy165;
-	case '\r':	goto yy159;
-	default:	goto yy153;
-	}
-yy161:
-	yych = *++cur;
-	switch (yych) {
-	case ':':	goto yy167;
-	default:	goto yy120;
-	}
-yy162:
-	yych = *++cur;
-	switch (yych) {
-	case 'A':	goto yy169;
-	default:	goto yy120;
-	}
-yy163:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy170;
-	case '\r':	goto yy163;
-	default:	goto yy157;
-	}
-yy165:
-	++cur;
-#line 167 "src/lib/amipack_parse.re"
-	{ CMD_HEADER(8, "Message"); }
-#line 1345 "src/lib/amipack_parse.c"
-yy167:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy121;
-	case '\r':	goto yy172;
-	default:	goto yy167;
-	}
-yy169:
-	yych = *++cur;
-	switch (yych) {
-	case 'N':	goto yy174;
-	default:	goto yy120;
-	}
-yy170:
-	++cur;
-#line 166 "src/lib/amipack_parse.re"
-	{ CMD_HEADER(9, "ActionID"); }
-#line 1363 "src/lib/amipack_parse.c"
-yy172:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy175;
-	case '\r':	goto yy172;
-	default:	goto yy167;
-	}
-yy174:
-	yych = *++cur;
-	switch (yych) {
-	case 'D':	goto yy177;
-	default:	goto yy120;
-	}
-yy175:
-	++cur;
-#line 165 "src/lib/amipack_parse.re"
-	{ CMD_HEADER(10, "Privilege"); }
-#line 1381 "src/lib/amipack_parse.c"
-yy177:
-	yych = *++cur;
-	switch (yych) {
-	case '-':	goto yy178;
-	default:	goto yy120;
-	}
-yy178:
-	yych = *++cur;
-	switch (yych) {
-	case '-':	goto yy179;
-	default:	goto yy120;
-	}
-yy179:
-	yych = *++cur;
-	switch (yych) {
-	case '\r':	goto yy180;
-	default:	goto yy120;
-	}
-yy180:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy181;
-	default:	goto yy119;
-	}
-yy181:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case '\r':	goto yy182;
-	default:	goto yy122;
-	}
-yy182:
-	yych = *++cur;
-	switch (yych) {
-	case '\n':	goto yy184;
-	default:	goto yy183;
-	}
-yy183:
-	cur = marker;
-	goto yy122;
-yy184:
-	++cur;
-#line 170 "src/lib/amipack_parse.re"
-	{
-              len = cur - tok - 19; // output minus command end tag
-              char *val = strndup(tok, len);
-              amipack_append (pack, strdup("Output"), 6, val, len);
-              goto done;
-            }
-#line 1430 "src/lib/amipack_parse.c"
-/* *********************************** */
-yyc_queue:
-	yych = *cur;
-	switch (yych) {
-	case ' ':	goto yy190;
-	case 'S':	goto yy191;
-	case 'W':	goto yy192;
-	case 'i':	goto yy193;
-	default:	goto yy188;
-	}
-yy188:
-	++cur;
-yy189:
-#line 106 "src/lib/amipack_parse.re"
-	{
-              //if (hdr_name) free (hdr_name);
-              amipack_destroy (pack);
-              return NULL;
-            }
-#line 1450 "src/lib/amipack_parse.c"
-yy190:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case ' ':	goto yy194;
-	default:	goto yy189;
-	}
-yy191:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case 'L':	goto yy196;
-	default:	goto yy189;
-	}
-yy192:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case ':':	goto yy197;
-	default:	goto yy189;
-	}
-yy193:
-	yych = *(marker = ++cur);
-	switch (yych) {
-	case 'n':	goto yy198;
-	default:	goto yy189;
-	}
-yy194:
-	yych = *++cur;
-	switch (yych) {
-	case ' ':	goto yy199;
-	default:	goto yy195;
-	}
-yy195:
-	cur = marker;
-	goto yy189;
-yy196:
-	yych = *++cur;
-	switch (yych) {
-	case ':':	goto yy200;
-	default:	goto yy195;
+	case 'z':	goto yy195;
+	default:	goto yy14;
 	}
 yy197:
 	yych = *++cur;
@@ -1499,25 +1475,958 @@ yy197:
 	case '7':
 	case '8':
 	case '9':
-		yyt1 = cur;
-		goto yy201;
-	default:	goto yy195;
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+		yyt3 = cur;
+		goto yy202;
+	default:	goto yy36;
 	}
 yy198:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy203;
-	default:	goto yy195;
+	case '(':	goto yy204;
+	default:	goto yy92;
 	}
 yy199:
 	yych = *++cur;
 	switch (yych) {
-	case 'C':	goto yy204;
-	case 'M':	goto yy205;
-	case 'N':	goto yy206;
-	default:	goto yy195;
+	case 'm':	goto yy205;
+	default:	goto yy81;
 	}
 yy200:
+	yych = *++cur;
+	switch (yych) {
+	case 's':	goto yy206;
+	default:	goto yy124;
+	}
+yy201:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy207;
+	default:	goto yy14;
+	}
+yy202:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy47;
+	case ')':	goto yy209;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':	goto yy202;
+	default:	goto yy35;
+	}
+yy204:
+	yych = *++cur;
+	switch (yych) {
+	case 'm':	goto yy210;
+	default:	goto yy92;
+	}
+yy205:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy211;
+	default:	goto yy81;
+	}
+yy206:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy212;
+	default:	goto yy124;
+	}
+yy207:
+	++cur;
+yy208:
+	tq1 = yyt1;
+	tq3 = yyt2;
+	tq5 = yyt3;
+	tq2 = yyt2 - 5;
+	tq4 = yyt3 - 12;
+	tq6 = cur - 2;
+#line 115 "src/lib/amipack_parse.re"
+	{
+              queue->name = strndup(tq1, (int)(tq2 - tq1));
+              queue->calls = (int)strtol(tq3, NULL, 10);
+              queue->maxlen = (int)strtol(tq5, NULL, 10);
+              amipack_type (pack, AMI_QUEUES);
+              goto yyc_queue;
+            }
+#line 1611 "src/lib/amipack_parse.c"
+yy209:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy213;
+	default:	goto yy36;
+	}
+yy210:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy214;
+	default:	goto yy92;
+	}
+yy211:
+	yych = *++cur;
+	switch (yych) {
+	case 'x':	goto yy215;
+	default:	goto yy81;
+	}
+yy212:
+	yych = *++cur;
+	switch (yych) {
+	case '(':	goto yy216;
+	default:	goto yy124;
+	}
+yy213:
+	yyaccept = 8;
+	yych = *(marker = ++cur);
+	goto yy36;
+yy214:
+	yych = *++cur;
+	switch (yych) {
+	case 'x':	goto yy217;
+	default:	goto yy92;
+	}
+yy215:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy218;
+	default:	goto yy81;
+	}
+yy216:
+	yych = *++cur;
+	switch (yych) {
+	case 'm':	goto yy219;
+	default:	goto yy124;
+	}
+yy217:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy220;
+	default:	goto yy92;
+	}
+yy218:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+		yyt3 = cur;
+		goto yy221;
+	default:	goto yy81;
+	}
+yy219:
+	yych = *++cur;
+	switch (yych) {
+	case 'a':	goto yy223;
+	default:	goto yy124;
+	}
+yy220:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+		yyt3 = cur;
+		goto yy224;
+	default:	goto yy92;
+	}
+yy221:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy99;
+	case ')':	goto yy226;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':	goto yy221;
+	default:	goto yy80;
+	}
+yy223:
+	yych = *++cur;
+	switch (yych) {
+	case 'x':	goto yy227;
+	default:	goto yy124;
+	}
+yy224:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy107;
+	case ')':	goto yy228;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':	goto yy224;
+	default:	goto yy91;
+	}
+yy226:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy229;
+	default:	goto yy81;
+	}
+yy227:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy230;
+	default:	goto yy124;
+	}
+yy228:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy231;
+	default:	goto yy92;
+	}
+yy229:
+	yyaccept = 8;
+	yych = *(marker = ++cur);
+	goto yy81;
+yy230:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+		yyt3 = cur;
+		goto yy232;
+	default:	goto yy124;
+	}
+yy231:
+	yyaccept = 8;
+	yych = *(marker = ++cur);
+	goto yy92;
+yy232:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy138;
+	case ')':	goto yy234;
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':	goto yy232;
+	default:	goto yy123;
+	}
+yy234:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy235;
+	default:	goto yy124;
+	}
+yy235:
+	yyaccept = 8;
+	yych = *(marker = ++cur);
+	goto yy124;
+/* *********************************** */
+yyc_command:
+	yych = *cur;
+	switch (yych) {
+	case '\n':	goto yy240;
+	case '-':	goto yy242;
+	case 'A':
+	case 'a':	goto yy243;
+	case 'M':
+	case 'm':	goto yy244;
+	case 'P':
+	case 'p':	goto yy245;
+	default:	goto yy238;
+	}
+yy238:
+	yych = *++cur;
+yy239:
+	switch (yych) {
+	case '\n':	goto yy240;
+	default:	goto yy238;
+	}
+yy240:
+	++cur;
+yy241:
+#line 163 "src/lib/amipack_parse.re"
+	{ goto yyc_command; }
+#line 1996 "src/lib/amipack_parse.c"
+yy242:
+	yych = *++cur;
+	switch (yych) {
+	case '-':	goto yy246;
+	default:	goto yy239;
+	}
+yy243:
+	yych = *++cur;
+	switch (yych) {
+	case 'C':
+	case 'c':	goto yy247;
+	default:	goto yy239;
+	}
+yy244:
+	yych = *++cur;
+	switch (yych) {
+	case 'E':
+	case 'e':	goto yy248;
+	default:	goto yy239;
+	}
+yy245:
+	yych = *++cur;
+	switch (yych) {
+	case 'R':
+	case 'r':	goto yy249;
+	default:	goto yy239;
+	}
+yy246:
+	yych = *++cur;
+	switch (yych) {
+	case 'E':	goto yy250;
+	default:	goto yy239;
+	}
+yy247:
+	yych = *++cur;
+	switch (yych) {
+	case 'T':
+	case 't':	goto yy251;
+	default:	goto yy239;
+	}
+yy248:
+	yych = *++cur;
+	switch (yych) {
+	case 'S':
+	case 's':	goto yy252;
+	default:	goto yy239;
+	}
+yy249:
+	yych = *++cur;
+	switch (yych) {
+	case 'I':
+	case 'i':	goto yy253;
+	default:	goto yy239;
+	}
+yy250:
+	yych = *++cur;
+	switch (yych) {
+	case 'N':	goto yy254;
+	default:	goto yy239;
+	}
+yy251:
+	yych = *++cur;
+	switch (yych) {
+	case 'I':
+	case 'i':	goto yy255;
+	default:	goto yy239;
+	}
+yy252:
+	yych = *++cur;
+	switch (yych) {
+	case 'S':
+	case 's':	goto yy256;
+	default:	goto yy239;
+	}
+yy253:
+	yych = *++cur;
+	switch (yych) {
+	case 'V':
+	case 'v':	goto yy257;
+	default:	goto yy239;
+	}
+yy254:
+	yych = *++cur;
+	switch (yych) {
+	case 'D':	goto yy258;
+	default:	goto yy239;
+	}
+yy255:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':
+	case 'o':	goto yy259;
+	default:	goto yy239;
+	}
+yy256:
+	yych = *++cur;
+	switch (yych) {
+	case 'A':
+	case 'a':	goto yy260;
+	default:	goto yy239;
+	}
+yy257:
+	yych = *++cur;
+	switch (yych) {
+	case 'I':
+	case 'i':	goto yy261;
+	default:	goto yy239;
+	}
+yy258:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy262;
+	default:	goto yy239;
+	}
+yy259:
+	yych = *++cur;
+	switch (yych) {
+	case 'N':
+	case 'n':	goto yy263;
+	default:	goto yy239;
+	}
+yy260:
+	yych = *++cur;
+	switch (yych) {
+	case 'G':
+	case 'g':	goto yy264;
+	default:	goto yy239;
+	}
+yy261:
+	yych = *++cur;
+	switch (yych) {
+	case 'L':
+	case 'l':	goto yy265;
+	default:	goto yy239;
+	}
+yy262:
+	yych = *++cur;
+	switch (yych) {
+	case 'C':	goto yy266;
+	default:	goto yy239;
+	}
+yy263:
+	yych = *++cur;
+	switch (yych) {
+	case 'I':
+	case 'i':	goto yy267;
+	default:	goto yy239;
+	}
+yy264:
+	yych = *++cur;
+	switch (yych) {
+	case 'E':
+	case 'e':	goto yy268;
+	default:	goto yy239;
+	}
+yy265:
+	yych = *++cur;
+	switch (yych) {
+	case 'E':
+	case 'e':	goto yy269;
+	default:	goto yy239;
+	}
+yy266:
+	yych = *++cur;
+	switch (yych) {
+	case 'O':	goto yy270;
+	default:	goto yy239;
+	}
+yy267:
+	yych = *++cur;
+	switch (yych) {
+	case 'D':
+	case 'd':	goto yy271;
+	default:	goto yy239;
+	}
+yy268:
+	yych = *++cur;
+	switch (yych) {
+	case ':':	goto yy272;
+	default:	goto yy239;
+	}
+yy269:
+	yych = *++cur;
+	switch (yych) {
+	case 'G':
+	case 'g':	goto yy274;
+	default:	goto yy239;
+	}
+yy270:
+	yych = *++cur;
+	switch (yych) {
+	case 'M':	goto yy275;
+	default:	goto yy239;
+	}
+yy271:
+	yych = *++cur;
+	switch (yych) {
+	case ':':	goto yy276;
+	default:	goto yy239;
+	}
+yy272:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy240;
+	case '\r':	goto yy278;
+	default:	goto yy272;
+	}
+yy274:
+	yych = *++cur;
+	switch (yych) {
+	case 'E':
+	case 'e':	goto yy280;
+	default:	goto yy239;
+	}
+yy275:
+	yych = *++cur;
+	switch (yych) {
+	case 'M':	goto yy281;
+	default:	goto yy239;
+	}
+yy276:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy240;
+	case '\r':	goto yy282;
+	default:	goto yy276;
+	}
+yy278:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy284;
+	case '\r':	goto yy278;
+	default:	goto yy272;
+	}
+yy280:
+	yych = *++cur;
+	switch (yych) {
+	case ':':	goto yy286;
+	default:	goto yy239;
+	}
+yy281:
+	yych = *++cur;
+	switch (yych) {
+	case 'A':	goto yy288;
+	default:	goto yy239;
+	}
+yy282:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy289;
+	case '\r':	goto yy282;
+	default:	goto yy276;
+	}
+yy284:
+	++cur;
+#line 161 "src/lib/amipack_parse.re"
+	{ CMD_HEADER(8, "Message"); }
+#line 2254 "src/lib/amipack_parse.c"
+yy286:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy240;
+	case '\r':	goto yy291;
+	default:	goto yy286;
+	}
+yy288:
+	yych = *++cur;
+	switch (yych) {
+	case 'N':	goto yy293;
+	default:	goto yy239;
+	}
+yy289:
+	++cur;
+#line 160 "src/lib/amipack_parse.re"
+	{ CMD_HEADER(9, "ActionID"); }
+#line 2272 "src/lib/amipack_parse.c"
+yy291:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy294;
+	case '\r':	goto yy291;
+	default:	goto yy286;
+	}
+yy293:
+	yych = *++cur;
+	switch (yych) {
+	case 'D':	goto yy296;
+	default:	goto yy239;
+	}
+yy294:
+	++cur;
+#line 159 "src/lib/amipack_parse.re"
+	{ CMD_HEADER(10, "Privilege"); }
+#line 2290 "src/lib/amipack_parse.c"
+yy296:
+	yych = *++cur;
+	switch (yych) {
+	case '-':	goto yy297;
+	default:	goto yy239;
+	}
+yy297:
+	yych = *++cur;
+	switch (yych) {
+	case '-':	goto yy298;
+	default:	goto yy239;
+	}
+yy298:
+	yych = *++cur;
+	switch (yych) {
+	case '\r':	goto yy299;
+	default:	goto yy239;
+	}
+yy299:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy300;
+	default:	goto yy238;
+	}
+yy300:
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case '\r':	goto yy301;
+	default:	goto yy241;
+	}
+yy301:
+	yych = *++cur;
+	switch (yych) {
+	case '\n':	goto yy303;
+	default:	goto yy302;
+	}
+yy302:
+	cur = marker;
+	goto yy241;
+yy303:
+	++cur;
+#line 164 "src/lib/amipack_parse.re"
+	{
+              len = cur - tok - 19; // output minus command end tag
+              char *val = strndup(tok, len);
+              amipack_append (pack, strdup("Output"), 6, val, len);
+              goto done;
+            }
+#line 2339 "src/lib/amipack_parse.c"
+/* *********************************** */
+yyc_queue:
+	yych = *cur;
+	switch (yych) {
+	case ' ':	goto yy309;
+	case 'S':	goto yy310;
+	case 'W':	goto yy311;
+	case 'i':	goto yy312;
+	default:	goto yy307;
+	}
+yy307:
+	++cur;
+yy308:
+#line 107 "src/lib/amipack_parse.re"
+	{
+              printf("---- PARSING ERROR ----\n");
+              amipack_destroy (pack);
+              return NULL;
+            }
+#line 2359 "src/lib/amipack_parse.c"
+yy309:
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case ' ':	goto yy313;
+	default:	goto yy308;
+	}
+yy310:
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case 'L':	goto yy315;
+	default:	goto yy308;
+	}
+yy311:
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case ':':	goto yy316;
+	default:	goto yy308;
+	}
+yy312:
+	yych = *(marker = ++cur);
+	switch (yych) {
+	case 'n':	goto yy317;
+	default:	goto yy308;
+	}
+yy313:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy318;
+	default:	goto yy314;
+	}
+yy314:
+	cur = marker;
+	goto yy308;
+yy315:
+	yych = *++cur;
+	switch (yych) {
+	case ':':	goto yy319;
+	default:	goto yy314;
+	}
+yy316:
+	yych = *++cur;
+	switch (yych) {
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		yyt1 = cur;
+		goto yy320;
+	default:	goto yy314;
+	}
+yy317:
+	yych = *++cur;
+	switch (yych) {
+	case ' ':	goto yy322;
+	default:	goto yy314;
+	}
+yy318:
+	yych = *++cur;
+	switch (yych) {
+	case 'C':	goto yy323;
+	case 'M':	goto yy324;
+	case 'N':	goto yy325;
+	default:	goto yy314;
+	}
+yy319:
 	yych = *++cur;
 	switch (yych) {
 	case '.':
@@ -1532,13 +2441,13 @@ yy200:
 	case '8':
 	case '9':
 		yyt1 = cur;
-		goto yy207;
-	default:	goto yy195;
+		goto yy326;
+	default:	goto yy314;
 	}
-yy201:
+yy320:
 	yych = *++cur;
 	switch (yych) {
-	case ',':	goto yy209;
+	case ',':	goto yy328;
 	case '0':
 	case '1':
 	case '2':
@@ -1548,37 +2457,37 @@ yy201:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy201;
-	default:	goto yy195;
+	case '9':	goto yy320;
+	default:	goto yy314;
 	}
-yy203:
+yy322:
 	yych = *++cur;
 	switch (yych) {
-	case '\'':	goto yy210;
-	default:	goto yy195;
+	case '\'':	goto yy329;
+	default:	goto yy314;
 	}
-yy204:
+yy323:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy211;
-	default:	goto yy195;
+	case 'a':	goto yy330;
+	default:	goto yy314;
 	}
-yy205:
+yy324:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy212;
-	default:	goto yy195;
+	case 'e':	goto yy331;
+	default:	goto yy314;
 	}
-yy206:
+yy325:
 	yych = *++cur;
 	switch (yych) {
-	case 'o':	goto yy213;
-	default:	goto yy195;
+	case 'o':	goto yy332;
+	default:	goto yy314;
 	}
-yy207:
+yy326:
 	yych = *++cur;
 	switch (yych) {
-	case '%':	goto yy214;
+	case '%':	goto yy333;
 	case '.':
 	case '0':
 	case '1':
@@ -1589,127 +2498,127 @@ yy207:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy207;
-	default:	goto yy195;
+	case '9':	goto yy326;
+	default:	goto yy314;
 	}
-yy209:
+yy328:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy215;
-	default:	goto yy195;
+	case ' ':	goto yy334;
+	default:	goto yy314;
 	}
-yy210:
+yy329:
 	yych = *++cur;
 	switch (yych) {
-	case '\'':	goto yy195;
+	case '\'':	goto yy314;
 	default:
 		yyt1 = cur;
-		goto yy216;
+		goto yy335;
 	}
-yy211:
+yy330:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy218;
-	default:	goto yy195;
+	case 'l':	goto yy337;
+	default:	goto yy314;
 	}
-yy212:
+yy331:
 	yych = *++cur;
 	switch (yych) {
-	case 'm':	goto yy219;
-	default:	goto yy195;
+	case 'm':	goto yy338;
+	default:	goto yy314;
 	}
-yy213:
+yy332:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy220;
-	default:	goto yy195;
+	case ' ':	goto yy339;
+	default:	goto yy314;
 	}
-yy214:
+yy333:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy221;
-	default:	goto yy195;
+	case ' ':	goto yy340;
+	default:	goto yy314;
 	}
-yy215:
+yy334:
 	yych = *++cur;
 	switch (yych) {
-	case 'C':	goto yy222;
-	default:	goto yy195;
+	case 'C':	goto yy341;
+	default:	goto yy314;
 	}
-yy216:
+yy335:
 	yych = *++cur;
 	switch (yych) {
-	case '\'':	goto yy223;
-	default:	goto yy216;
+	case '\'':	goto yy342;
+	default:	goto yy335;
 	}
-yy218:
+yy337:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy224;
-	default:	goto yy195;
+	case 'l':	goto yy343;
+	default:	goto yy314;
 	}
-yy219:
+yy338:
 	yych = *++cur;
 	switch (yych) {
-	case 'b':	goto yy225;
-	default:	goto yy195;
+	case 'b':	goto yy344;
+	default:	goto yy314;
 	}
-yy220:
+yy339:
 	yych = *++cur;
 	switch (yych) {
-	case 'C':	goto yy226;
-	case 'M':	goto yy227;
-	default:	goto yy195;
+	case 'C':	goto yy345;
+	case 'M':	goto yy346;
+	default:	goto yy314;
 	}
-yy221:
+yy340:
 	yych = *++cur;
 	switch (yych) {
-	case 'w':	goto yy228;
-	default:	goto yy195;
+	case 'w':	goto yy347;
+	default:	goto yy314;
 	}
-yy222:
+yy341:
 	yych = *++cur;
 	switch (yych) {
-	case ':':	goto yy229;
-	default:	goto yy195;
+	case ':':	goto yy348;
+	default:	goto yy314;
 	}
-yy223:
+yy342:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy230;
-	default:	goto yy195;
+	case ' ':	goto yy349;
+	default:	goto yy314;
 	}
-yy224:
+yy343:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy231;
-	default:	goto yy195;
+	case 'e':	goto yy350;
+	default:	goto yy314;
 	}
-yy225:
+yy344:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy232;
-	default:	goto yy195;
+	case 'e':	goto yy351;
+	default:	goto yy314;
 	}
-yy226:
+yy345:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy233;
-	default:	goto yy195;
+	case 'a':	goto yy352;
+	default:	goto yy314;
 	}
-yy227:
+yy346:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy234;
-	default:	goto yy195;
+	case 'e':	goto yy353;
+	default:	goto yy314;
 	}
-yy228:
+yy347:
 	yych = *++cur;
 	switch (yych) {
-	case 'i':	goto yy235;
-	default:	goto yy195;
+	case 'i':	goto yy354;
+	default:	goto yy314;
 	}
-yy229:
+yy348:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -1723,49 +2632,49 @@ yy229:
 	case '8':
 	case '9':
 		yyt2 = cur;
-		goto yy236;
-	default:	goto yy195;
+		goto yy355;
+	default:	goto yy314;
 	}
-yy230:
+yy349:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy238;
-	default:	goto yy195;
+	case 's':	goto yy357;
+	default:	goto yy314;
 	}
-yy231:
+yy350:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy239;
-	default:	goto yy195;
+	case 'r':	goto yy358;
+	default:	goto yy314;
 	}
-yy232:
+yy351:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy240;
-	default:	goto yy195;
+	case 'r':	goto yy359;
+	default:	goto yy314;
 	}
-yy233:
+yy352:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy241;
-	default:	goto yy195;
+	case 'l':	goto yy360;
+	default:	goto yy314;
 	}
-yy234:
+yy353:
 	yych = *++cur;
 	switch (yych) {
-	case 'm':	goto yy242;
-	default:	goto yy195;
+	case 'm':	goto yy361;
+	default:	goto yy314;
 	}
-yy235:
+yy354:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy243;
-	default:	goto yy195;
+	case 't':	goto yy362;
+	default:	goto yy314;
 	}
-yy236:
+yy355:
 	yych = *++cur;
 	switch (yych) {
-	case ',':	goto yy244;
+	case ',':	goto yy363;
 	case '0':
 	case '1':
 	case '2':
@@ -1775,172 +2684,172 @@ yy236:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy236;
-	default:	goto yy195;
+	case '9':	goto yy355;
+	default:	goto yy314;
 	}
-yy238:
+yy357:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy245;
-	default:	goto yy195;
+	case 't':	goto yy364;
+	default:	goto yy314;
 	}
-yy239:
+yy358:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy246;
-	default:	goto yy195;
+	case 's':	goto yy365;
+	default:	goto yy314;
 	}
-yy240:
+yy359:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy247;
-	default:	goto yy195;
+	case 's':	goto yy366;
+	default:	goto yy314;
 	}
-yy241:
+yy360:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy248;
-	default:	goto yy195;
+	case 'l':	goto yy367;
+	default:	goto yy314;
 	}
-yy242:
+yy361:
 	yych = *++cur;
 	switch (yych) {
-	case 'b':	goto yy249;
-	default:	goto yy195;
+	case 'b':	goto yy368;
+	default:	goto yy314;
 	}
-yy243:
+yy362:
 	yych = *++cur;
 	switch (yych) {
-	case 'h':	goto yy250;
-	default:	goto yy195;
+	case 'h':	goto yy369;
+	default:	goto yy314;
 	}
-yy244:
+yy363:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy251;
-	default:	goto yy195;
+	case ' ':	goto yy370;
+	default:	goto yy314;
 	}
-yy245:
+yy364:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy252;
-	default:	goto yy195;
+	case 'r':	goto yy371;
+	default:	goto yy314;
 	}
-yy246:
+yy365:
 	yych = *++cur;
 	switch (yych) {
-	case ':':	goto yy253;
-	default:	goto yy195;
+	case ':':	goto yy372;
+	default:	goto yy314;
 	}
-yy247:
+yy366:
 	yych = *++cur;
 	switch (yych) {
-	case ':':	goto yy254;
-	default:	goto yy195;
+	case ':':	goto yy373;
+	default:	goto yy314;
 	}
-yy248:
+yy367:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy255;
-	default:	goto yy195;
+	case 'e':	goto yy374;
+	default:	goto yy314;
 	}
-yy249:
+yy368:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy256;
-	default:	goto yy195;
+	case 'e':	goto yy375;
+	default:	goto yy314;
 	}
-yy250:
+yy369:
 	yych = *++cur;
 	switch (yych) {
-	case 'i':	goto yy257;
-	default:	goto yy195;
+	case 'i':	goto yy376;
+	default:	goto yy314;
 	}
-yy251:
+yy370:
 	yych = *++cur;
 	switch (yych) {
-	case 'A':	goto yy258;
-	default:	goto yy195;
+	case 'A':	goto yy377;
+	default:	goto yy314;
 	}
-yy252:
+yy371:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy259;
-	default:	goto yy195;
+	case 'a':	goto yy378;
+	default:	goto yy314;
 	}
-yy253:
+yy372:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy260;
-	default:	goto yy195;
+	case ' ':	goto yy379;
+	default:	goto yy314;
 	}
-yy254:
+yy373:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy261;
-	default:	goto yy195;
+	case ' ':	goto yy380;
+	default:	goto yy314;
 	}
-yy255:
+yy374:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy262;
-	default:	goto yy195;
+	case 'r':	goto yy381;
+	default:	goto yy314;
 	}
-yy256:
+yy375:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy263;
-	default:	goto yy195;
+	case 'r':	goto yy382;
+	default:	goto yy314;
 	}
-yy257:
+yy376:
 	yych = *++cur;
 	switch (yych) {
-	case 'n':	goto yy264;
-	default:	goto yy195;
+	case 'n':	goto yy383;
+	default:	goto yy314;
 	}
-yy258:
+yy377:
 	yych = *++cur;
 	switch (yych) {
-	case ':':	goto yy265;
-	default:	goto yy195;
+	case ':':	goto yy384;
+	default:	goto yy314;
 	}
-yy259:
+yy378:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy266;
-	default:	goto yy195;
+	case 't':	goto yy385;
+	default:	goto yy314;
 	}
-yy260:
+yy379:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy267;
-	default:	goto yy195;
+	case '\r':	goto yy386;
+	default:	goto yy314;
 	}
-yy261:
+yy380:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy268;
-	default:	goto yy195;
+	case '\r':	goto yy387;
+	default:	goto yy314;
 	}
-yy262:
+yy381:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy269;
-	default:	goto yy195;
+	case 's':	goto yy388;
+	default:	goto yy314;
 	}
-yy263:
+yy382:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy270;
-	default:	goto yy195;
+	case 's':	goto yy389;
+	default:	goto yy314;
 	}
-yy264:
+yy383:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy271;
-	default:	goto yy195;
+	case ' ':	goto yy390;
+	default:	goto yy314;
 	}
-yy265:
+yy384:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -1954,40 +2863,40 @@ yy265:
 	case '8':
 	case '9':
 		yyt3 = cur;
-		goto yy272;
-	default:	goto yy195;
+		goto yy391;
+	default:	goto yy314;
 	}
-yy266:
+yy385:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy274;
-	default:	goto yy195;
+	case 'e':	goto yy393;
+	default:	goto yy314;
 	}
-yy267:
+yy386:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy275;
-	default:	goto yy195;
+	case '\n':	goto yy394;
+	default:	goto yy314;
 	}
-yy268:
+yy387:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy277;
-	default:	goto yy195;
+	case '\n':	goto yy396;
+	default:	goto yy314;
 	}
-yy269:
+yy388:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy279;
-	default:	goto yy195;
+	case '\r':	goto yy398;
+	default:	goto yy314;
 	}
-yy270:
+yy389:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy280;
-	default:	goto yy195;
+	case '\r':	goto yy399;
+	default:	goto yy314;
 	}
-yy271:
+yy390:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2001,13 +2910,13 @@ yy271:
 	case '8':
 	case '9':
 		yyt2 = cur;
-		goto yy281;
-	default:	goto yy195;
+		goto yy400;
+	default:	goto yy314;
 	}
-yy272:
+yy391:
 	yych = *++cur;
 	switch (yych) {
-	case ',':	goto yy283;
+	case ',':	goto yy402;
 	case '0':
 	case '1':
 	case '2':
@@ -2017,42 +2926,42 @@ yy272:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy272;
-	default:	goto yy195;
+	case '9':	goto yy391;
+	default:	goto yy314;
 	}
-yy274:
+yy393:
 	yych = *++cur;
 	switch (yych) {
-	case 'g':	goto yy284;
-	default:	goto yy195;
+	case 'g':	goto yy403;
+	default:	goto yy314;
 	}
-yy275:
+yy394:
 	++cur;
-#line 206 "src/lib/amipack_parse.re"
+#line 200 "src/lib/amipack_parse.re"
 	{
               goto yyc_qcallers;
           }
-#line 2036 "src/lib/amipack_parse.c"
-yy277:
+#line 2945 "src/lib/amipack_parse.c"
+yy396:
 	++cur;
-#line 203 "src/lib/amipack_parse.re"
+#line 197 "src/lib/amipack_parse.re"
 	{
               goto yyc_qmembers;
           }
-#line 2043 "src/lib/amipack_parse.c"
-yy279:
+#line 2952 "src/lib/amipack_parse.c"
+yy398:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy285;
-	default:	goto yy195;
+	case '\n':	goto yy404;
+	default:	goto yy314;
 	}
-yy280:
+yy399:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy286;
-	default:	goto yy195;
+	case '\n':	goto yy405;
+	default:	goto yy314;
 	}
-yy281:
+yy400:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2064,43 +2973,43 @@ yy281:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy281;
-	case 's':	goto yy288;
-	default:	goto yy195;
+	case '9':	goto yy400;
+	case 's':	goto yy407;
+	default:	goto yy314;
 	}
-yy283:
+yy402:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy289;
-	default:	goto yy195;
+	case ' ':	goto yy408;
+	default:	goto yy314;
 	}
-yy284:
+yy403:
 	yych = *++cur;
 	switch (yych) {
-	case 'y':	goto yy291;
-	default:	goto yy195;
+	case 'y':	goto yy410;
+	default:	goto yy314;
 	}
-yy285:
+yy404:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy292;
-	default:	goto yy195;
+	case '\r':	goto yy411;
+	default:	goto yy314;
 	}
-yy286:
+yy405:
 	++cur;
-#line 195 "src/lib/amipack_parse.re"
+#line 189 "src/lib/amipack_parse.re"
 	{
               queue->members_size = 0;
               goto yyc_queue;
           }
-#line 2097 "src/lib/amipack_parse.c"
-yy288:
+#line 3006 "src/lib/amipack_parse.c"
+yy407:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy293;
-	default:	goto yy195;
+	case '\r':	goto yy412;
+	default:	goto yy314;
 	}
-yy289:
+yy408:
 	++cur;
 	tq1 = yyt1;
 	tq3 = yyt2;
@@ -2108,60 +3017,60 @@ yy289:
 	tq2 = yyt2 - 4;
 	tq4 = yyt3 - 4;
 	tq6 = cur - 2;
-#line 184 "src/lib/amipack_parse.re"
+#line 178 "src/lib/amipack_parse.re"
 	{
               queue->weight = (int)strtol(tq1, NULL, 10);
               queue->callscompleted = (int)strtol(tq3, NULL, 10);
               queue->callsabandoned = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
-#line 2119 "src/lib/amipack_parse.c"
-yy291:
+#line 3028 "src/lib/amipack_parse.c"
+yy410:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy294;
-	default:	goto yy195;
+	case ' ':	goto yy413;
+	default:	goto yy314;
 	}
-yy292:
+yy411:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy295;
-	default:	goto yy195;
+	case '\n':	goto yy414;
+	default:	goto yy314;
 	}
-yy293:
+yy412:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy297;
-	default:	goto yy195;
+	case '\n':	goto yy416;
+	default:	goto yy314;
 	}
-yy294:
+yy413:
 	yych = *++cur;
 	switch (yych) {
-	case '(':	goto yy299;
-	default:	goto yy195;
+	case '(':	goto yy418;
+	default:	goto yy314;
 	}
-yy295:
+yy414:
 	++cur;
-#line 199 "src/lib/amipack_parse.re"
+#line 193 "src/lib/amipack_parse.re"
 	{
               queue->callers_size = 0;
               goto done;
           }
-#line 2151 "src/lib/amipack_parse.c"
-yy297:
+#line 3060 "src/lib/amipack_parse.c"
+yy416:
 	++cur;
 	tq1 = yyt1;
 	tq3 = yyt2;
 	tq2 = yyt2 - 8;
 	tq4 = cur - 3;
-#line 190 "src/lib/amipack_parse.re"
+#line 184 "src/lib/amipack_parse.re"
 	{
               queue->sl = strndup(tq1, (int)(tq2 - tq1));
               queue->sl_sec = (int)strtol(tq3, NULL, 10);
               goto yyc_queue;
           }
-#line 2164 "src/lib/amipack_parse.c"
-yy299:
+#line 3073 "src/lib/amipack_parse.c"
+yy418:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2175,10 +3084,10 @@ yy299:
 	case '8':
 	case '9':
 		yyt2 = cur;
-		goto yy300;
-	default:	goto yy195;
+		goto yy419;
+	default:	goto yy314;
 	}
-yy300:
+yy419:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2190,77 +3099,77 @@ yy300:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy300;
-	case 's':	goto yy302;
-	default:	goto yy195;
+	case '9':	goto yy419;
+	case 's':	goto yy421;
+	default:	goto yy314;
 	}
-yy302:
+yy421:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy303;
-	default:	goto yy195;
+	case ' ':	goto yy422;
+	default:	goto yy314;
 	}
-yy303:
+yy422:
 	yych = *++cur;
 	switch (yych) {
-	case 'h':	goto yy304;
-	default:	goto yy195;
+	case 'h':	goto yy423;
+	default:	goto yy314;
 	}
-yy304:
+yy423:
 	yych = *++cur;
 	switch (yych) {
-	case 'o':	goto yy305;
-	default:	goto yy195;
+	case 'o':	goto yy424;
+	default:	goto yy314;
 	}
-yy305:
+yy424:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy306;
-	default:	goto yy195;
+	case 'l':	goto yy425;
+	default:	goto yy314;
 	}
-yy306:
+yy425:
 	yych = *++cur;
 	switch (yych) {
-	case 'd':	goto yy307;
-	default:	goto yy195;
+	case 'd':	goto yy426;
+	default:	goto yy314;
 	}
-yy307:
+yy426:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy308;
-	default:	goto yy195;
+	case 't':	goto yy427;
+	default:	goto yy314;
 	}
-yy308:
+yy427:
 	yych = *++cur;
 	switch (yych) {
-	case 'i':	goto yy309;
-	default:	goto yy195;
+	case 'i':	goto yy428;
+	default:	goto yy314;
 	}
-yy309:
+yy428:
 	yych = *++cur;
 	switch (yych) {
-	case 'm':	goto yy310;
-	default:	goto yy195;
+	case 'm':	goto yy429;
+	default:	goto yy314;
 	}
-yy310:
+yy429:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy311;
-	default:	goto yy195;
+	case 'e':	goto yy430;
+	default:	goto yy314;
 	}
-yy311:
+yy430:
 	yych = *++cur;
 	switch (yych) {
-	case ',':	goto yy312;
-	default:	goto yy195;
+	case ',':	goto yy431;
+	default:	goto yy314;
 	}
-yy312:
+yy431:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy313;
-	default:	goto yy195;
+	case ' ':	goto yy432;
+	default:	goto yy314;
 	}
-yy313:
+yy432:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2274,10 +3183,10 @@ yy313:
 	case '8':
 	case '9':
 		yyt3 = cur;
-		goto yy314;
-	default:	goto yy195;
+		goto yy433;
+	default:	goto yy314;
 	}
-yy314:
+yy433:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2289,83 +3198,83 @@ yy314:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy314;
-	case 's':	goto yy316;
-	default:	goto yy195;
+	case '9':	goto yy433;
+	case 's':	goto yy435;
+	default:	goto yy314;
 	}
-yy316:
+yy435:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy317;
-	default:	goto yy195;
+	case ' ':	goto yy436;
+	default:	goto yy314;
 	}
-yy317:
+yy436:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy318;
-	default:	goto yy195;
+	case 't':	goto yy437;
+	default:	goto yy314;
 	}
-yy318:
+yy437:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy319;
-	default:	goto yy195;
+	case 'a':	goto yy438;
+	default:	goto yy314;
 	}
-yy319:
+yy438:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy320;
-	default:	goto yy195;
+	case 'l':	goto yy439;
+	default:	goto yy314;
 	}
-yy320:
+yy439:
 	yych = *++cur;
 	switch (yych) {
-	case 'k':	goto yy321;
-	default:	goto yy195;
+	case 'k':	goto yy440;
+	default:	goto yy314;
 	}
-yy321:
+yy440:
 	yych = *++cur;
 	switch (yych) {
-	case 't':	goto yy322;
-	default:	goto yy195;
+	case 't':	goto yy441;
+	default:	goto yy314;
 	}
-yy322:
+yy441:
 	yych = *++cur;
 	switch (yych) {
-	case 'i':	goto yy323;
-	default:	goto yy195;
+	case 'i':	goto yy442;
+	default:	goto yy314;
 	}
-yy323:
+yy442:
 	yych = *++cur;
 	switch (yych) {
-	case 'm':	goto yy324;
-	default:	goto yy195;
+	case 'm':	goto yy443;
+	default:	goto yy314;
 	}
-yy324:
+yy443:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy325;
-	default:	goto yy195;
+	case 'e':	goto yy444;
+	default:	goto yy314;
 	}
-yy325:
+yy444:
 	yych = *++cur;
 	switch (yych) {
-	case ')':	goto yy326;
-	default:	goto yy195;
+	case ')':	goto yy445;
+	default:	goto yy314;
 	}
-yy326:
+yy445:
 	yych = *++cur;
 	switch (yych) {
-	case ',':	goto yy327;
-	default:	goto yy195;
+	case ',':	goto yy446;
+	default:	goto yy314;
 	}
-yy327:
+yy446:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy328;
-	default:	goto yy195;
+	case ' ':	goto yy447;
+	default:	goto yy314;
 	}
-yy328:
+yy447:
 	++cur;
 	tq1 = yyt1;
 	tq3 = yyt2;
@@ -2373,320 +3282,320 @@ yy328:
 	tq2 = yyt2 - 12;
 	tq4 = yyt3 - 12;
 	tq6 = cur - 13;
-#line 178 "src/lib/amipack_parse.re"
+#line 172 "src/lib/amipack_parse.re"
 	{
               queue->strategy = strndup(tq1, (int)(tq2 - tq1));
               queue->holdtime = (int)strtol(tq3, NULL, 10);
               queue->talktime = (int)strtol(tq5, NULL, 10);
               goto yyc_queue;
           }
-#line 2384 "src/lib/amipack_parse.c"
+#line 3293 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_qmembers:
 	yych = *cur;
 	switch (yych) {
-	case ' ':	goto yy334;
-	default:	goto yy332;
+	case ' ':	goto yy453;
+	default:	goto yy451;
 	}
-yy332:
+yy451:
 	++cur;
-yy333:
-#line 106 "src/lib/amipack_parse.re"
+yy452:
+#line 107 "src/lib/amipack_parse.re"
 	{
-              //if (hdr_name) free (hdr_name);
+              printf("---- PARSING ERROR ----\n");
               amipack_destroy (pack);
               return NULL;
             }
-#line 2401 "src/lib/amipack_parse.c"
-yy334:
+#line 3310 "src/lib/amipack_parse.c"
+yy453:
 	yych = *(marker = ++cur);
 	switch (yych) {
-	case ' ':	goto yy335;
-	default:	goto yy333;
+	case ' ':	goto yy454;
+	default:	goto yy452;
 	}
-yy335:
+yy454:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy337;
-	default:	goto yy336;
+	case ' ':	goto yy456;
+	default:	goto yy455;
 	}
-yy336:
+yy455:
 	cur = marker;
-	goto yy333;
-yy337:
+	goto yy452;
+yy456:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy338;
-	case 'C':	goto yy339;
-	case 'N':	goto yy340;
-	default:	goto yy336;
+	case ' ':	goto yy457;
+	case 'C':	goto yy458;
+	case 'N':	goto yy459;
+	default:	goto yy455;
 	}
-yy338:
+yy457:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy341;
-	default:	goto yy336;
+	case ' ':	goto yy460;
+	default:	goto yy455;
 	}
-yy339:
+yy458:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy342;
-	default:	goto yy336;
+	case 'a':	goto yy461;
+	default:	goto yy455;
 	}
-yy340:
+yy459:
 	yych = *++cur;
 	switch (yych) {
-	case 'o':	goto yy343;
-	default:	goto yy336;
+	case 'o':	goto yy462;
+	default:	goto yy455;
 	}
-yy341:
+yy460:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy344;
-	default:	goto yy336;
+	case ' ':	goto yy463;
+	default:	goto yy455;
 	}
-yy342:
+yy461:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy345;
-	default:	goto yy336;
+	case 'l':	goto yy464;
+	default:	goto yy455;
 	}
-yy343:
+yy462:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy346;
-	default:	goto yy336;
+	case ' ':	goto yy465;
+	default:	goto yy455;
 	}
-yy344:
+yy463:
 	yych = *++cur;
 	switch (yych) {
-	case '@':	goto yy336;
+	case '@':	goto yy455;
 	default:
 		yyt1 = cur;
-		goto yy347;
+		goto yy466;
 	}
-yy345:
+yy464:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy349;
-	default:	goto yy336;
+	case 'l':	goto yy468;
+	default:	goto yy455;
 	}
-yy346:
+yy465:
 	yych = *++cur;
 	switch (yych) {
-	case 'C':	goto yy350;
-	default:	goto yy336;
+	case 'C':	goto yy469;
+	default:	goto yy455;
 	}
-yy347:
+yy466:
 	yych = *++cur;
 	switch (yych) {
-	case '@':	goto yy351;
-	default:	goto yy347;
+	case '@':	goto yy470;
+	default:	goto yy466;
 	}
-yy349:
+yy468:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy353;
-	default:	goto yy336;
+	case 'e':	goto yy472;
+	default:	goto yy455;
 	}
-yy350:
+yy469:
 	yych = *++cur;
 	switch (yych) {
-	case 'a':	goto yy354;
-	default:	goto yy336;
+	case 'a':	goto yy473;
+	default:	goto yy455;
 	}
-yy351:
+yy470:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy336;
-	case '\r':	goto yy355;
-	default:	goto yy351;
+	case '\n':	goto yy455;
+	case '\r':	goto yy474;
+	default:	goto yy470;
 	}
-yy353:
+yy472:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy357;
-	default:	goto yy336;
+	case 'r':	goto yy476;
+	default:	goto yy455;
 	}
-yy354:
+yy473:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy358;
-	default:	goto yy336;
+	case 'l':	goto yy477;
+	default:	goto yy455;
 	}
-yy355:
+yy474:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy359;
-	case '\r':	goto yy355;
-	default:	goto yy351;
+	case '\n':	goto yy478;
+	case '\r':	goto yy474;
+	default:	goto yy470;
 	}
-yy357:
+yy476:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy361;
-	default:	goto yy336;
+	case 's':	goto yy480;
+	default:	goto yy455;
 	}
-yy358:
+yy477:
 	yych = *++cur;
 	switch (yych) {
-	case 'l':	goto yy362;
-	default:	goto yy336;
+	case 'l':	goto yy481;
+	default:	goto yy455;
 	}
-yy359:
+yy478:
 	++cur;
 	tq1 = yyt1;
 	tq2 = cur - 2;
-#line 210 "src/lib/amipack_parse.re"
+#line 204 "src/lib/amipack_parse.re"
 	{
               queue->members_size++;
               goto yyc_qmembers;
           }
-#line 2546 "src/lib/amipack_parse.c"
-yy361:
+#line 3455 "src/lib/amipack_parse.c"
+yy480:
 	yych = *++cur;
 	switch (yych) {
-	case ':':	goto yy363;
-	default:	goto yy336;
+	case ':':	goto yy482;
+	default:	goto yy455;
 	}
-yy362:
+yy481:
 	yych = *++cur;
 	switch (yych) {
-	case 'e':	goto yy364;
-	default:	goto yy336;
+	case 'e':	goto yy483;
+	default:	goto yy455;
 	}
-yy363:
+yy482:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy365;
-	default:	goto yy336;
+	case ' ':	goto yy484;
+	default:	goto yy455;
 	}
-yy364:
+yy483:
 	yych = *++cur;
 	switch (yych) {
-	case 'r':	goto yy366;
-	default:	goto yy336;
+	case 'r':	goto yy485;
+	default:	goto yy455;
 	}
-yy365:
+yy484:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy367;
-	default:	goto yy336;
+	case '\r':	goto yy486;
+	default:	goto yy455;
 	}
-yy366:
+yy485:
 	yych = *++cur;
 	switch (yych) {
-	case 's':	goto yy368;
-	default:	goto yy336;
+	case 's':	goto yy487;
+	default:	goto yy455;
 	}
-yy367:
+yy486:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy369;
-	default:	goto yy336;
+	case '\n':	goto yy488;
+	default:	goto yy455;
 	}
-yy368:
+yy487:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy371;
-	default:	goto yy336;
+	case '\r':	goto yy490;
+	default:	goto yy455;
 	}
-yy369:
+yy488:
 	++cur;
-#line 218 "src/lib/amipack_parse.re"
+#line 212 "src/lib/amipack_parse.re"
 	{
               goto yyc_qcallers;
           }
-#line 2601 "src/lib/amipack_parse.c"
-yy371:
+#line 3510 "src/lib/amipack_parse.c"
+yy490:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy372;
-	default:	goto yy336;
+	case '\n':	goto yy491;
+	default:	goto yy455;
 	}
-yy372:
+yy491:
 	yych = *++cur;
 	switch (yych) {
-	case '\r':	goto yy373;
-	default:	goto yy336;
+	case '\r':	goto yy492;
+	default:	goto yy455;
 	}
-yy373:
+yy492:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy374;
-	default:	goto yy336;
+	case '\n':	goto yy493;
+	default:	goto yy455;
 	}
-yy374:
+yy493:
 	++cur;
-#line 214 "src/lib/amipack_parse.re"
+#line 208 "src/lib/amipack_parse.re"
 	{
               queue->callers_size = 0;
               goto done;
           }
-#line 2627 "src/lib/amipack_parse.c"
+#line 3536 "src/lib/amipack_parse.c"
 /* *********************************** */
 yyc_qcallers:
 	yych = *cur;
 	switch (yych) {
-	case '\r':	goto yy380;
-	case ' ':	goto yy381;
-	default:	goto yy378;
+	case '\r':	goto yy499;
+	case ' ':	goto yy500;
+	default:	goto yy497;
 	}
-yy378:
+yy497:
 	++cur;
-yy379:
-#line 106 "src/lib/amipack_parse.re"
+yy498:
+#line 107 "src/lib/amipack_parse.re"
 	{
-              //if (hdr_name) free (hdr_name);
+              printf("---- PARSING ERROR ----\n");
               amipack_destroy (pack);
               return NULL;
             }
-#line 2645 "src/lib/amipack_parse.c"
-yy380:
+#line 3554 "src/lib/amipack_parse.c"
+yy499:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy382;
-	default:	goto yy379;
+	case '\n':	goto yy501;
+	default:	goto yy498;
 	}
-yy381:
+yy500:
 	yych = *(marker = ++cur);
 	switch (yych) {
-	case ' ':	goto yy384;
-	default:	goto yy379;
+	case ' ':	goto yy503;
+	default:	goto yy498;
 	}
-yy382:
+yy501:
 	++cur;
-#line 226 "src/lib/amipack_parse.re"
+#line 220 "src/lib/amipack_parse.re"
 	{goto done;}
-#line 2662 "src/lib/amipack_parse.c"
-yy384:
+#line 3571 "src/lib/amipack_parse.c"
+yy503:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy386;
-	default:	goto yy385;
+	case ' ':	goto yy505;
+	default:	goto yy504;
 	}
-yy385:
+yy504:
 	cur = marker;
-	goto yy379;
-yy386:
+	goto yy498;
+yy505:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy387;
-	default:	goto yy385;
+	case ' ':	goto yy506;
+	default:	goto yy504;
 	}
-yy387:
+yy506:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy388;
-	default:	goto yy385;
+	case ' ':	goto yy507;
+	default:	goto yy504;
 	}
-yy388:
+yy507:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy389;
-	default:	goto yy385;
+	case ' ':	goto yy508;
+	default:	goto yy504;
 	}
-yy389:
+yy508:
 	yych = *++cur;
 	switch (yych) {
 	case '0':
@@ -2698,13 +3607,13 @@ yy389:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy390;
-	default:	goto yy385;
+	case '9':	goto yy509;
+	default:	goto yy504;
 	}
-yy390:
+yy509:
 	yych = *++cur;
 	switch (yych) {
-	case '.':	goto yy392;
+	case '.':	goto yy511;
 	case '0':
 	case '1':
 	case '2':
@@ -2714,39 +3623,39 @@ yy390:
 	case '6':
 	case '7':
 	case '8':
-	case '9':	goto yy390;
-	default:	goto yy385;
+	case '9':	goto yy509;
+	default:	goto yy504;
 	}
-yy392:
+yy511:
 	yych = *++cur;
 	switch (yych) {
-	case ' ':	goto yy393;
-	default:	goto yy385;
+	case ' ':	goto yy512;
+	default:	goto yy504;
 	}
-yy393:
+yy512:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy385;
-	case '\r':	goto yy395;
-	default:	goto yy393;
+	case '\n':	goto yy504;
+	case '\r':	goto yy514;
+	default:	goto yy512;
 	}
-yy395:
+yy514:
 	yych = *++cur;
 	switch (yych) {
-	case '\n':	goto yy397;
-	case '\r':	goto yy395;
-	default:	goto yy393;
+	case '\n':	goto yy516;
+	case '\r':	goto yy514;
+	default:	goto yy512;
 	}
-yy397:
+yy516:
 	++cur;
-#line 222 "src/lib/amipack_parse.re"
+#line 216 "src/lib/amipack_parse.re"
 	{
               queue->callers_size++;
               goto yyc_qcallers;
           }
-#line 2748 "src/lib/amipack_parse.c"
+#line 3657 "src/lib/amipack_parse.c"
 }
-#line 227 "src/lib/amipack_parse.re"
+#line 221 "src/lib/amipack_parse.re"
 
 
 done:

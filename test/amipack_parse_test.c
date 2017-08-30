@@ -53,9 +53,11 @@ static void parse_action_one_header (void **state)
   int ret;
   size_t len;
   char *hv; // header value
-  const char *str = "Action: CoreStatus\r\n\r\n";
+  // Action: CoreStatus\r\n\r\n
+  const char str[] = {0x41,0x63,0x74,0x69,0x6f,0x6e,0x3a,0x20,0x43,0x6f,0x72,0x65,0x53,0x74,0x61,0x74,0x75,0x73,0xd,0xa,0xd,0xa};
 
   pack = amiparse_pack (str);
+  assert_non_null(pack);
   assert_int_equal (AMI_ACTION, pack->type);
   assert_int_equal (pack->size, 1);
   len = amiheader_find(pack, "Action", &hv);
@@ -69,9 +71,11 @@ static void parse_event_one_header (void **state)
   AMIPacket *pack;
   size_t len;
   char *hv; // header value
-  const char *str = "Event: FullyBooted\r\n\r\n";
+  // Event: FullyBooted\r\n\r\n
+  const char str[] = {0x45,0x76,0x65,0x6e,0x74,0x3a,0x20,0x46,0x75,0x6c,0x6c,0x79,0x42,0x6f,0x6f,0x74,0x65,0x64,0xd,0xa,0xd,0xa};
 
   pack = amiparse_pack (str);
+  assert_non_null(pack);
   assert_int_equal (pack->type, AMI_EVENT);
   assert_int_equal (pack->size, 1);
   len = amiheader_find(pack, "Event", &hv);
@@ -113,7 +117,8 @@ static void parse_response_one_header_caseinsen (void **state)
   AMIPacket *pack;
   size_t len;
   char *hv; // header value
-  const char *str = "response: Fail\r\n\r\n";
+  // response: Fail\r\n\r\n
+  const char str[] = {0x72,0x65,0x73,0x70,0x6f,0x6e,0x73,0x65,0x3a,0x20,0x46,0x61,0x69,0x6c,0xd,0xa,0xd,0xa};
 
   pack = amiparse_pack (str);
   assert_int_equal (pack->type, AMI_RESPONSE);
