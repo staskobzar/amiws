@@ -85,12 +85,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-TESTS = config_test$(EXEEXT) pack_scan$(EXEEXT) \
-	amipack_create_test$(EXEEXT) amipack_parse_test$(EXEEXT) \
-	amipack_parse_queue_test$(EXEEXT)
-check_PROGRAMS = config_test$(EXEEXT) pack_scan$(EXEEXT) \
-	amipack_create_test$(EXEEXT) amipack_parse_test$(EXEEXT) \
-	amipack_parse_queue_test$(EXEEXT)
+TESTS = test_config$(EXEEXT) test_pack_scan$(EXEEXT) \
+	test_create_packet$(EXEEXT) test_pack_type_detect$(EXEEXT) \
+	test_parser_prompt$(EXEEXT) test_parser_message$(EXEEXT) \
+	test_parser_command$(EXEEXT) test_parser_queue$(EXEEXT)
+check_PROGRAMS = test_config$(EXEEXT) test_pack_scan$(EXEEXT) \
+	test_create_packet$(EXEEXT) test_pack_type_detect$(EXEEXT) \
+	test_parser_prompt$(EXEEXT) test_parser_message$(EXEEXT) \
+	test_parser_command$(EXEEXT) test_parser_queue$(EXEEXT)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -101,36 +103,52 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_amipack_create_test_OBJECTS =  \
-	amipack_create_test-amipack_create_test.$(OBJEXT)
-amipack_create_test_OBJECTS = $(am_amipack_create_test_OBJECTS)
-amipack_create_test_DEPENDENCIES =
-amipack_create_test_LINK = $(CCLD) $(amipack_create_test_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_amipack_parse_queue_test_OBJECTS =  \
-	amipack_parse_queue_test-amipack_parse_queue_test.$(OBJEXT)
-amipack_parse_queue_test_OBJECTS =  \
-	$(am_amipack_parse_queue_test_OBJECTS)
-amipack_parse_queue_test_DEPENDENCIES =
-amipack_parse_queue_test_LINK = $(CCLD) \
-	$(amipack_parse_queue_test_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
-am_amipack_parse_test_OBJECTS =  \
-	amipack_parse_test-amipack_parse_test.$(OBJEXT)
-amipack_parse_test_OBJECTS = $(am_amipack_parse_test_OBJECTS)
-amipack_parse_test_DEPENDENCIES =
-amipack_parse_test_LINK = $(CCLD) $(amipack_parse_test_CFLAGS) \
-	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-config_test_SOURCES = config_test.c
-config_test_OBJECTS = config_test-config_test.$(OBJEXT)
-config_test_DEPENDENCIES =
-config_test_LINK = $(CCLD) $(config_test_CFLAGS) $(CFLAGS) \
+test_config_SOURCES = test_config.c
+test_config_OBJECTS = test_config-test_config.$(OBJEXT)
+test_config_DEPENDENCIES =
+test_config_LINK = $(CCLD) $(test_config_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-pack_scan_SOURCES = pack_scan.c
-pack_scan_OBJECTS = pack_scan-pack_scan.$(OBJEXT)
-pack_scan_DEPENDENCIES =
-pack_scan_LINK = $(CCLD) $(pack_scan_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+am_test_create_packet_OBJECTS =  \
+	test_create_packet-test_create_packet.$(OBJEXT)
+test_create_packet_OBJECTS = $(am_test_create_packet_OBJECTS)
+test_create_packet_DEPENDENCIES =
+test_create_packet_LINK = $(CCLD) $(test_create_packet_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+test_pack_scan_SOURCES = test_pack_scan.c
+test_pack_scan_OBJECTS = test_pack_scan-test_pack_scan.$(OBJEXT)
+test_pack_scan_DEPENDENCIES =
+test_pack_scan_LINK = $(CCLD) $(test_pack_scan_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+test_pack_type_detect_SOURCES = test_pack_type_detect.c
+test_pack_type_detect_OBJECTS =  \
+	test_pack_type_detect-test_pack_type_detect.$(OBJEXT)
+test_pack_type_detect_DEPENDENCIES =
+test_pack_type_detect_LINK = $(CCLD) $(test_pack_type_detect_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_test_parser_command_OBJECTS =  \
+	test_parser_command-test_parser_command.$(OBJEXT)
+test_parser_command_OBJECTS = $(am_test_parser_command_OBJECTS)
+test_parser_command_DEPENDENCIES =
+test_parser_command_LINK = $(CCLD) $(test_parser_command_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_test_parser_message_OBJECTS =  \
+	test_parser_message-test_parser_message.$(OBJEXT)
+test_parser_message_OBJECTS = $(am_test_parser_message_OBJECTS)
+test_parser_message_DEPENDENCIES =
+test_parser_message_LINK = $(CCLD) $(test_parser_message_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_test_parser_prompt_OBJECTS =  \
+	test_parser_prompt-test_parser_prompt.$(OBJEXT)
+test_parser_prompt_OBJECTS = $(am_test_parser_prompt_OBJECTS)
+test_parser_prompt_DEPENDENCIES =
+test_parser_prompt_LINK = $(CCLD) $(test_parser_prompt_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_test_parser_queue_OBJECTS =  \
+	test_parser_queue-test_parser_queue.$(OBJEXT)
+test_parser_queue_OBJECTS = $(am_test_parser_queue_OBJECTS)
+test_parser_queue_DEPENDENCIES =
+test_parser_queue_LINK = $(CCLD) $(test_parser_queue_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -163,12 +181,14 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(amipack_create_test_SOURCES) \
-	$(amipack_parse_queue_test_SOURCES) \
-	$(amipack_parse_test_SOURCES) config_test.c pack_scan.c
-DIST_SOURCES = $(amipack_create_test_SOURCES) \
-	$(amipack_parse_queue_test_SOURCES) \
-	$(amipack_parse_test_SOURCES) config_test.c pack_scan.c
+SOURCES = test_config.c $(test_create_packet_SOURCES) test_pack_scan.c \
+	test_pack_type_detect.c $(test_parser_command_SOURCES) \
+	$(test_parser_message_SOURCES) $(test_parser_prompt_SOURCES) \
+	$(test_parser_queue_SOURCES)
+DIST_SOURCES = test_config.c $(test_create_packet_SOURCES) \
+	test_pack_scan.c test_pack_type_detect.c \
+	$(test_parser_command_SOURCES) $(test_parser_message_SOURCES) \
+	$(test_parser_prompt_SOURCES) $(test_parser_queue_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -399,15 +419,15 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp \
 	$(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /Users/stas/dev/amiws/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_CPPFLAGS = 
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/stas/dev/amiws/missing autoconf
-AUTOHEADER = ${SHELL} /Users/stas/dev/amiws/missing autoheader
-AUTOMAKE = ${SHELL} /Users/stas/dev/amiws/missing automake-1.15
-AWK = awk
+AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
+AUTOHEADER = ${SHELL} /home/stas/Dev/amiws/missing autoheader
+AUTOMAKE = ${SHELL} /home/stas/Dev/amiws/missing automake-1.15
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
@@ -416,13 +436,13 @@ CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-GREP = /usr/bin/grep
-INSTALL = /usr/local/bin/ginstall -c
+GREP = /bin/grep
+INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
@@ -431,8 +451,8 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lyaml 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /Users/stas/dev/amiws/missing makeinfo
-MKDIR_P = /usr/local/bin/gmkdir -p
+MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
+MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = amiws
 PACKAGE_BUGREPORT = staskobzar@gmail.com
@@ -444,13 +464,13 @@ PACKAGE_VERSION = 1.0.0
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 1.0.0
-abs_builddir = /Users/stas/dev/amiws/test
-abs_srcdir = /Users/stas/dev/amiws/test
-abs_top_builddir = /Users/stas/dev/amiws
-abs_top_srcdir = /Users/stas/dev/amiws
+abs_builddir = /home/stas/Dev/amiws/test
+abs_srcdir = /home/stas/Dev/amiws/test
+abs_top_builddir = /home/stas/Dev/amiws
+abs_top_srcdir = /home/stas/Dev/amiws
 ac_ct_AR = ar
 ac_ct_CC = gcc
 am__include = include
@@ -470,7 +490,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/stas/dev/amiws/install-sh
+install_sh = ${SHELL} /home/stas/Dev/amiws/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -494,21 +514,30 @@ top_srcdir = ..
 LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
 
-config_test_SOURCE = config_test.c
-config_test_CFLAGS = -I$(top_builddir)/src/lib
-config_test_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
-pack_scan_SOURCE = pack_scan.c
-pack_scan_CFLAGS = -I$(top_builddir)/src/lib
-pack_scan_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
-amipack_create_test_SOURCES = amipack_create_test.c
-amipack_create_test_CFLAGS = -I$(top_builddir)/src/lib
-amipack_create_test_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
-amipack_parse_test_SOURCES = amipack_parse_test.c
-amipack_parse_test_CFLAGS = -I$(top_builddir)/src/lib
-amipack_parse_test_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
-amipack_parse_queue_test_SOURCES = amipack_parse_queue_test.c
-amipack_parse_queue_test_CFLAGS = -I$(top_builddir)/src/lib
-amipack_parse_queue_test_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
+test_config_SOURCE = test_config.c
+test_config_CFLAGS = -I$(top_builddir)/src/lib
+test_config_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
+test_pack_scan_SOURCE = test_pack_scan.c
+test_pack_scan_CFLAGS = -I$(top_builddir)/src/lib
+test_pack_scan_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
+test_create_packet_SOURCES = test_create_packet.c
+test_create_packet_CFLAGS = -I$(top_builddir)/src/lib
+test_create_packet_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
+test_pack_type_detect_SOURCE = test_pack_type_detect.c
+test_pack_type_detect_CFLAGS = -I$(top_builddir)/src/lib
+test_pack_type_detect_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
+test_parser_prompt_SOURCES = test_parser_prompt.c
+test_parser_prompt_CFLAGS = -I$(top_builddir)/src/lib
+test_parser_prompt_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
+test_parser_message_SOURCES = test_parser_message.c
+test_parser_message_CFLAGS = -I$(top_builddir)/src/lib
+test_parser_message_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
+test_parser_command_SOURCES = test_parser_command.c
+test_parser_command_CFLAGS = -I$(top_builddir)/src/lib
+test_parser_command_LDADD = -L$(top_builddir)/src/lib -lamipack -lcmocka
+test_parser_queue_SOURCES = test_parser_queue.c
+test_parser_queue_CFLAGS = -I$(top_builddir)/src/lib
+test_parser_queue_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
 all: all-am
 
 .SUFFIXES:
@@ -546,25 +575,37 @@ $(am__aclocal_m4_deps):
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-amipack_create_test$(EXEEXT): $(amipack_create_test_OBJECTS) $(amipack_create_test_DEPENDENCIES) $(EXTRA_amipack_create_test_DEPENDENCIES) 
-	@rm -f amipack_create_test$(EXEEXT)
-	$(AM_V_CCLD)$(amipack_create_test_LINK) $(amipack_create_test_OBJECTS) $(amipack_create_test_LDADD) $(LIBS)
+test_config$(EXEEXT): $(test_config_OBJECTS) $(test_config_DEPENDENCIES) $(EXTRA_test_config_DEPENDENCIES) 
+	@rm -f test_config$(EXEEXT)
+	$(AM_V_CCLD)$(test_config_LINK) $(test_config_OBJECTS) $(test_config_LDADD) $(LIBS)
 
-amipack_parse_queue_test$(EXEEXT): $(amipack_parse_queue_test_OBJECTS) $(amipack_parse_queue_test_DEPENDENCIES) $(EXTRA_amipack_parse_queue_test_DEPENDENCIES) 
-	@rm -f amipack_parse_queue_test$(EXEEXT)
-	$(AM_V_CCLD)$(amipack_parse_queue_test_LINK) $(amipack_parse_queue_test_OBJECTS) $(amipack_parse_queue_test_LDADD) $(LIBS)
+test_create_packet$(EXEEXT): $(test_create_packet_OBJECTS) $(test_create_packet_DEPENDENCIES) $(EXTRA_test_create_packet_DEPENDENCIES) 
+	@rm -f test_create_packet$(EXEEXT)
+	$(AM_V_CCLD)$(test_create_packet_LINK) $(test_create_packet_OBJECTS) $(test_create_packet_LDADD) $(LIBS)
 
-amipack_parse_test$(EXEEXT): $(amipack_parse_test_OBJECTS) $(amipack_parse_test_DEPENDENCIES) $(EXTRA_amipack_parse_test_DEPENDENCIES) 
-	@rm -f amipack_parse_test$(EXEEXT)
-	$(AM_V_CCLD)$(amipack_parse_test_LINK) $(amipack_parse_test_OBJECTS) $(amipack_parse_test_LDADD) $(LIBS)
+test_pack_scan$(EXEEXT): $(test_pack_scan_OBJECTS) $(test_pack_scan_DEPENDENCIES) $(EXTRA_test_pack_scan_DEPENDENCIES) 
+	@rm -f test_pack_scan$(EXEEXT)
+	$(AM_V_CCLD)$(test_pack_scan_LINK) $(test_pack_scan_OBJECTS) $(test_pack_scan_LDADD) $(LIBS)
 
-config_test$(EXEEXT): $(config_test_OBJECTS) $(config_test_DEPENDENCIES) $(EXTRA_config_test_DEPENDENCIES) 
-	@rm -f config_test$(EXEEXT)
-	$(AM_V_CCLD)$(config_test_LINK) $(config_test_OBJECTS) $(config_test_LDADD) $(LIBS)
+test_pack_type_detect$(EXEEXT): $(test_pack_type_detect_OBJECTS) $(test_pack_type_detect_DEPENDENCIES) $(EXTRA_test_pack_type_detect_DEPENDENCIES) 
+	@rm -f test_pack_type_detect$(EXEEXT)
+	$(AM_V_CCLD)$(test_pack_type_detect_LINK) $(test_pack_type_detect_OBJECTS) $(test_pack_type_detect_LDADD) $(LIBS)
 
-pack_scan$(EXEEXT): $(pack_scan_OBJECTS) $(pack_scan_DEPENDENCIES) $(EXTRA_pack_scan_DEPENDENCIES) 
-	@rm -f pack_scan$(EXEEXT)
-	$(AM_V_CCLD)$(pack_scan_LINK) $(pack_scan_OBJECTS) $(pack_scan_LDADD) $(LIBS)
+test_parser_command$(EXEEXT): $(test_parser_command_OBJECTS) $(test_parser_command_DEPENDENCIES) $(EXTRA_test_parser_command_DEPENDENCIES) 
+	@rm -f test_parser_command$(EXEEXT)
+	$(AM_V_CCLD)$(test_parser_command_LINK) $(test_parser_command_OBJECTS) $(test_parser_command_LDADD) $(LIBS)
+
+test_parser_message$(EXEEXT): $(test_parser_message_OBJECTS) $(test_parser_message_DEPENDENCIES) $(EXTRA_test_parser_message_DEPENDENCIES) 
+	@rm -f test_parser_message$(EXEEXT)
+	$(AM_V_CCLD)$(test_parser_message_LINK) $(test_parser_message_OBJECTS) $(test_parser_message_LDADD) $(LIBS)
+
+test_parser_prompt$(EXEEXT): $(test_parser_prompt_OBJECTS) $(test_parser_prompt_DEPENDENCIES) $(EXTRA_test_parser_prompt_DEPENDENCIES) 
+	@rm -f test_parser_prompt$(EXEEXT)
+	$(AM_V_CCLD)$(test_parser_prompt_LINK) $(test_parser_prompt_OBJECTS) $(test_parser_prompt_LDADD) $(LIBS)
+
+test_parser_queue$(EXEEXT): $(test_parser_queue_OBJECTS) $(test_parser_queue_DEPENDENCIES) $(EXTRA_test_parser_queue_DEPENDENCIES) 
+	@rm -f test_parser_queue$(EXEEXT)
+	$(AM_V_CCLD)$(test_parser_queue_LINK) $(test_parser_queue_OBJECTS) $(test_parser_queue_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -572,11 +613,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/amipack_create_test-amipack_create_test.Po
-include ./$(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Po
-include ./$(DEPDIR)/amipack_parse_test-amipack_parse_test.Po
-include ./$(DEPDIR)/config_test-config_test.Po
-include ./$(DEPDIR)/pack_scan-pack_scan.Po
+include ./$(DEPDIR)/test_config-test_config.Po
+include ./$(DEPDIR)/test_create_packet-test_create_packet.Po
+include ./$(DEPDIR)/test_pack_scan-test_pack_scan.Po
+include ./$(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Po
+include ./$(DEPDIR)/test_parser_command-test_parser_command.Po
+include ./$(DEPDIR)/test_parser_message-test_parser_message.Po
+include ./$(DEPDIR)/test_parser_prompt-test_parser_prompt.Po
+include ./$(DEPDIR)/test_parser_queue-test_parser_queue.Po
 
 .c.o:
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -592,75 +636,117 @@ include ./$(DEPDIR)/pack_scan-pack_scan.Po
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-amipack_create_test-amipack_create_test.o: amipack_create_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_create_test_CFLAGS) $(CFLAGS) -MT amipack_create_test-amipack_create_test.o -MD -MP -MF $(DEPDIR)/amipack_create_test-amipack_create_test.Tpo -c -o amipack_create_test-amipack_create_test.o `test -f 'amipack_create_test.c' || echo '$(srcdir)/'`amipack_create_test.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_create_test-amipack_create_test.Tpo $(DEPDIR)/amipack_create_test-amipack_create_test.Po
-#	$(AM_V_CC)source='amipack_create_test.c' object='amipack_create_test-amipack_create_test.o' libtool=no \
+test_config-test_config.o: test_config.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test_config.o -MD -MP -MF $(DEPDIR)/test_config-test_config.Tpo -c -o test_config-test_config.o `test -f 'test_config.c' || echo '$(srcdir)/'`test_config.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_config-test_config.Tpo $(DEPDIR)/test_config-test_config.Po
+#	$(AM_V_CC)source='test_config.c' object='test_config-test_config.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_create_test_CFLAGS) $(CFLAGS) -c -o amipack_create_test-amipack_create_test.o `test -f 'amipack_create_test.c' || echo '$(srcdir)/'`amipack_create_test.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test_config.o `test -f 'test_config.c' || echo '$(srcdir)/'`test_config.c
 
-amipack_create_test-amipack_create_test.obj: amipack_create_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_create_test_CFLAGS) $(CFLAGS) -MT amipack_create_test-amipack_create_test.obj -MD -MP -MF $(DEPDIR)/amipack_create_test-amipack_create_test.Tpo -c -o amipack_create_test-amipack_create_test.obj `if test -f 'amipack_create_test.c'; then $(CYGPATH_W) 'amipack_create_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_create_test.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_create_test-amipack_create_test.Tpo $(DEPDIR)/amipack_create_test-amipack_create_test.Po
-#	$(AM_V_CC)source='amipack_create_test.c' object='amipack_create_test-amipack_create_test.obj' libtool=no \
+test_config-test_config.obj: test_config.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -MT test_config-test_config.obj -MD -MP -MF $(DEPDIR)/test_config-test_config.Tpo -c -o test_config-test_config.obj `if test -f 'test_config.c'; then $(CYGPATH_W) 'test_config.c'; else $(CYGPATH_W) '$(srcdir)/test_config.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_config-test_config.Tpo $(DEPDIR)/test_config-test_config.Po
+#	$(AM_V_CC)source='test_config.c' object='test_config-test_config.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_create_test_CFLAGS) $(CFLAGS) -c -o amipack_create_test-amipack_create_test.obj `if test -f 'amipack_create_test.c'; then $(CYGPATH_W) 'amipack_create_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_create_test.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_config_CFLAGS) $(CFLAGS) -c -o test_config-test_config.obj `if test -f 'test_config.c'; then $(CYGPATH_W) 'test_config.c'; else $(CYGPATH_W) '$(srcdir)/test_config.c'; fi`
 
-amipack_parse_queue_test-amipack_parse_queue_test.o: amipack_parse_queue_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_queue_test_CFLAGS) $(CFLAGS) -MT amipack_parse_queue_test-amipack_parse_queue_test.o -MD -MP -MF $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Tpo -c -o amipack_parse_queue_test-amipack_parse_queue_test.o `test -f 'amipack_parse_queue_test.c' || echo '$(srcdir)/'`amipack_parse_queue_test.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Tpo $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Po
-#	$(AM_V_CC)source='amipack_parse_queue_test.c' object='amipack_parse_queue_test-amipack_parse_queue_test.o' libtool=no \
+test_create_packet-test_create_packet.o: test_create_packet.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_packet_CFLAGS) $(CFLAGS) -MT test_create_packet-test_create_packet.o -MD -MP -MF $(DEPDIR)/test_create_packet-test_create_packet.Tpo -c -o test_create_packet-test_create_packet.o `test -f 'test_create_packet.c' || echo '$(srcdir)/'`test_create_packet.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_create_packet-test_create_packet.Tpo $(DEPDIR)/test_create_packet-test_create_packet.Po
+#	$(AM_V_CC)source='test_create_packet.c' object='test_create_packet-test_create_packet.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_queue_test_CFLAGS) $(CFLAGS) -c -o amipack_parse_queue_test-amipack_parse_queue_test.o `test -f 'amipack_parse_queue_test.c' || echo '$(srcdir)/'`amipack_parse_queue_test.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_packet_CFLAGS) $(CFLAGS) -c -o test_create_packet-test_create_packet.o `test -f 'test_create_packet.c' || echo '$(srcdir)/'`test_create_packet.c
 
-amipack_parse_queue_test-amipack_parse_queue_test.obj: amipack_parse_queue_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_queue_test_CFLAGS) $(CFLAGS) -MT amipack_parse_queue_test-amipack_parse_queue_test.obj -MD -MP -MF $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Tpo -c -o amipack_parse_queue_test-amipack_parse_queue_test.obj `if test -f 'amipack_parse_queue_test.c'; then $(CYGPATH_W) 'amipack_parse_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_parse_queue_test.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Tpo $(DEPDIR)/amipack_parse_queue_test-amipack_parse_queue_test.Po
-#	$(AM_V_CC)source='amipack_parse_queue_test.c' object='amipack_parse_queue_test-amipack_parse_queue_test.obj' libtool=no \
+test_create_packet-test_create_packet.obj: test_create_packet.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_packet_CFLAGS) $(CFLAGS) -MT test_create_packet-test_create_packet.obj -MD -MP -MF $(DEPDIR)/test_create_packet-test_create_packet.Tpo -c -o test_create_packet-test_create_packet.obj `if test -f 'test_create_packet.c'; then $(CYGPATH_W) 'test_create_packet.c'; else $(CYGPATH_W) '$(srcdir)/test_create_packet.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_create_packet-test_create_packet.Tpo $(DEPDIR)/test_create_packet-test_create_packet.Po
+#	$(AM_V_CC)source='test_create_packet.c' object='test_create_packet-test_create_packet.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_queue_test_CFLAGS) $(CFLAGS) -c -o amipack_parse_queue_test-amipack_parse_queue_test.obj `if test -f 'amipack_parse_queue_test.c'; then $(CYGPATH_W) 'amipack_parse_queue_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_parse_queue_test.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_create_packet_CFLAGS) $(CFLAGS) -c -o test_create_packet-test_create_packet.obj `if test -f 'test_create_packet.c'; then $(CYGPATH_W) 'test_create_packet.c'; else $(CYGPATH_W) '$(srcdir)/test_create_packet.c'; fi`
 
-amipack_parse_test-amipack_parse_test.o: amipack_parse_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_test_CFLAGS) $(CFLAGS) -MT amipack_parse_test-amipack_parse_test.o -MD -MP -MF $(DEPDIR)/amipack_parse_test-amipack_parse_test.Tpo -c -o amipack_parse_test-amipack_parse_test.o `test -f 'amipack_parse_test.c' || echo '$(srcdir)/'`amipack_parse_test.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_parse_test-amipack_parse_test.Tpo $(DEPDIR)/amipack_parse_test-amipack_parse_test.Po
-#	$(AM_V_CC)source='amipack_parse_test.c' object='amipack_parse_test-amipack_parse_test.o' libtool=no \
+test_pack_scan-test_pack_scan.o: test_pack_scan.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_scan_CFLAGS) $(CFLAGS) -MT test_pack_scan-test_pack_scan.o -MD -MP -MF $(DEPDIR)/test_pack_scan-test_pack_scan.Tpo -c -o test_pack_scan-test_pack_scan.o `test -f 'test_pack_scan.c' || echo '$(srcdir)/'`test_pack_scan.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_pack_scan-test_pack_scan.Tpo $(DEPDIR)/test_pack_scan-test_pack_scan.Po
+#	$(AM_V_CC)source='test_pack_scan.c' object='test_pack_scan-test_pack_scan.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_test_CFLAGS) $(CFLAGS) -c -o amipack_parse_test-amipack_parse_test.o `test -f 'amipack_parse_test.c' || echo '$(srcdir)/'`amipack_parse_test.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_scan_CFLAGS) $(CFLAGS) -c -o test_pack_scan-test_pack_scan.o `test -f 'test_pack_scan.c' || echo '$(srcdir)/'`test_pack_scan.c
 
-amipack_parse_test-amipack_parse_test.obj: amipack_parse_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_test_CFLAGS) $(CFLAGS) -MT amipack_parse_test-amipack_parse_test.obj -MD -MP -MF $(DEPDIR)/amipack_parse_test-amipack_parse_test.Tpo -c -o amipack_parse_test-amipack_parse_test.obj `if test -f 'amipack_parse_test.c'; then $(CYGPATH_W) 'amipack_parse_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_parse_test.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/amipack_parse_test-amipack_parse_test.Tpo $(DEPDIR)/amipack_parse_test-amipack_parse_test.Po
-#	$(AM_V_CC)source='amipack_parse_test.c' object='amipack_parse_test-amipack_parse_test.obj' libtool=no \
+test_pack_scan-test_pack_scan.obj: test_pack_scan.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_scan_CFLAGS) $(CFLAGS) -MT test_pack_scan-test_pack_scan.obj -MD -MP -MF $(DEPDIR)/test_pack_scan-test_pack_scan.Tpo -c -o test_pack_scan-test_pack_scan.obj `if test -f 'test_pack_scan.c'; then $(CYGPATH_W) 'test_pack_scan.c'; else $(CYGPATH_W) '$(srcdir)/test_pack_scan.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_pack_scan-test_pack_scan.Tpo $(DEPDIR)/test_pack_scan-test_pack_scan.Po
+#	$(AM_V_CC)source='test_pack_scan.c' object='test_pack_scan-test_pack_scan.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(amipack_parse_test_CFLAGS) $(CFLAGS) -c -o amipack_parse_test-amipack_parse_test.obj `if test -f 'amipack_parse_test.c'; then $(CYGPATH_W) 'amipack_parse_test.c'; else $(CYGPATH_W) '$(srcdir)/amipack_parse_test.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_scan_CFLAGS) $(CFLAGS) -c -o test_pack_scan-test_pack_scan.obj `if test -f 'test_pack_scan.c'; then $(CYGPATH_W) 'test_pack_scan.c'; else $(CYGPATH_W) '$(srcdir)/test_pack_scan.c'; fi`
 
-config_test-config_test.o: config_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(config_test_CFLAGS) $(CFLAGS) -MT config_test-config_test.o -MD -MP -MF $(DEPDIR)/config_test-config_test.Tpo -c -o config_test-config_test.o `test -f 'config_test.c' || echo '$(srcdir)/'`config_test.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/config_test-config_test.Tpo $(DEPDIR)/config_test-config_test.Po
-#	$(AM_V_CC)source='config_test.c' object='config_test-config_test.o' libtool=no \
+test_pack_type_detect-test_pack_type_detect.o: test_pack_type_detect.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_type_detect_CFLAGS) $(CFLAGS) -MT test_pack_type_detect-test_pack_type_detect.o -MD -MP -MF $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Tpo -c -o test_pack_type_detect-test_pack_type_detect.o `test -f 'test_pack_type_detect.c' || echo '$(srcdir)/'`test_pack_type_detect.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Tpo $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Po
+#	$(AM_V_CC)source='test_pack_type_detect.c' object='test_pack_type_detect-test_pack_type_detect.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(config_test_CFLAGS) $(CFLAGS) -c -o config_test-config_test.o `test -f 'config_test.c' || echo '$(srcdir)/'`config_test.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_type_detect_CFLAGS) $(CFLAGS) -c -o test_pack_type_detect-test_pack_type_detect.o `test -f 'test_pack_type_detect.c' || echo '$(srcdir)/'`test_pack_type_detect.c
 
-config_test-config_test.obj: config_test.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(config_test_CFLAGS) $(CFLAGS) -MT config_test-config_test.obj -MD -MP -MF $(DEPDIR)/config_test-config_test.Tpo -c -o config_test-config_test.obj `if test -f 'config_test.c'; then $(CYGPATH_W) 'config_test.c'; else $(CYGPATH_W) '$(srcdir)/config_test.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/config_test-config_test.Tpo $(DEPDIR)/config_test-config_test.Po
-#	$(AM_V_CC)source='config_test.c' object='config_test-config_test.obj' libtool=no \
+test_pack_type_detect-test_pack_type_detect.obj: test_pack_type_detect.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_type_detect_CFLAGS) $(CFLAGS) -MT test_pack_type_detect-test_pack_type_detect.obj -MD -MP -MF $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Tpo -c -o test_pack_type_detect-test_pack_type_detect.obj `if test -f 'test_pack_type_detect.c'; then $(CYGPATH_W) 'test_pack_type_detect.c'; else $(CYGPATH_W) '$(srcdir)/test_pack_type_detect.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Tpo $(DEPDIR)/test_pack_type_detect-test_pack_type_detect.Po
+#	$(AM_V_CC)source='test_pack_type_detect.c' object='test_pack_type_detect-test_pack_type_detect.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(config_test_CFLAGS) $(CFLAGS) -c -o config_test-config_test.obj `if test -f 'config_test.c'; then $(CYGPATH_W) 'config_test.c'; else $(CYGPATH_W) '$(srcdir)/config_test.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_pack_type_detect_CFLAGS) $(CFLAGS) -c -o test_pack_type_detect-test_pack_type_detect.obj `if test -f 'test_pack_type_detect.c'; then $(CYGPATH_W) 'test_pack_type_detect.c'; else $(CYGPATH_W) '$(srcdir)/test_pack_type_detect.c'; fi`
 
-pack_scan-pack_scan.o: pack_scan.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pack_scan_CFLAGS) $(CFLAGS) -MT pack_scan-pack_scan.o -MD -MP -MF $(DEPDIR)/pack_scan-pack_scan.Tpo -c -o pack_scan-pack_scan.o `test -f 'pack_scan.c' || echo '$(srcdir)/'`pack_scan.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/pack_scan-pack_scan.Tpo $(DEPDIR)/pack_scan-pack_scan.Po
-#	$(AM_V_CC)source='pack_scan.c' object='pack_scan-pack_scan.o' libtool=no \
+test_parser_command-test_parser_command.o: test_parser_command.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_command_CFLAGS) $(CFLAGS) -MT test_parser_command-test_parser_command.o -MD -MP -MF $(DEPDIR)/test_parser_command-test_parser_command.Tpo -c -o test_parser_command-test_parser_command.o `test -f 'test_parser_command.c' || echo '$(srcdir)/'`test_parser_command.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_command-test_parser_command.Tpo $(DEPDIR)/test_parser_command-test_parser_command.Po
+#	$(AM_V_CC)source='test_parser_command.c' object='test_parser_command-test_parser_command.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pack_scan_CFLAGS) $(CFLAGS) -c -o pack_scan-pack_scan.o `test -f 'pack_scan.c' || echo '$(srcdir)/'`pack_scan.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_command_CFLAGS) $(CFLAGS) -c -o test_parser_command-test_parser_command.o `test -f 'test_parser_command.c' || echo '$(srcdir)/'`test_parser_command.c
 
-pack_scan-pack_scan.obj: pack_scan.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pack_scan_CFLAGS) $(CFLAGS) -MT pack_scan-pack_scan.obj -MD -MP -MF $(DEPDIR)/pack_scan-pack_scan.Tpo -c -o pack_scan-pack_scan.obj `if test -f 'pack_scan.c'; then $(CYGPATH_W) 'pack_scan.c'; else $(CYGPATH_W) '$(srcdir)/pack_scan.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/pack_scan-pack_scan.Tpo $(DEPDIR)/pack_scan-pack_scan.Po
-#	$(AM_V_CC)source='pack_scan.c' object='pack_scan-pack_scan.obj' libtool=no \
+test_parser_command-test_parser_command.obj: test_parser_command.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_command_CFLAGS) $(CFLAGS) -MT test_parser_command-test_parser_command.obj -MD -MP -MF $(DEPDIR)/test_parser_command-test_parser_command.Tpo -c -o test_parser_command-test_parser_command.obj `if test -f 'test_parser_command.c'; then $(CYGPATH_W) 'test_parser_command.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_command.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_command-test_parser_command.Tpo $(DEPDIR)/test_parser_command-test_parser_command.Po
+#	$(AM_V_CC)source='test_parser_command.c' object='test_parser_command-test_parser_command.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pack_scan_CFLAGS) $(CFLAGS) -c -o pack_scan-pack_scan.obj `if test -f 'pack_scan.c'; then $(CYGPATH_W) 'pack_scan.c'; else $(CYGPATH_W) '$(srcdir)/pack_scan.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_command_CFLAGS) $(CFLAGS) -c -o test_parser_command-test_parser_command.obj `if test -f 'test_parser_command.c'; then $(CYGPATH_W) 'test_parser_command.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_command.c'; fi`
+
+test_parser_message-test_parser_message.o: test_parser_message.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_message_CFLAGS) $(CFLAGS) -MT test_parser_message-test_parser_message.o -MD -MP -MF $(DEPDIR)/test_parser_message-test_parser_message.Tpo -c -o test_parser_message-test_parser_message.o `test -f 'test_parser_message.c' || echo '$(srcdir)/'`test_parser_message.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_message-test_parser_message.Tpo $(DEPDIR)/test_parser_message-test_parser_message.Po
+#	$(AM_V_CC)source='test_parser_message.c' object='test_parser_message-test_parser_message.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_message_CFLAGS) $(CFLAGS) -c -o test_parser_message-test_parser_message.o `test -f 'test_parser_message.c' || echo '$(srcdir)/'`test_parser_message.c
+
+test_parser_message-test_parser_message.obj: test_parser_message.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_message_CFLAGS) $(CFLAGS) -MT test_parser_message-test_parser_message.obj -MD -MP -MF $(DEPDIR)/test_parser_message-test_parser_message.Tpo -c -o test_parser_message-test_parser_message.obj `if test -f 'test_parser_message.c'; then $(CYGPATH_W) 'test_parser_message.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_message.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_message-test_parser_message.Tpo $(DEPDIR)/test_parser_message-test_parser_message.Po
+#	$(AM_V_CC)source='test_parser_message.c' object='test_parser_message-test_parser_message.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_message_CFLAGS) $(CFLAGS) -c -o test_parser_message-test_parser_message.obj `if test -f 'test_parser_message.c'; then $(CYGPATH_W) 'test_parser_message.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_message.c'; fi`
+
+test_parser_prompt-test_parser_prompt.o: test_parser_prompt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_prompt_CFLAGS) $(CFLAGS) -MT test_parser_prompt-test_parser_prompt.o -MD -MP -MF $(DEPDIR)/test_parser_prompt-test_parser_prompt.Tpo -c -o test_parser_prompt-test_parser_prompt.o `test -f 'test_parser_prompt.c' || echo '$(srcdir)/'`test_parser_prompt.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_prompt-test_parser_prompt.Tpo $(DEPDIR)/test_parser_prompt-test_parser_prompt.Po
+#	$(AM_V_CC)source='test_parser_prompt.c' object='test_parser_prompt-test_parser_prompt.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_prompt_CFLAGS) $(CFLAGS) -c -o test_parser_prompt-test_parser_prompt.o `test -f 'test_parser_prompt.c' || echo '$(srcdir)/'`test_parser_prompt.c
+
+test_parser_prompt-test_parser_prompt.obj: test_parser_prompt.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_prompt_CFLAGS) $(CFLAGS) -MT test_parser_prompt-test_parser_prompt.obj -MD -MP -MF $(DEPDIR)/test_parser_prompt-test_parser_prompt.Tpo -c -o test_parser_prompt-test_parser_prompt.obj `if test -f 'test_parser_prompt.c'; then $(CYGPATH_W) 'test_parser_prompt.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_prompt.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_prompt-test_parser_prompt.Tpo $(DEPDIR)/test_parser_prompt-test_parser_prompt.Po
+#	$(AM_V_CC)source='test_parser_prompt.c' object='test_parser_prompt-test_parser_prompt.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_prompt_CFLAGS) $(CFLAGS) -c -o test_parser_prompt-test_parser_prompt.obj `if test -f 'test_parser_prompt.c'; then $(CYGPATH_W) 'test_parser_prompt.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_prompt.c'; fi`
+
+test_parser_queue-test_parser_queue.o: test_parser_queue.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_queue_CFLAGS) $(CFLAGS) -MT test_parser_queue-test_parser_queue.o -MD -MP -MF $(DEPDIR)/test_parser_queue-test_parser_queue.Tpo -c -o test_parser_queue-test_parser_queue.o `test -f 'test_parser_queue.c' || echo '$(srcdir)/'`test_parser_queue.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_queue-test_parser_queue.Tpo $(DEPDIR)/test_parser_queue-test_parser_queue.Po
+#	$(AM_V_CC)source='test_parser_queue.c' object='test_parser_queue-test_parser_queue.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_queue_CFLAGS) $(CFLAGS) -c -o test_parser_queue-test_parser_queue.o `test -f 'test_parser_queue.c' || echo '$(srcdir)/'`test_parser_queue.c
+
+test_parser_queue-test_parser_queue.obj: test_parser_queue.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_queue_CFLAGS) $(CFLAGS) -MT test_parser_queue-test_parser_queue.obj -MD -MP -MF $(DEPDIR)/test_parser_queue-test_parser_queue.Tpo -c -o test_parser_queue-test_parser_queue.obj `if test -f 'test_parser_queue.c'; then $(CYGPATH_W) 'test_parser_queue.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_queue.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/test_parser_queue-test_parser_queue.Tpo $(DEPDIR)/test_parser_queue-test_parser_queue.Po
+#	$(AM_V_CC)source='test_parser_queue.c' object='test_parser_queue-test_parser_queue.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_parser_queue_CFLAGS) $(CFLAGS) -c -o test_parser_queue-test_parser_queue.obj `if test -f 'test_parser_queue.c'; then $(CYGPATH_W) 'test_parser_queue.c'; else $(CYGPATH_W) '$(srcdir)/test_parser_queue.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -855,37 +941,58 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-config_test.log: config_test$(EXEEXT)
-	@p='config_test$(EXEEXT)'; \
-	b='config_test'; \
+test_config.log: test_config$(EXEEXT)
+	@p='test_config$(EXEEXT)'; \
+	b='test_config'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-pack_scan.log: pack_scan$(EXEEXT)
-	@p='pack_scan$(EXEEXT)'; \
-	b='pack_scan'; \
+test_pack_scan.log: test_pack_scan$(EXEEXT)
+	@p='test_pack_scan$(EXEEXT)'; \
+	b='test_pack_scan'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-amipack_create_test.log: amipack_create_test$(EXEEXT)
-	@p='amipack_create_test$(EXEEXT)'; \
-	b='amipack_create_test'; \
+test_create_packet.log: test_create_packet$(EXEEXT)
+	@p='test_create_packet$(EXEEXT)'; \
+	b='test_create_packet'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-amipack_parse_test.log: amipack_parse_test$(EXEEXT)
-	@p='amipack_parse_test$(EXEEXT)'; \
-	b='amipack_parse_test'; \
+test_pack_type_detect.log: test_pack_type_detect$(EXEEXT)
+	@p='test_pack_type_detect$(EXEEXT)'; \
+	b='test_pack_type_detect'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-amipack_parse_queue_test.log: amipack_parse_queue_test$(EXEEXT)
-	@p='amipack_parse_queue_test$(EXEEXT)'; \
-	b='amipack_parse_queue_test'; \
+test_parser_prompt.log: test_parser_prompt$(EXEEXT)
+	@p='test_parser_prompt$(EXEEXT)'; \
+	b='test_parser_prompt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_parser_message.log: test_parser_message$(EXEEXT)
+	@p='test_parser_message$(EXEEXT)'; \
+	b='test_parser_message'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_parser_command.log: test_parser_command$(EXEEXT)
+	@p='test_parser_command$(EXEEXT)'; \
+	b='test_parser_command'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_parser_queue.log: test_parser_queue$(EXEEXT)
+	@p='test_parser_queue$(EXEEXT)'; \
+	b='test_parser_queue'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

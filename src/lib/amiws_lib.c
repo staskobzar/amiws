@@ -130,7 +130,8 @@ void ami_ev_handler(struct mg_connection *nc,
 
     case MG_EV_RECV:
 
-      if ( amiparse_prompt(io->buf, &conn->ami_ver) == 1 ) {
+      if ( amipack_parser_detect(io->buf) == AMI_PROMPT &&
+           amipack_parser_prompt(io->buf, &conn->ami_ver) == 1 ) {
 
         syslog (LOG_INFO, "AMI version: %d.%d.%d", conn->ami_ver.major,
             conn->ami_ver.minor, conn->ami_ver.patch);
@@ -167,55 +168,69 @@ void ami_ev_handler(struct mg_connection *nc,
 
 char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
 {
-  AMIPacket *ami_pack;
   char    *buf          = (char *) malloc(BUFSIZE);
   struct  json_out out  = JSON_OUT_BUF(buf, BUFSIZE);
 
-  if ( (ami_pack = amiparse_pack(ami_pack_str)) == NULL ) {
-    syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
-    return NULL;
-  }
-  if (ami_pack->type == AMI_UNKNOWN) {
-    amipack_destroy(ami_pack);
-    syslog (LOG_ERR, "Invalid packet: %s", ami_pack_str);
-    return NULL;
-  }
-
-  if (auth_fail(ami_pack)) {
-    syslog (LOG_ERR, "Authentication failed.");
-  }
+  enum pack_type type = amipack_parser_detect(ami_pack_str);
 
   json_printf(&out,
       "{ type: %d, server_id: %d, server_name: %Q, ssl: %B, data: {",
-      ami_pack->type, conn->id, conn->name, conn->is_ssl);
+      type, conn->id, conn->name, conn->is_ssl);
 
-  if (ami_pack->type == AMI_QUEUES) {
-    AMIQueue *queue = ami_pack->queue;
-    json_printf(&out, "QueueName: %Q,", queue->name);
-    json_printf(&out, "Calls: %d,", queue->calls);
-    json_printf(&out, "Maxlen: %d,", queue->maxlen);
-    json_printf(&out, "Strategy: %Q,", queue->strategy);
-    json_printf(&out, "Holdtime: %d,", queue->holdtime);
-    json_printf(&out, "Talktime: %d,", queue->talktime);
-    json_printf(&out, "Weight: %d,", queue->weight);
-    json_printf(&out, "CallsCompleted: %d,", queue->callscompleted);
-    json_printf(&out, "CallsAbandoned: %d,", queue->callsabandoned);
-    json_printf(&out, "ServiceLevel: %Q,", queue->sl);
-    json_printf(&out, "ServiceLevelPeriod: %d,", queue->sl_sec);
-    json_printf(&out, "MembersCount: %d,", queue->members_size);
-    json_printf(&out, "CallersCount: %d", queue->callers_size);
-  } else {
-    for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
-      json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
-      if (hdr != ami_pack->tail) {
-        json_printf(&out, ",");
+  switch(type)
+  {
+    case AMI_ACTION:
+    case AMI_EVENT:
+    case AMI_RESPONSE:
+    case AMI_RESPCMD: {
+      AMIPacket *ami_pack;
+      if ((ami_pack = amipack_parser_message(ami_pack_str)) == NULL) {
+        syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
+        return NULL;
       }
+      if (auth_fail(ami_pack)) {
+        syslog (LOG_ERR, "Authentication failed.");
+      }
+      for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
+        json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
+        if (hdr != ami_pack->tail) {
+          json_printf(&out, ",");
+        }
+      }
+      json_printf(&out, "}}", 1);
+      amipack_destroy(ami_pack);
+      break;
     }
+
+    case AMI_QUEUE: {
+      AMIQueue *queue;
+      if ((queue = amipack_parser_queue(ami_pack_str)) == NULL) {
+        syslog (LOG_ERR, "Failed to parse queue: %s", ami_pack_str);
+        return NULL;
+      }
+      json_printf(&out, "QueueName: %Q,", queue->name);
+      json_printf(&out, "Calls: %d,", queue->calls);
+      json_printf(&out, "Maxlen: %d,", queue->maxlen);
+      json_printf(&out, "Strategy: %Q,", queue->strategy);
+      json_printf(&out, "Holdtime: %d,", queue->holdtime);
+      json_printf(&out, "Talktime: %d,", queue->talktime);
+      json_printf(&out, "Weight: %d,", queue->weight);
+      json_printf(&out, "CallsCompleted: %d,", queue->callscompleted);
+      json_printf(&out, "CallsAbandoned: %d,", queue->callsabandoned);
+      json_printf(&out, "ServiceLevel: %Q,", queue->sl);
+      json_printf(&out, "ServiceLevelPeriod: %d,", queue->sl_sec);
+      json_printf(&out, "MembersCount: %d,", queue->members_size);
+      json_printf(&out, "CallersCount: %d", queue->callers_size);
+      json_printf(&out, "}}", 1);
+      amipack_queue_destroy(queue);
+      break;
+    }
+    default:
+      syslog (LOG_ERR, "Unknown AMI packet:\n%s", ami_pack_str);
+      if (buf) free(buf);
+      return NULL;
+      break;
   }
-
-  json_printf(&out, "}}", 1);
-
-  amipack_destroy(ami_pack);
 
   return buf;
 }

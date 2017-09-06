@@ -33,9 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define QUEUE_LIST_LEN 64
-#define QUEUE_ITEM_LEN 512
-
 /*!
  * Return length of the packet as string representation.
  * All headers length + CRLF stanza (2 bytes)
@@ -53,7 +50,13 @@
 
 /*! AMI packet types. */
 enum pack_type {
-  AMI_UNKNOWN, AMI_PROMPT, AMI_ACTION, AMI_EVENT, AMI_RESPONSE, AMI_QUEUES
+  AMI_UNKNOWN,
+  AMI_PROMPT,
+  AMI_ACTION,
+  AMI_EVENT,
+  AMI_RESPONSE,
+  AMI_RESPCMD,
+  AMI_QUEUE
 };
 
 /*!
@@ -114,8 +117,6 @@ typedef struct AMIPacket_ {
   AMIHeader       *head;  /*!< Linked list head pointer to AMI header. */
   AMIHeader       *tail;  /*!< Linked list tail pointer to AMI header. */
 
-  AMIQueue        *queue; /*!< Queues response structure. */
-
 } AMIPacket;
 
 /**
@@ -126,22 +127,22 @@ typedef struct AMIPacket_ {
 AMIPacket *amipack_init();
 
 /**
+ * Destroy AMI packet and free memory.
+ * @param pack    AMI header to destroy
+ */
+void amipack_destroy(AMIPacket *pack);
+
+/**
  * Initiate Queue member
  * @return AMIQueue pointer to the new structure
  */
-static AMIQueue *amipack_queue_init();
+AMIQueue *amipack_queue_init();
 
 /**
  * Destroy Queue structrue.
  * @param pack    AMI header to destroy
  */
-static void amipack_queue_destroy(AMIQueue *queue);
-
-/**
- * Destroy AMI packet and free memory.
- * @param pack    AMI header to destroy
- */
-void amipack_destroy(AMIPacket *pack);
+void amipack_queue_destroy(AMIQueue *queue);
 
 /**
  * Create new AMI header with given parameters.
@@ -211,6 +212,13 @@ int amipack_list_append (AMIPacket *pack, AMIHeader *header);
 size_t amiheader_find(AMIPacket *pack, const char *name, char **value);
 
 /**
+ * Detect AMI packet type.
+ * @param packet    Packet received from server as bytes array.
+ * @return packet type
+ */
+enum pack_type amipack_parser_detect (const char *packet);
+
+/**
  * Parse AMI protocol prompt string when user logged in.
  * Will set AMIver structure with parsed server AMI version.
  * Prompt header example: Asterisk Call Manager/1.1
@@ -218,14 +226,27 @@ size_t amiheader_find(AMIPacket *pack, const char *name, char **value);
  * @param version   AMIVer struct will be set when packet parsed
  * @return 1 on success or 0 on fail
  */
-int amiparse_prompt (const char *packet, AMIVer *version);
-
+int amipack_parser_prompt (const char *packet, AMIVer *version);
 
 /**
  * Parse AMI packet to AMIPacket structure.
  * @param pack_str  Bytes array received from server.
  * @return AMIPacket pointer or NULL if AMI packet failed to parse.
  */
-AMIPacket *amiparse_pack (const char *pack_str);
+AMIPacket *amipack_parser_message (const char *pack_str);
+
+/**
+ * Parse AMI Response for Command.
+ * @param packet    Packet received from server as bytes array.
+ * @return AMIPacket pointer or NULL if AMI packet failed to parse.
+ */
+AMIPacket *amipack_parser_command (const char *packet);
+
+/**
+ * Parse AMI Queue Action response.
+ * @param packet    Packet received from server as bytes array.
+ * @return packet type
+ */
+AMIQueue *amipack_parser_queue (const char *packet);
 
 #endif

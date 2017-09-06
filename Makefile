@@ -200,15 +200,15 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /Users/stas/dev/amiws/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_CPPFLAGS = 
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/stas/dev/amiws/missing autoconf
-AUTOHEADER = ${SHELL} /Users/stas/dev/amiws/missing autoheader
-AUTOMAKE = ${SHELL} /Users/stas/dev/amiws/missing automake-1.15
-AWK = awk
+AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
+AUTOHEADER = ${SHELL} /home/stas/Dev/amiws/missing autoheader
+AUTOMAKE = ${SHELL} /home/stas/Dev/amiws/missing automake-1.15
+AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
@@ -217,13 +217,13 @@ CPPFLAGS =
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-GREP = /usr/bin/grep
-INSTALL = /usr/local/bin/ginstall -c
+GREP = /bin/grep
+INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
@@ -232,8 +232,8 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lyaml 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /Users/stas/dev/amiws/missing makeinfo
-MKDIR_P = /usr/local/bin/gmkdir -p
+MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
+MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = amiws
 PACKAGE_BUGREPORT = staskobzar@gmail.com
@@ -245,13 +245,13 @@ PACKAGE_VERSION = 1.0.0
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 1.0.0
-abs_builddir = /Users/stas/dev/amiws
-abs_srcdir = /Users/stas/dev/amiws
-abs_top_builddir = /Users/stas/dev/amiws
-abs_top_srcdir = /Users/stas/dev/amiws
+abs_builddir = /home/stas/Dev/amiws
+abs_srcdir = /home/stas/Dev/amiws
+abs_top_builddir = /home/stas/Dev/amiws
+abs_top_srcdir = /home/stas/Dev/amiws
 ac_ct_AR = ar
 ac_ct_CC = gcc
 am__include = include
@@ -271,7 +271,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/stas/dev/amiws/install-sh
+install_sh = ${SHELL} /home/stas/Dev/amiws/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -767,15 +767,31 @@ uninstall-am:
 
 
 .PHONY: parser doc
-parser: src/lib/amipack_parse.c src/lib/amipack_parse_prompt.c
+parser: src/lib/amipack_parser_detect.c   \
+        src/lib/amipack_parser_prompt.c   \
+        src/lib/amipack_parser_message.c  \
+        src/lib/amipack_parser_command.c  \
+        src/lib/amipack_parser_queue.c
 
-src/lib/amipack_parse_prompt.c: src/lib/amipack_parse_prompt.re
-	@echo "== Generating AMI prompt parser with re2c"
-	re2c --no-generation-date -c -o $@ $^
+src/lib/amipack_parser_detect.c: src/lib/amipack_parser_detect.re
+	@echo "Generating AMI packet detect parser with re2c..."
+	@re2c --no-generation-date -o $@ $^
 
-src/lib/amipack_parse.c: src/lib/amipack_parse.re
-	@echo "== Generating AMI parser with re2c"
-	re2c --no-generation-date --tags -c -o $@ $^
+src/lib/amipack_parser_prompt.c: src/lib/amipack_parser_prompt.re
+	@echo "Generating AMI Prompt parser with re2c"
+	@re2c --no-generation-date -c -o $@ $^
+
+src/lib/amipack_parser_message.c: src/lib/amipack_parser_message.re
+	@echo "Generating AMI Standard message parser with re2c"
+	@re2c --no-generation-date --tags -o $@ $^
+
+src/lib/amipack_parser_command.c: src/lib/amipack_parser_command.re
+	@echo "Generating AMI Command output parser with re2c"
+	@re2c --no-generation-date --tags -o $@ $^
+
+src/lib/amipack_parser_queue.c: src/lib/amipack_parser_queue.re
+	@echo "Generating AMI Queue output parser with re2c"
+	@re2c --no-generation-date -c --tags -o $@ $^
 
 doc:
 	cd doc && doxygen

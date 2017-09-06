@@ -99,10 +99,13 @@ confesSfsP/
 Gemfile.lock
 test/site.exp
 test/test.sh
-test/config_test
-test/pack_scan
-test/amipack_create_test
-test/amipack_parse_test
-test/amipack_parse_queue_test
+test/test_config
+test/test_create_packet
+test/test_pack_scan
+test/test_pack_type_detect
+test/test_parser_command
+test/test_parser_message
+test/test_parser_prompt
+
 src/amiws
 

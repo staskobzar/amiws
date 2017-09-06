@@ -19,7 +19,7 @@
  */
 
 /**
- * @file amipack_parse_prompt.c
+ * @file amipack_parser_prompt.c
  * @brief AMI (Asterisk Management Interface) prompt packet parser.
  *
  * @author Stas Kobzar <stas.kobzar@modulis.ca>
@@ -36,7 +36,7 @@ enum yycond_prompt {
   yycmajor,
 };
 
-int amiparse_prompt (const char *packet, AMIVer *ver)
+int amipack_parser_prompt (const char *packet, AMIVer *ver)
 {
   // init version structure
   ver->major = 0;

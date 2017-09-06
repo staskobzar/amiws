@@ -218,6 +218,8 @@ void free_conf(struct amiws_config *conf);
 
 /* private methods */
 
+static void recv_callback(struct mbuf *io, struct amiws_conn *conn, struct mg_connection *nc);
+
 static void read_buffer(struct mbuf *io, struct mg_connection *nc);
 
 static void set_conf_param(struct amiws_config *conf, char *key, char *value);

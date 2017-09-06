@@ -32,7 +32,13 @@
 #include "amipack.h"
 
 static const char *pack_type_name[] = {
-  "AMI_UNKNOWN", "AMI_PROMPT", "AMI_ACTION", "AMI_EVENT", "AMI_RESPONSE", "AMI_QUEUES"
+  "AMI_UNKNOWN",
+  "AMI_PROMPT",
+  "AMI_ACTION",
+  "AMI_EVENT",
+  "AMI_RESPONSE",
+  "AMI_RESPCMD",
+  "AMI_QUEUE"
 };
 
 
@@ -45,13 +51,10 @@ AMIPacket *amipack_init()
   pack->head = NULL;
   pack->tail = NULL;
 
-  // queues
-  pack->queue = amipack_queue_init();
-
   return pack;
 }
 
-static AMIQueue *amipack_queue_init()
+AMIQueue *amipack_queue_init()
 {
   AMIQueue *queue = (AMIQueue*) malloc(sizeof(AMIQueue));
   assert (queue != NULL && "Failed to allocate memory for queue");
@@ -72,7 +75,7 @@ static AMIQueue *amipack_queue_init()
   return queue;
 }
 
-static void amipack_queue_destroy(AMIQueue *queue)
+void amipack_queue_destroy(AMIQueue *queue)
 {
     if (queue->name) free(queue->name);
     if (queue->strategy) free(queue->strategy);
@@ -123,12 +126,6 @@ void amipack_destroy (AMIPacket *pack)
 
     hnext = hdr->next;
     amiheader_destroy (hdr);
-
-  }
-
-  if (pack->queue) {
-
-    amipack_queue_destroy(pack->queue);
 
   }
 
