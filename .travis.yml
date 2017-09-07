@@ -11,4 +11,5 @@ before_install:
 script: ./bootstrap && ./configure --with-ssl CFLAGS='-coverage -O0' && make && make check
 
 after_success:
+  - rm src/lib/frozen.gc* src/lib/mongoose.gc*
   - bash <(curl -s https://codecov.io/bash)

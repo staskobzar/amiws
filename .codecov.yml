@@ -3,6 +3,9 @@ codecov:
 
 coverage:
   ignore:
-    - "test/*"
+    - "test*"
     - "src/lib/mongoose.*"
     - "src/lib/frozen.*"
+    - "src/lib/amipack_parser_detect.c"
+    - "amiws_lib.c"
+    - "src/lib/amiws_lib.c"
