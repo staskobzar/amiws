@@ -12,4 +12,4 @@ script: ./bootstrap && ./configure --with-ssl CFLAGS='-coverage -O0' && make && 
 
 after_success:
   - rm src/lib/frozen.gc* src/lib/mongoose.gc*
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -f '!./amiws_lib.c.gcov' -f '!./test_*' -f '!./src#lib#amipack_parser_*.c.gcov'
