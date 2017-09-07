@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/staskobzar/amiws.svg?branch=master)](https://travis-ci.org/staskobzar/amiws)
 ![](https://img.shields.io/badge/license-GPL_3-green.svg "License")
+[![codecov](https://codecov.io/gh/staskobzar/amiws/branch/master/graph/badge.svg)](https://codecov.io/gh/staskobzar/amiws)
 
 
 ### Introduction
@@ -127,6 +128,8 @@ _AMI message types_:
 - 2 - Action
 - 3 - Event
 - 4 - Response
+- 5 - Respons with command output
+- 6 - Queues list. AMI returns queues list not as AMI packet but as a text (like command: queue show). That's why here is special type.
 
 AMI description in details can be found in [Asterisk wiki](https://wiki.asterisk.org/wiki/display/AST/Home).
 

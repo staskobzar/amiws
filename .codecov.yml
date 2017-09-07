@@ -1,0 +1,8 @@
+codecov:
+  token: d1beb134-bedf-43b9-b5e5-ebd3abed9917
+
+coverage:
+  ignore:
+    - "test/*"
+    - "src/lib/mongoose.*"
+    - "src/lib/frozen.*"

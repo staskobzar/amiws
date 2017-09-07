@@ -8,4 +8,7 @@ before_install:
   - sudo apt-get install cmake -y
   - bash .travis-install-cmocka.sh
 
-script: ./bootstrap && ./configure --with-ssl && make && make check
+script: ./bootstrap && ./configure --with-ssl CFLAGS='-coverage -O0' && make && make check
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
