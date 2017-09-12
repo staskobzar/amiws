@@ -166,10 +166,11 @@ void ami_ev_handler(struct mg_connection *nc,
 }
 
 
-char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
+char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn)
 {
-  char    *buf          = (char *) malloc(BUFSIZE);
-  struct  json_out out  = JSON_OUT_BUF(buf, BUFSIZE);
+  int buflen = len * 2; // long enough for JSON wrapping to quotes and parentheses
+  char    *buf          = (char *) malloc(buflen);
+  struct  json_out out  = JSON_OUT_BUF(buf, buflen);
 
   enum pack_type type = amipack_parser_detect(ami_pack_str);
 
@@ -181,8 +182,7 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
   {
     case AMI_ACTION:
     case AMI_EVENT:
-    case AMI_RESPONSE:
-    case AMI_RESPCMD: {
+    case AMI_RESPONSE: {
       AMIPacket *ami_pack;
       if ((ami_pack = amipack_parser_message(ami_pack_str)) == NULL) {
         syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
@@ -191,6 +191,24 @@ char *amipack_to_json(const char *ami_pack_str, struct amiws_conn *conn)
       if (auth_fail(ami_pack)) {
         syslog (LOG_ERR, "Authentication failed.");
       }
+      for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
+        json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
+        if (hdr != ami_pack->tail) {
+          json_printf(&out, ",");
+        }
+      }
+      json_printf(&out, "}}", 1);
+      amipack_destroy(ami_pack);
+      break;
+    }
+
+    case AMI_RESPCMD: {
+      AMIPacket *ami_pack;
+      if ((ami_pack = amipack_parser_command(ami_pack_str)) == NULL) {
+        syslog (LOG_ERR, "Failed to parse command response: %s", ami_pack_str);
+        return NULL;
+      }
+      syslog (LOG_DEBUG, "AMI Command Response.");
       for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
         json_printf(&out, "%Q: %Q", hdr->name, hdr->value);
         if (hdr != ami_pack->tail) {
@@ -398,8 +416,8 @@ static void read_buffer(struct mbuf *io, struct mg_connection *nc)
       break;
     }
 
-    buf = strndup(io->buf, len);
-    json = amipack_to_json(buf, conn);
+    buf = strndup(io->buf, io->len);
+    json = amipack_to_json(buf, io->len, conn);
     if (json != NULL) {
       syslog (LOG_DEBUG, "JSON STRING: %s", json);
       websock_send (nc, json);
@@ -430,7 +448,6 @@ static void send_ami_action(struct websocket_message *wm,
   char *p_str = NULL;
   size_t len;
   struct mg_connection *c;
-  char buf[BUFSIZE] = "";
   AMIPacket *pack = (AMIPacket *) amipack_init ();
 
   if(json_walk((const char*)wm->data, wm->size, json_scan_cb, (void*)pack) < (int)wm->size ){

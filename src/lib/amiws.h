@@ -51,7 +51,7 @@
 /*! Polling interval. */
 #define POLL_SLEEP 1000
 /*! Buffer for JSON strings. */
-#define BUFSIZE 1024 * 4
+#define BUFSIZE 1024 * 32
 
 /*! Convert string to int */
 #define intval(val) str2int(val, strlen(val))
@@ -189,10 +189,11 @@ void ami_login(struct mg_connection *nc, struct amiws_conn *conn);
 /**
  * Convert AMI packet to JSON string.
  * @param buf     AMI packet stream as received from connection
+ * @param len     Buffer size
  * @param conn    AMI connection.
  * @return JSON string
  */
-char *amipack_to_json(const char *buf, struct amiws_conn *conn);
+char *amipack_to_json(const char *buf, int len, struct amiws_conn *conn);
 
 /**
  * Read YAML configuration file.

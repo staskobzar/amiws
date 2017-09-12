@@ -5,6 +5,27 @@
 
 #include "amipack.h"
 
+static void parse_command_show_hints (void **state)
+{
+  (void)*state;
+  AMIPacket *pack;
+  size_t len;
+  char *hv; // header value
+  enum pack_type type;
+
+  const char str_pack[] = "Response: Follows\r\n"
+                          "Privilege: Command\r\n"
+                          "There are no registered dialplan hints\n"
+                          "--END COMMAND--\r\n\r\n";
+  type = amipack_parser_detect(str_pack);
+  assert_int_equal (AMI_RESPCMD, type);
+  pack = amipack_parser_command (str_pack);
+  len = amiheader_find(pack, "Privilege", &hv);
+  assert_string_equal(hv, "Command");
+
+  amipack_destroy (pack);
+}
+
 static void parse_pack_command_output (void **state)
 {
   (void)*state;
@@ -74,6 +95,7 @@ static void parse_pack_command_output_v2 (void **state)
 int main(void)
 {
   const struct CMUnitTest tests[] = {
+    cmocka_unit_test (parse_command_show_hints),
     cmocka_unit_test (parse_pack_command_output),
     cmocka_unit_test (parse_pack_command_output_v2),
   };
