@@ -1,7 +1,6 @@
 LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
 
-#TESTS = config_test pack_scan amipack_create_test amipack_parse_test amipack_parse_queue_test
 TESTS = test_config test_pack_scan   \
         test_create_packet           \
         test_pack_type_detect        \
@@ -10,7 +9,6 @@ TESTS = test_config test_pack_scan   \
         test_parser_command          \
         test_parser_queue
 
-#check_PROGRAMS = config_test pack_scan amipack_create_test amipack_parse_test amipack_parse_queue_test
 check_PROGRAMS = test_config test_pack_scan   \
                  test_create_packet           \
                  test_pack_type_detect        \
