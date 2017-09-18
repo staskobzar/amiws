@@ -421,7 +421,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp \
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CPPFLAGS = 
+AM_CPPFLAGS = -DMG_ENABLE_SSL
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
@@ -449,7 +449,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lyaml 
+LIBS = -lssl -lcrypto -lyaml 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -516,7 +516,7 @@ LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
 
 test_config_SOURCE = test_config.c
 test_config_CFLAGS = -I$(top_builddir)/src/lib
-test_config_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
+test_config_LDADD = -L$(top_builddir)/src/lib -lamiws -lamiwscfg -lcmocka
 test_pack_scan_SOURCE = test_pack_scan.c
 test_pack_scan_CFLAGS = -I$(top_builddir)/src/lib
 test_pack_scan_LDADD = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka

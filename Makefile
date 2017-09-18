@@ -202,7 +202,7 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CPPFLAGS = 
+AM_CPPFLAGS = -DMG_ENABLE_SSL
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
@@ -230,7 +230,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lyaml 
+LIBS = -lssl -lcrypto -lyaml 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -771,7 +771,8 @@ parser: src/lib/amipack_parser_detect.c   \
         src/lib/amipack_parser_prompt.c   \
         src/lib/amipack_parser_message.c  \
         src/lib/amipack_parser_command.c  \
-        src/lib/amipack_parser_queue.c
+        src/lib/amipack_parser_queue.c		\
+				src/lib/config_parser.c
 
 src/lib/amipack_parser_detect.c: src/lib/amipack_parser_detect.re
 	@echo "Generating AMI packet detect parser with re2c..."
@@ -792,6 +793,10 @@ src/lib/amipack_parser_command.c: src/lib/amipack_parser_command.re
 src/lib/amipack_parser_queue.c: src/lib/amipack_parser_queue.re
 	@echo "Generating AMI Queue output parser with re2c"
 	@re2c --no-generation-date -c --tags -o $@ $^
+
+src/lib/config_parser.c: src/lib/config_parser.y
+	@echo "Generating config file parser"
+	@lemon $^
 
 doc:
 	cd doc && doxygen

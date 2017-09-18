@@ -70,6 +70,8 @@ static void config_file_with_multiple_hosts(void **state)
   assert_string_equal(conn->username, "asterisk");
   assert_string_equal(conn->secret, "pass003");
   assert_int_equal(conn->id, 3);
+
+  //free_conf(conf);
 }
 
 static void config_file_test_default_vals(void **state)

@@ -208,7 +208,7 @@ am__relativize = \
   reldir="$$dir2"
 ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CPPFLAGS = 
+AM_CPPFLAGS = -DMG_ENABLE_SSL
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
@@ -236,7 +236,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lyaml 
+LIBS = -lssl -lcrypto -lyaml 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -302,7 +302,7 @@ SUBDIRS = lib
 AM_CFLAGS = -Ilib
 amiws_SOURCES = amiws.c
 amiws_CFLAGS = -Ilib
-amiws_LDADD = -Llib -lamiws -lmongoose -lfrozen -lamipack
+amiws_LDADD = -Llib -lamiws -lmongoose -lfrozen -lamipack -lamiwscfg
 all: all-recursive
 
 .SUFFIXES:

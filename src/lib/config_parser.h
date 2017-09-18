@@ -1,0 +1,9 @@
+#define STREAM_START                     1
+#define STREAM_END                       2
+#define BLOCK_MAPPING_START              3
+#define BLOCK_END                        4
+#define KEY                              5
+#define SCALAR                           6
+#define VALUE                            7
+#define BLOCK_SEQUENCE_START             8
+#define BLOCK_ENTRY                      9

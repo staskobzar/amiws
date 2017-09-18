@@ -19,7 +19,7 @@ check_PROGRAMS = test_config test_pack_scan   \
 
 test_config_SOURCE = test_config.c
 test_config_CFLAGS = -I$(top_builddir)/src/lib
-test_config_LDADD  = -L$(top_builddir)/src/lib -lamiws -lamipack -lmongoose -lfrozen -lcmocka
+test_config_LDADD  = -L$(top_builddir)/src/lib -lamiws -lamiwscfg -lcmocka
 
 test_pack_scan_SOURCE = test_pack_scan.c
 test_pack_scan_CFLAGS = -I$(top_builddir)/src/lib

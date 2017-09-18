@@ -115,6 +115,10 @@ libamiws_a_AR = $(AR) $(ARFLAGS)
 libamiws_a_LIBADD =
 am_libamiws_a_OBJECTS = amiws_lib.$(OBJEXT)
 libamiws_a_OBJECTS = $(am_libamiws_a_OBJECTS)
+libamiwscfg_a_AR = $(AR) $(ARFLAGS)
+libamiwscfg_a_LIBADD =
+am_libamiwscfg_a_OBJECTS = config.$(OBJEXT) config_parser.$(OBJEXT)
+libamiwscfg_a_OBJECTS = $(am_libamiwscfg_a_OBJECTS)
 libfrozen_a_AR = $(AR) $(ARFLAGS)
 libfrozen_a_LIBADD =
 am_libfrozen_a_OBJECTS = frozen.$(OBJEXT)
@@ -152,9 +156,11 @@ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libamipack_a_SOURCES) $(libamiws_a_SOURCES) \
-	$(libfrozen_a_SOURCES) $(libmongoose_a_SOURCES)
+	$(libamiwscfg_a_SOURCES) $(libfrozen_a_SOURCES) \
+	$(libmongoose_a_SOURCES)
 DIST_SOURCES = $(libamipack_a_SOURCES) $(libamiws_a_SOURCES) \
-	$(libfrozen_a_SOURCES) $(libmongoose_a_SOURCES)
+	$(libamiwscfg_a_SOURCES) $(libfrozen_a_SOURCES) \
+	$(libmongoose_a_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -183,7 +189,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = ${SHELL} /home/stas/Dev/amiws/missing aclocal-1.15
 AMTAR = $${TAR-tar}
-AM_CPPFLAGS = 
+AM_CPPFLAGS = -DMG_ENABLE_SSL
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AUTOCONF = ${SHELL} /home/stas/Dev/amiws/missing autoconf
@@ -211,7 +217,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lyaml 
+LIBS = -lssl -lcrypto -lyaml 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/stas/Dev/amiws/missing makeinfo
 MKDIR_P = /bin/mkdir -p
@@ -273,7 +279,8 @@ target_alias =
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-noinst_LIBRARIES = libmongoose.a libfrozen.a libamipack.a libamiws.a
+noinst_LIBRARIES = libmongoose.a libfrozen.a libamipack.a libamiws.a libamiwscfg.a
+libamiwscfg_a_SOURCES = config.c config_parser.c config_parser.h amiws.h
 libamiws_a_SOURCES = amiws_lib.c amiws.h
 #libmongoose_a_CPPFLAGS = -DMG_ENABLE_DEBUG
 libmongoose_a_SOURCES = mongoose.c mongoose.h
@@ -332,6 +339,11 @@ libamiws.a: $(libamiws_a_OBJECTS) $(libamiws_a_DEPENDENCIES) $(EXTRA_libamiws_a_
 	$(AM_V_AR)$(libamiws_a_AR) libamiws.a $(libamiws_a_OBJECTS) $(libamiws_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libamiws.a
 
+libamiwscfg.a: $(libamiwscfg_a_OBJECTS) $(libamiwscfg_a_DEPENDENCIES) $(EXTRA_libamiwscfg_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libamiwscfg.a
+	$(AM_V_AR)$(libamiwscfg_a_AR) libamiwscfg.a $(libamiwscfg_a_OBJECTS) $(libamiwscfg_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libamiwscfg.a
+
 libfrozen.a: $(libfrozen_a_OBJECTS) $(libfrozen_a_DEPENDENCIES) $(EXTRA_libfrozen_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libfrozen.a
 	$(AM_V_AR)$(libfrozen_a_AR) libfrozen.a $(libfrozen_a_OBJECTS) $(libfrozen_a_LIBADD)
@@ -355,6 +367,8 @@ include ./$(DEPDIR)/amipack_parser_message.Po
 include ./$(DEPDIR)/amipack_parser_prompt.Po
 include ./$(DEPDIR)/amipack_parser_queue.Po
 include ./$(DEPDIR)/amiws_lib.Po
+include ./$(DEPDIR)/config.Po
+include ./$(DEPDIR)/config_parser.Po
 include ./$(DEPDIR)/frozen.Po
 include ./$(DEPDIR)/mongoose.Po
 

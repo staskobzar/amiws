@@ -6,7 +6,8 @@ parser: src/lib/amipack_parser_detect.c   \
         src/lib/amipack_parser_prompt.c   \
         src/lib/amipack_parser_message.c  \
         src/lib/amipack_parser_command.c  \
-        src/lib/amipack_parser_queue.c
+        src/lib/amipack_parser_queue.c		\
+				src/lib/config_parser.c
 
 
 src/lib/amipack_parser_detect.c: src/lib/amipack_parser_detect.re
@@ -28,6 +29,10 @@ src/lib/amipack_parser_command.c: src/lib/amipack_parser_command.re
 src/lib/amipack_parser_queue.c: src/lib/amipack_parser_queue.re
 	@echo "Generating AMI Queue output parser with re2c"
 	@re2c --no-generation-date -c --tags -o $@ $^
+
+src/lib/config_parser.c: src/lib/config_parser.y
+	@echo "Generating config file parser"
+	@lemon $^
 
 doc:
 	cd doc && doxygen

@@ -50,14 +50,12 @@
 #define DEFAULT_WEBSOCK_PORT  8000
 /*! Polling interval. */
 #define POLL_SLEEP 1000
-/*! Buffer for JSON strings. */
-#define BUFSIZE 1024 * 32
 
 /*! Convert string to int */
 #define intval(val) str2int(val, strlen(val))
 
 /*! Macro to initilize configuration structure. */
-#define macro_init_conf(conf) conf = (struct amiws_config *) calloc(1, sizeof(struct amiws_config));\
+#define macro_init_conf(conf) conf = (struct amiws_config *) malloc(sizeof(struct amiws_config));\
   conf->log_level     = DEFAULT_LOG_LEVEL;    \
   conf->log_facility  = DEFAULT_LOG_FACILITY; \
   conf->ws_port       = DEFAULT_WEBSOCK_PORT; \
@@ -120,16 +118,6 @@ struct amiws_conn {
 #endif
   int is_ssl;               /*!< Flag if SSL is used. */
   struct amiws_conn *next;  /*!< Pointer to next connection. */
-};
-
-/*!
- * Token context for YAML configuration parsing.
- */
-enum token_context {
-  CXT_TKN_KEY,
-  CXT_TKN_VALUE,
-  CXT_BLOCK_START,
-  CXT_BLOCK_END,
 };
 
 /**
@@ -223,9 +211,9 @@ static void recv_callback(struct mbuf *io, struct amiws_conn *conn, struct mg_co
 
 static void read_buffer(struct mbuf *io, struct mg_connection *nc);
 
-static void set_conf_param(struct amiws_config *conf, char *key, char *value);
+void set_conf_param(struct amiws_config *conf, char *key, char *value);
 
-static void set_conn_param(struct amiws_conn *conn, char *key, char *value);
+void set_conn_param(struct amiws_conn *conn, char *key, char *value);
 
 static int str2int(const char *val, int len);
 

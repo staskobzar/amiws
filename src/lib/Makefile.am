@@ -1,5 +1,6 @@
-noinst_LIBRARIES = libmongoose.a libfrozen.a libamipack.a libamiws.a
+noinst_LIBRARIES = libmongoose.a libfrozen.a libamipack.a libamiws.a libamiwscfg.a
 
+libamiwscfg_a_SOURCES = config.c config_parser.c config_parser.h amiws.h
 libamiws_a_SOURCES   = amiws_lib.c amiws.h
 #libmongoose_a_CPPFLAGS = -DMG_ENABLE_DEBUG
 libmongoose_a_SOURCES= mongoose.c mongoose.h
