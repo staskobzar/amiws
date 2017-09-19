@@ -28,6 +28,7 @@ Here is simple workflow scheme:
 * WWW Digest authenticatation with username/password for HTTP(s)
 * YAML configuration file
 
+
 ### Command line arguments
 Usage: ```amiws [OPTIONS]```
 
@@ -49,6 +50,7 @@ Options:
 * [fozen](https://github.com/cesanta/frozen) - awesome JSON parser and emitter from [Cesanta](https://www.cesanta.com/).
 * [re2c](http://re2c.org/) - awesome lexer generator for AMI protocol implementation. 
 * [cmocka](https://cmocka.org/) - awesome unit testing framework for C.
+* [lemon](http://www.hwaci.com/sw/lemon/lemon.html) - parser generator to process YAML tokens
 
 They do not need to me installed. *mongoose* and *frozen* are already included. *re2c* and *cmocka* are only needed for developers.
 
