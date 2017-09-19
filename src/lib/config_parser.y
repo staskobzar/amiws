@@ -8,10 +8,10 @@
 }
 
 %parse_failure {
-  //printf("ERROR: Failed to parse config file.\n");
+  pConf->parse_fail = 1;
 }
 %syntax_error {
-  //printf("ERROR: Syntax error.\n");
+  pConf->syntax_error = 1;
 }
 
 %extra_argument { struct amiws_config *pConf }
@@ -31,7 +31,7 @@ field     ::= key(K) value(V) . {
 key(A)    ::= KEY SCALAR(S)   . { A = S; }
 value(A)  ::= VALUE SCALAR(S) . { A = S; }
 
-connections ::= key VALUE BLOCK_SEQUENCE_START ami_servers BLOCK_END .
+connections ::= key(A) VALUE BLOCK_SEQUENCE_START ami_servers BLOCK_END . { free(A); }
 ami_servers ::= ami_servers server .
 ami_servers ::= .
 server ::= BLOCK_ENTRY BLOCK_MAPPING_START entries BLOCK_END .

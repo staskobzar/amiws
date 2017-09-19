@@ -746,6 +746,11 @@ static void yy_reduce(
 { yygotominor.yy0 = yymsp[0].minor.yy0; }
 #line 748 "src/lib/config_parser.c"
         break;
+      case 7: /* connections ::= key VALUE BLOCK_SEQUENCE_START ami_servers BLOCK_END */
+#line 34 "src/lib/config_parser.y"
+{ free(yymsp[-4].minor.yy0); }
+#line 753 "src/lib/config_parser.c"
+        break;
       case 12: /* entries ::= */
 #line 39 "src/lib/config_parser.y"
 {
@@ -766,21 +771,20 @@ static void yy_reduce(
   pConf->size++;
   conn->id = pConf->size;
 }
-#line 770 "src/lib/config_parser.c"
+#line 775 "src/lib/config_parser.c"
         break;
       case 13: /* entry_field ::= entry_key entry_value */
 #line 57 "src/lib/config_parser.y"
 {
   set_conn_param(pConf->tail, yymsp[-1].minor.yy0, yymsp[0].minor.yy0);
 }
-#line 777 "src/lib/config_parser.c"
+#line 782 "src/lib/config_parser.c"
         break;
       default:
       /* (0) yaml ::= STREAM_START block STREAM_END */ yytestcase(yyruleno==0);
       /* (1) block ::= BLOCK_MAPPING_START conf connections BLOCK_END */ yytestcase(yyruleno==1);
       /* (2) conf ::= conf field */ yytestcase(yyruleno==2);
       /* (3) conf ::= */ yytestcase(yyruleno==3);
-      /* (7) connections ::= key VALUE BLOCK_SEQUENCE_START ami_servers BLOCK_END */ yytestcase(yyruleno==7);
       /* (8) ami_servers ::= ami_servers server */ yytestcase(yyruleno==8);
       /* (9) ami_servers ::= */ yytestcase(yyruleno==9);
       /* (10) server ::= BLOCK_ENTRY BLOCK_MAPPING_START entries BLOCK_END */ yytestcase(yyruleno==10);
@@ -834,8 +838,8 @@ static void yy_parse_failed(
 /************ Begin %parse_failure code ***************************************/
 #line 10 "src/lib/config_parser.y"
 
-  //printf("ERROR: Failed to parse config file.\n");
-#line 839 "src/lib/config_parser.c"
+  pConf->parse_fail = 1;
+#line 843 "src/lib/config_parser.c"
 /************ End %parse_failure code *****************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -854,8 +858,8 @@ static void yy_syntax_error(
 /************ Begin %syntax_error code ****************************************/
 #line 13 "src/lib/config_parser.y"
 
-  //printf("ERROR: Syntax error.\n");
-#line 859 "src/lib/config_parser.c"
+  pConf->syntax_error = 1;
+#line 863 "src/lib/config_parser.c"
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

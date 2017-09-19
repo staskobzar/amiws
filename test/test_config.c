@@ -35,6 +35,7 @@ static void config_file_with_single_host(void **state)
   assert_string_equal(conn->host, "10.168.1.100");
   assert_string_equal(conn->username, "admin");
   assert_string_equal(conn->secret, "passw0rd");
+  free_conf(conf);
 }
 
 static void config_file_with_multiple_hosts(void **state)
@@ -71,7 +72,7 @@ static void config_file_with_multiple_hosts(void **state)
   assert_string_equal(conn->secret, "pass003");
   assert_int_equal(conn->id, 3);
 
-  //free_conf(conf);
+  free_conf(conf);
 }
 
 static void config_file_test_default_vals(void **state)
@@ -88,6 +89,7 @@ static void config_file_test_default_vals(void **state)
 
   assert_null(conf->auth_domain);
   assert_null(conf->auth_file);
+  free_conf(conf);
 }
 
 static void config_file_with_missing_password (void **state)
@@ -124,6 +126,7 @@ static void config_file_with_single_host_connection_address(void **state)
   struct amiws_config *conf = read_conf("fixtures/single_ami_host.yml");
   struct amiws_conn *conn = conf->head;
   assert_string_equal(conn->address, "tcp://10.168.1.100:5038");
+  free_conf(conf);
 }
 
 static void config_file_with_multiple_hosts_connection_address(void **state)
@@ -138,6 +141,7 @@ static void config_file_with_multiple_hosts_connection_address(void **state)
   assert_string_equal(conn->address, "tcp://10.12.30.1:5039");
   conn = conn->next;
   assert_string_equal(conn->address, "tcp://10.0.110.10:6038");
+  free_conf(conf);
 }
 
 static void config_file_test_default_vals_connection_address(void **state)
@@ -146,6 +150,7 @@ static void config_file_test_default_vals_connection_address(void **state)
   struct amiws_config *conf = read_conf("fixtures/default_vals.yml");
   struct amiws_conn *conn = conf->head;
   assert_string_equal(conn->address, "tcp://10.168.1.100:5038");
+  free_conf(conf);
 }
 
 static void config_file_web_root_set(void **state)
@@ -153,6 +158,7 @@ static void config_file_web_root_set(void **state)
   (void) *state;
   struct amiws_config *conf = read_conf("fixtures/single_ami_host.yml");
   assert_string_equal(conf->web_root, "/home/amiws/web_root");
+  free_conf(conf);
 }
 
 static void config_file_test_default_vals_for_web_root(void **state)
@@ -160,6 +166,7 @@ static void config_file_test_default_vals_for_web_root(void **state)
   (void) *state;
   struct amiws_config *conf = read_conf("fixtures/default_vals.yml");
   assert_string_equal(conf->web_root, "./web_root");
+  free_conf(conf);
 }
 
 static void config_file_auth_no_domain (void **state)

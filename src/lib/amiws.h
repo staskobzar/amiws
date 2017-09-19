@@ -62,13 +62,15 @@
   conf->size          = 0;                    \
   conf->head          = NULL;                 \
   conf->tail          = NULL;                 \
-  conf->web_root      = DEFAULT_WEB_ROOT;     \
+  conf->web_root      = NULL;                 \
   conf->auth_domain   = NULL;                 \
+  conf->parse_fail    = 0;                    \
+  conf->syntax_error  = 0;                    \
   conf->auth_file     = NULL;
 
 
 /*! Macro to initilize AMI connection. */
-#define macro_init_conn(conn) conn = (struct amiws_conn *) calloc(1, sizeof(struct amiws_conn)); \
+#define macro_init_conn(conn) conn = (struct amiws_conn *) malloc(sizeof(struct amiws_conn)); \
   conn->port = 5038;      \
   conn->address = NULL;   \
   conn->name = NULL;      \
@@ -98,6 +100,9 @@ struct amiws_config {
   char *ssl_cert;           /*!< SSL certificate file. */
   char *ssl_key;            /*!< SSL key file. */
 #endif
+
+  int parse_fail:1;
+  int syntax_error:1;
 };
 
 /*!

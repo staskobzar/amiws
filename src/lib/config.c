@@ -60,30 +60,40 @@ struct amiws_config *read_conf(const char *filename)
   do {
     if (!yaml_parser_scan(&parser, &token)) {
       fprintf(stderr, "ERROR: Failed to parse token.\n");
-      break;
+      goto done;
     }
     if(token.type == YAML_NO_TOKEN) {
       // parsing fail - invalid config file
-      return NULL;
+      goto done;
     }
 
     if ( token.type == YAML_SCALAR_TOKEN ) {
       val = (char*)strndup(token.data.scalar.value, token.data.scalar.length);
     } else { val = NULL; }
+
     Parse(scanner, yaml_tokenize(token.type), val, conf);
+
+    if (conf->parse_fail) {
+      fprintf(stderr, "ERROR: Failed to parse file.\n");
+      goto done;
+    }
+    if (conf->syntax_error) {
+      fprintf(stderr, "ERROR: Config file syntax error.\n");
+      goto done;
+    }
 
     if(token.type != YAML_STREAM_END_TOKEN)
       yaml_token_delete(&token);
 
   } while(token.type != YAML_STREAM_END_TOKEN);
 
-  yaml_token_delete(&token);
 
   Parse (scanner, 0, 0, NULL);
 
-  yaml_parser_delete(&parser);
+done:
   ParseFree (scanner, free);
-
+  yaml_token_delete(&token);
+  yaml_parser_delete(&parser);
   fclose(fh);
   return valid_conf(conf);
 }
@@ -98,18 +108,21 @@ void set_conf_param( struct amiws_config *conf,
     conf->log_level = intval(val);
     if (conf->log_level == -1)
       fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+    free(val);
 
   } else if (strcmp(key, "log_facility") == 0) {
 
     conf->log_facility = intval(val);
     if (conf->log_facility == -1)
       fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+    free(val);
 
   } else if (strcmp(key, "ws_port") == 0) {
 
     conf->ws_port = intval(val);
     if (conf->ws_port == -1)
       fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+    free(val);
 
   } else if (strcmp(key, "web_root") == 0) {
 
@@ -134,7 +147,9 @@ void set_conf_param( struct amiws_config *conf,
 #endif
   } else {
     fprintf(stderr, "WARNING: >> Unknown parameter '%s: %s'.\n", key, val);
+    free(val);
   }
+  free(key);
 }
 
 
@@ -151,6 +166,7 @@ void set_conn_param( struct amiws_conn *conn,
     conn->port = intval(val);
     if (conn->port == -1)
       fprintf(stderr, "ERROR: Invalid %s: '%s'.\n", key, val);
+    free(val);
 
   } else if (strcmp(key, "host") == 0) {
 
@@ -176,7 +192,9 @@ void set_conn_param( struct amiws_conn *conn,
 
   } else {
     fprintf(stderr, "ERROR: Unknown parameter '%s: %s'.\n", key, val);
+    free(val);
   }
+  free(key);
 }
 
 
@@ -204,19 +222,20 @@ void free_conf(struct amiws_config *conf)
 {
   if(!conf) return;
   for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
-    if(conn->name) free(conn->name);
-    if(conn->address) free(conn->address);
-    if(conn->host) free(conn->host);
-    if(conn->username) free(conn->username);
-    if(conn->secret) free(conn->secret);
+    if(conn->name)      free(conn->name);
+    if(conn->address)   free(conn->address);
+    if(conn->host)      free(conn->host);
+    if(conn->username)  free(conn->username);
+    if(conn->secret)    free(conn->secret);
 #if MG_ENABLE_SSL
-    if(conn->ssl_cert) free(conn->ssl_cert);
-    if(conn->ssl_key) free(conn->ssl_key);
+    if(conn->ssl_cert)  free(conn->ssl_cert);
+    if(conn->ssl_key)   free(conn->ssl_key);
 #endif
+    free(conn);
   }
 
   if (conf){
-    //if(conf->web_root) free(conf->web_root);
+    if(conf->web_root) free(conf->web_root);
     if(conf->auth_domain) free(conf->auth_domain);
     if(conf->auth_file) free(conf->auth_file);
 #if MG_ENABLE_SSL
@@ -242,6 +261,7 @@ static struct amiws_config *valid_conf(struct amiws_config *conf)
   // auth settings
   if ((conf->auth_domain != NULL || conf->auth_file != NULL) &&
       !is_valid_auth_settings(conf) ) err = 1;
+  if (conf->web_root == NULL) conf->web_root = strdup(DEFAULT_WEB_ROOT);
   // SSL files
 #if MG_ENABLE_SSL
   if ((conf->ssl_key != NULL || conf->ssl_cert != NULL) &&
