@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/staskobzar/amiws.svg?branch=master)](https://travis-ci.org/staskobzar/amiws)
 ![](https://img.shields.io/badge/license-GPL_3-green.svg "License")
 [![codecov](https://codecov.io/gh/staskobzar/amiws/branch/master/graph/badge.svg)](https://codecov.io/gh/staskobzar/amiws)
-![verion-2.0.1](https://img.shields.io/badge/version-2.0.1-blue.svg)
+![verion-2.1.1](https://img.shields.io/badge/version-2.1.1-blue.svg)
 
 
 ### Introduction
