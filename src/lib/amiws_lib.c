@@ -168,7 +168,7 @@ void ami_ev_handler(struct mg_connection *nc,
 
 char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn)
 {
-  int buflen = len * 4; // long enough for JSON wrapping to quotes and parentheses
+  int buflen = (len * 2) + 60 + strlen(conn->name); // long enough for JSON wrapping to quotes and parentheses
   char    *buf          = (char *) malloc(buflen);
   struct  json_out out  = JSON_OUT_BUF(buf, buflen);
 

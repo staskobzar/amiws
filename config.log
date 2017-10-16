@@ -152,7 +152,7 @@ configure:4171: $? = 0
 configure:4180: result: yes
 configure:4197: checking for library containing CRYPTO_new_ex_data
 configure:4228: gcc -o conftest -coverage -O0   conftest.c -lyaml  >&5
-/tmp/stas/ccz8JB7z.o: In function `main':
+/tmp/stas/ccxMIpz4.o: In function `main':
 conftest.c:(.text+0x1c): undefined reference to `CRYPTO_new_ex_data'
 collect2: error: ld returned 1 exit status
 configure:4228: $? = 1
@@ -219,7 +219,7 @@ configure:4228: $? = 0
 configure:4245: result: -lcrypto
 configure:4257: checking for library containing SSL_library_init
 configure:4288: gcc -o conftest -coverage -O0   conftest.c -lcrypto -lyaml  >&5
-/tmp/stas/cc80HUsY.o: In function `main':
+/tmp/stas/ccdysaZk.o: In function `main':
 conftest.c:(.text+0x1c): undefined reference to `SSL_library_init'
 collect2: error: ld returned 1 exit status
 configure:4288: $? = 1
