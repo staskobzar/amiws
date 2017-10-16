@@ -19,7 +19,7 @@
 #
 
 AC_PREREQ([2.63])
-AC_INIT([amiws], [2.1.1], [staskobzar@gmail.com])
+AC_INIT([amiws], [2.2.1], [staskobzar@gmail.com])
 AM_INIT_AUTOMAKE([foreign parallel-tests color-tests -Wall -Werror])
 
 AC_PROG_RANLIB
