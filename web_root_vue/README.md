@@ -2,7 +2,27 @@
 
 > Web root example with Vue.js
 
-## Build Setup
+## Install
+
+Install node.js (lots of info in google).
+
+In the "web_root_vue" folder install dependencies:
+```bash
+npm install
+```
+
+Build static files in "dist" folder:
+```bash
+npm run build
+```
+
+Point web_root parameter to "dist" folder in "amiws.yaml" configuration file. For example, if the projec folder is in "/var/www/amiws_webroot", then parameter should look like:
+```yaml
+web_root: /var/www/amiws_webroot/dist
+```
+
+
+## Available commands
 
 ``` bash
 # install dependencies
