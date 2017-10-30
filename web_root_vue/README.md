@@ -11,6 +11,11 @@ In the "web_root_vue" folder install dependencies:
 npm install
 ```
 
+Default amiws URL is 'ws://0.0.0.0:8000'. To change, update file ```config/prod.env.js``` and set parameter:
+```json
+WS_URL: '"ws://0.0.0.0:8000"'
+```
+
 Build static files in "dist" folder:
 ```bash
 npm run build
