@@ -383,6 +383,16 @@ static void send_ami_action(struct websocket_message *wm,
   // send to all AMI connection
   for (c = mg_next(nc->mgr, NULL); c != NULL; c = mg_next(nc->mgr, c)) {
     if(c->flags & MG_F_IS_WEBSOCKET) continue;
+    struct amiws_conn *conn = (struct amiws_conn *) c->user_data;
+    if (conn && conn->id && pack->sid) {
+      if (pack->sid == conn->id) {
+        syslog (LOG_DEBUG, "Send to specific AMI server with id: %d", pack->sid);
+      } else {
+        // server id is set in packet (AMIServerID), but
+        // not match connection id.
+        continue;
+      }
+    }
     mg_send(c, p_str, len);
   }
 
@@ -403,8 +413,13 @@ static void json_scan_cb( void *callback_data,
     case JSON_TYPE_TRUE:
     case JSON_TYPE_FALSE:
     case JSON_TYPE_NULL:
-      amipack_append(pack, strndup(name, name_len), name_len,
-                           strndup(token->ptr, token->len), token->len);
+      if(strncasecmp(name, "AMIServerID", name_len) == 0) {
+        pack->sid = atoi(token->ptr);
+        syslog (LOG_DEBUG, "AMI server header AMIServerID: %d", pack->sid);
+      } else {
+        amipack_append(pack, strndup(name, name_len), name_len,
+                             strndup(token->ptr, token->len), token->len);
+      }
       break;
     default: break;
   }

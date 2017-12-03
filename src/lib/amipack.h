@@ -110,6 +110,8 @@ typedef struct AMIPacket_ {
 
   int             size;   /*!< Number of headers. */
 
+  int             sid;    /*!< Server ID from JSON client */
+
   size_t          length; /*!< Total length of all headers as string. */
 
   enum pack_type  type;   /*!< AMI packet type: Action, Event etc. */

@@ -47,6 +47,7 @@ AMIPacket *amipack_init()
   AMIPacket *pack = (AMIPacket*) malloc(sizeof(AMIPacket));
   pack->size = 0;
   pack->length = 0;
+  pack->sid = 0;
   pack->type = AMI_UNKNOWN;
   pack->head = NULL;
   pack->tail = NULL;

@@ -142,7 +142,18 @@ sock.send(JSON.stringify({"Action": "CoreStatus", "ActionID": "12345"}));
 ```
 Beware that this will send same Action to all AMI servers!
 
-Keep in mind this when you deploy *amiws* within public Internet and protect access to it.
+Keep this in mind when you deploy *amiws* within public Internet and protect access to it.
+
+#### Special header AMIServerID
+To send message to specified AMI server you can use header ```AMIServerID```.
+The is should correspond to the ```server_id``` in requests.
+
+Example:
+```javascript
+sock.send(JSON.stringify({"Action": "CoreStatus", "AMIServerID": 1}));
+```
+Beware that this will send same Action to all AMI servers!
+
 
 ### SSL/TLS transport
 SSL/TLS transport usage is described in this blog article:
