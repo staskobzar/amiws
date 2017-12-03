@@ -152,8 +152,6 @@ Example:
 ```javascript
 sock.send(JSON.stringify({"Action": "CoreStatus", "AMIServerID": 1}));
 ```
-Beware that this will send same Action to all AMI servers!
-
 
 ### SSL/TLS transport
 SSL/TLS transport usage is described in this blog article:
