@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-aclocal
-autoheader
-automake --foreign --add-missing
-autoreconf --force --install
