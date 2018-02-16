@@ -110,3 +110,4 @@ test/test_parser_queue
 
 src/amiws
 
+build/
