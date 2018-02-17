@@ -215,8 +215,9 @@ static void usage()
   printf("-D, --wdir PATH         Working directory when run as daemon. By default '/tmp'\n");
 
   printf("\n");
-  printf( PACKAGE_STRING " Copyright (C) 2017  " PACKAGE_BUGREPORT "\n"
+  printf( PACKAGE_STRING " Copyright (C) 2017  " PACKAGE_OWNER ".\n"
           "This program comes with ABSOLUTELY NO WARRANTY.\n"
           "This is free software, and you are welcome to redistribute it\n"
-          "under conditions describer in COPYRIGHT file.\n");
+          "under conditions describer in COPYRIGHT file.\n"
+          "Bug report: '" PACKAGE_ISSUES "'\n" );
 }

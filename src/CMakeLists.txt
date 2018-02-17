@@ -17,6 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with amiws.  If not, see <http://www.gnu.org/licenses/>.
 #
-cmake_minimum_required (VERSION 3.5)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+include_directories( "${CMAKE_CURRENT_BINARY_DIR}/lib" )
+
+configure_file (
+  "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+  )
 
 add_subdirectory (lib)
+
+add_executable (amiws amiws.c)
+target_link_libraries (amiws
+  amiws_lib
+  amipack
+  amiwscfg
+  mongoose
+  frozen)

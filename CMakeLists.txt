@@ -23,7 +23,7 @@ project (amiws VERSION 2.2.1 LANGUAGES C)
 
 # project info
 set (PACKAGE_URL "https://github.com/staskobzar/amiws")
-set (PACKAGE_BUGREPORT "staskobzar@gmail.com")
+set (PACKAGE_OWNER "staskobzar@gmail.com")
 set (PACKAGE_ISSUES "https://github.com/staskobzar/amiws/issues")
 
 add_subdirectory (src)
