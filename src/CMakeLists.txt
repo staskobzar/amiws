@@ -20,6 +20,23 @@
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( "${CMAKE_CURRENT_BINARY_DIR}/lib" )
 
+option (USE_SSL "With SSL support" OFF)
+
+if (USE_SSL)
+  include (FindOpenSSL)
+  if (OPENSSL_FOUND)
+    set(MG_ENABLE_SSL 1)
+  else (OPENSSL_FOUND)
+    message (FATAL_ERROR "OpenSSL not found.")
+  endif(OPENSSL_FOUND)
+endif(USE_SSL)
+
+include (CheckIncludeFile)
+check_include_file (syslog.h HAVE_SYSLOG)
+if (NOT HAVE_SYSLOG)
+  message (FATAL_ERROR "Syslog library header 'syslog.h' not found.")
+endif()
+
 configure_file (
   "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
   "${CMAKE_CURRENT_BINARY_DIR}/config.h"
