@@ -93,6 +93,7 @@ test/*.trs
 # dejagnu
 *.sum
 test/site.bak
+Testing/
 
 confesSfsP/
 *.tar.gz
