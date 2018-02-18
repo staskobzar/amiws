@@ -19,6 +19,8 @@
 #
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/lib )
 
+option (USE_RE2C "Generate AMI parser with re2c" OFF)
+option (USE_LEMON "Generate config parser with lemon" OFF)
 option (USE_SSL "With SSL support" OFF)
 
 if (USE_SSL)

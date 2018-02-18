@@ -30,15 +30,35 @@ add_cmocka_test (test_config test_config.c
 
 add_cmocka_test (test_pack_scan test_pack_scan.c
                  amiws_lib amipack mongoose frozen cmocka)
+#add_test (test_pack_scan_valgrind valgrind
+#  --error-exitcode=1 --read-var-info=yes
+#  --leak-check=full --show-leak-kinds=all
+#  ./test_pack_scan
+#  )
 
 add_cmocka_test (test_create_packet test_create_packet.c
                  amipack cmocka)
+#add_test (test_create_packet_valgrind valgrind
+#  --error-exitcode=1 --read-var-info=yes
+#  --leak-check=full --show-leak-kinds=all
+#  ./test_create_packet
+#  )
 
 add_cmocka_test (test_pack_type_detect test_pack_type_detect.c
                  amiws_lib amipack mongoose frozen cmocka)
+#add_test (test_pack_type_detect_valgrind valgrind
+#  --error-exitcode=1 --read-var-info=yes
+#  --leak-check=full --show-leak-kinds=all
+#  ./test_pack_type_detect
+#  )
 
 add_cmocka_test (test_parser_prompt test_parser_prompt.c
                  amipack cmocka)
+#add_test (test_parser_prompt_valgrind valgrind
+#  --error-exitcode=1 --read-var-info=yes
+#  --leak-check=full --show-leak-kinds=all
+#  ./test_parser_prompt
+#  )
 
 add_cmocka_test (test_parser_message test_parser_message.c
                  amipack cmocka)

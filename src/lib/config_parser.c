@@ -24,7 +24,7 @@
 */
 #include <stdio.h>
 /************ Begin %include sections from the grammar ************************/
-#line 1 "src/lib/config_parser.y"
+#line 1 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 
-#line 36 "src/lib/config_parser.c"
+#line 36 "/home/stas/Dev/amiws/src/lib/config_parser.c"
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
 ** in a format understandable to "makeheaders".  This section is blank unless
@@ -732,27 +732,27 @@ static void yy_reduce(
   */
 /********** Begin reduce actions **********************************************/
       case 4: /* field ::= key value */
-#line 28 "src/lib/config_parser.y"
+#line 28 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 {
   set_conf_param(pConf, yymsp[-1].minor.yy0, yymsp[0].minor.yy0);
 }
-#line 740 "src/lib/config_parser.c"
+#line 740 "/home/stas/Dev/amiws/src/lib/config_parser.c"
         break;
       case 5: /* key ::= KEY SCALAR */
       case 6: /* value ::= VALUE SCALAR */ yytestcase(yyruleno==6);
       case 14: /* entry_key ::= KEY SCALAR */ yytestcase(yyruleno==14);
       case 15: /* entry_value ::= VALUE SCALAR */ yytestcase(yyruleno==15);
-#line 31 "src/lib/config_parser.y"
+#line 31 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 { yygotominor.yy0 = yymsp[0].minor.yy0; }
-#line 748 "src/lib/config_parser.c"
+#line 748 "/home/stas/Dev/amiws/src/lib/config_parser.c"
         break;
       case 7: /* connections ::= key VALUE BLOCK_SEQUENCE_START ami_servers BLOCK_END */
-#line 34 "src/lib/config_parser.y"
+#line 34 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 { free(yymsp[-4].minor.yy0); }
-#line 753 "src/lib/config_parser.c"
+#line 753 "/home/stas/Dev/amiws/src/lib/config_parser.c"
         break;
       case 12: /* entries ::= */
-#line 39 "src/lib/config_parser.y"
+#line 39 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 {
   struct amiws_conn *conn;
   macro_init_conn(conn);
@@ -771,14 +771,14 @@ static void yy_reduce(
   pConf->size++;
   conn->id = pConf->size;
 }
-#line 775 "src/lib/config_parser.c"
+#line 775 "/home/stas/Dev/amiws/src/lib/config_parser.c"
         break;
       case 13: /* entry_field ::= entry_key entry_value */
-#line 57 "src/lib/config_parser.y"
+#line 57 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 {
   set_conn_param(pConf->tail, yymsp[-1].minor.yy0, yymsp[0].minor.yy0);
 }
-#line 782 "src/lib/config_parser.c"
+#line 782 "/home/stas/Dev/amiws/src/lib/config_parser.c"
         break;
       default:
       /* (0) yaml ::= STREAM_START block STREAM_END */ yytestcase(yyruleno==0);
@@ -836,10 +836,10 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
-#line 10 "src/lib/config_parser.y"
+#line 10 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 
   pConf->parse_fail = 1;
-#line 843 "src/lib/config_parser.c"
+#line 843 "/home/stas/Dev/amiws/src/lib/config_parser.c"
 /************ End %parse_failure code *****************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
@@ -856,10 +856,10 @@ static void yy_syntax_error(
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
 /************ Begin %syntax_error code ****************************************/
-#line 13 "src/lib/config_parser.y"
+#line 13 "/home/stas/Dev/amiws/src/lib/config_parser.y"
 
   pConf->syntax_error = 1;
-#line 863 "src/lib/config_parser.c"
+#line 863 "/home/stas/Dev/amiws/src/lib/config_parser.c"
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }

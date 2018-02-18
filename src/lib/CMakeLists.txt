@@ -26,6 +26,45 @@ if (NOT HAVE_YAML)
                        "Install libyaml and retry.")
 endif()
 
+# generate parser with re2c
+macro (re2c_gen SRCNAME)
+  add_custom_command (
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SRCNAME}.c
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${SRCNAME}.re
+    COMMAND ${RE2C} --no-generation-date ${ARGV1} ${ARGV2}
+            -o ${CMAKE_CURRENT_SOURCE_DIR}/${SRCNAME}.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/${SRCNAME}.re
+    )
+endmacro (re2c_gen)
+
+# generate AMI parser with re2c
+if (USE_RE2C)
+  find_program (RE2C re2c)
+  if (NOT RE2C)
+    message (FATAL_ERROR "Can not find 're2c'. Install it to generate AMI parser")
+  endif()
+  message ("Generate AMI parser with re2c: ${RE2C}")
+  re2c_gen (amipack_parser_detect)
+  re2c_gen (amipack_parser_prompt "-c")
+  re2c_gen (amipack_parser_message "--tags")
+  re2c_gen (amipack_parser_command "--tags")
+  re2c_gen (amipack_parser_queue "-c" "--tags")
+endif (USE_RE2C)
+
+# generate config parser with lemon
+if (USE_LEMON)
+  find_program (LEMON lemon)
+  if (NOT LEMON)
+    message (FATAL_ERROR "Can not find 'lemon'. Install it to generate config parser")
+  endif()
+  message ("Generate config parser with lemon: ${LEMON}")
+  add_custom_command (
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/config_parser.c
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config_parser.y
+    COMMAND ${LEMON} ${CMAKE_CURRENT_SOURCE_DIR}/config_parser.y
+    )
+endif (USE_LEMON)
+
 add_library (amiwscfg config.c config_parser.c config_parser.h amiws.h)
 add_library (amiws_lib amiws_lib.c amiws.h)
 add_library (mongoose mongoose.c mongoose.h)
