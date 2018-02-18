@@ -27,3 +27,7 @@ set (PACKAGE_OWNER "staskobzar@gmail.com")
 set (PACKAGE_ISSUES "https://github.com/staskobzar/amiws/issues")
 
 add_subdirectory (src)
+
+# tests
+include (test/AddCMockaTest.cmake)
+add_subdirectory (test)

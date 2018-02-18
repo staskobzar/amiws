@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with amiws.  If not, see <http://www.gnu.org/licenses/>.
 #
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories( "${CMAKE_CURRENT_BINARY_DIR}/lib" )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/lib )
 
 option (USE_SSL "With SSL support" OFF)
 
@@ -38,8 +37,8 @@ if (NOT HAVE_SYSLOG)
 endif()
 
 configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/config.h"
   )
 
 add_subdirectory (lib)
@@ -51,3 +50,4 @@ target_link_libraries (amiws
   amiwscfg
   mongoose
   frozen)
+
