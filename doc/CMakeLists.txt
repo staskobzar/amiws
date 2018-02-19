@@ -17,20 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with amiws.  If not, see <http://www.gnu.org/licenses/>.
 #
-cmake_minimum_required (VERSION 3.5)
 
-project (amiws VERSION 2.2.1 LANGUAGES C)
+include (FindDoxygen)
+if (DOXYGEN_FOUND)
+  set (DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+  set (DOXYFILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+  configure_file (${DOXYFILE_IN} ${DOXYFILE})
 
-# project info
-set (PACKAGE_URL "https://github.com/staskobzar/amiws")
-set (PACKAGE_OWNER "staskobzar@gmail.com")
-set (PACKAGE_ISSUES "https://github.com/staskobzar/amiws/issues")
+  add_custom_target (doc
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation with Doxygen"
+    VERBATIM)
 
-add_subdirectory (src)
-
-# tests
-include (test/AddCMockaTest.cmake)
-add_subdirectory (test)
-
-# docs
-add_subdirectory (doc)
+else (DOXYGEN_FOUND)
+  message (SEND_ERROR "Doxygen not found. Install doxygen to generate docs.")
+endif (DOXYGEN_FOUND)
