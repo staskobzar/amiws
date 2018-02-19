@@ -80,6 +80,7 @@ Session.vim
 tags
 
 # ignore doc
+/doc/Doxyfile
 /doc/html/
 
 # gcc coverage testing tool files

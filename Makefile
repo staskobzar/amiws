@@ -1,5 +1,5 @@
 
-.PHONY: all build install clean test doc
+.PHONY: all build install clean test doc package
 
 all: build
 
@@ -11,9 +11,13 @@ test:
 	@cd build && ctest
 
 install: build
+	@cd build && make install
 
 doc:
 	@cd build && make doc
+
+package: build
+	@cd build && make package
 
 clean:
 	@rm -rf build

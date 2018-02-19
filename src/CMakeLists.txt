@@ -53,3 +53,8 @@ target_link_libraries (amiws
   mongoose
   frozen)
 
+# install
+install (TARGETS amiws DESTINATION bin)
+install (FILES ${CMAKE_SOURCE_DIR}/etc/amiws.sample.yaml
+         DESTINATION /etc/
+         RENAME amiws.yaml)
