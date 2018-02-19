@@ -34,3 +34,10 @@ add_subdirectory (test)
 
 # docs
 add_subdirectory (doc)
+
+# packaging
+set (CPACK_GENERATOR "DEB")
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Stas Kobzar <staskobzar@gmail.com>")
+set (CPACK_DEBIAN_PACKAGE_VERSION ${amiws_VERSION})
+set (CPACK_DEBIAN_PACKAGE_DEPENDS "libyaml")
+include (CPack)
