@@ -58,3 +58,9 @@ install (TARGETS amiws DESTINATION bin)
 install (FILES ${CMAKE_SOURCE_DIR}/etc/amiws.sample.yaml
          DESTINATION /etc/
          RENAME amiws.yaml)
+install (FILES ${CMAKE_SOURCE_DIR}/etc/amiws.sysv.init
+         DESTINATION /etc/init.d/
+         RENAME amiws
+         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+                    GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+         )

@@ -24,6 +24,8 @@ doc:
 
 package: build
 	@cd build && make package
+	@cp build/amiws-*.rpm rpm
+
 
 clean:
 	@rm -rf build

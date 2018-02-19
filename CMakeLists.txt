@@ -36,13 +36,4 @@ add_subdirectory (test)
 add_subdirectory (doc)
 
 # packaging
-set (CPACK_GENERATOR "DEB;RPM")
-set (CPACK_PACKAGE_VERSION ${amiws_VERSION})
-set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "Asterisk Management Interface (AMI) to Web-socket proxy")
-set (CPACK_RPM_PACKAGE_VENDOR "Stas Kobzar <staskobzar@gmail.com>")
-set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Stas Kobzar <staskobzar@gmail.com>")
-set (CPACK_DEBIAN_PACKAGE_DEPENDS "libyaml")
-set (CPACK_RPM_PACKAGE_REQUIRES "libyaml")
-
-include (CPack)
+include (CMakePack.cmake)

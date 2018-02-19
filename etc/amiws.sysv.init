@@ -23,7 +23,7 @@
 . /etc/rc.d/init.d/functions
 
 prog="amiws"
-app="/usr/local/bin/$prog"
+app="/usr/bin/$prog"
 lock_file="/var/lock/subsys/$prog"
 conf_file="/etc/amiws.yaml"
 proguser=root
