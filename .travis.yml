@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get install cmake -y
   - bash .travis-install-cmocka.sh
 
-script: ./bootstrap && ./configure --with-ssl CFLAGS='-coverage -O0' && make && make check
+script: make && make test
 
 after_success:
   - rm src/lib/frozen.gc* src/lib/mongoose.gc*
