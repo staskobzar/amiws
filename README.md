@@ -55,17 +55,19 @@ Options:
 They do not need to me installed. *mongoose* and *frozen* are already included. *re2c* and *cmocka* are only needed for developers.
 
 ### Building and install
+amiws requires CMake ver3.5+ to build. Dummy make file provides building targets.
 ```
-./configure
-make && make install
+make
+sudo make install
 ```
-
-In case of problems, try to run script ```./bootstrap```.
 
 To enable SSL support:
 ```
-./configure --with-ssl
-make && make install
+make build
+cd build
+cmake .. -DUSE_SSL=ON
+make
+sudo make install
 ```
 
 To create source documentation:
@@ -75,7 +77,12 @@ make doc
 
 To run unit tests (requires cmocka):
 ```
-make check
+make test
+```
+
+Create rpm package:
+```
+make package
 ```
 
 This repo also provides init scripts for [System V](https://github.com/staskobzar/amiws/blob/master/etc/amiws.sysv.init) 
