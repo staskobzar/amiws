@@ -24,7 +24,7 @@ set (CPACK_DEBIAN_PACKAGE_DEPENDS "libyaml")
 
 set (CPACK_RPM_PACKAGE_VENDOR "Stas Kobzar <staskobzar@gmail.com>")
 set (CPACK_RPM_PACKAGE_REQUIRES_PRE "initscripts")
-set (CPACK_RPM_PACKAGE_REQUIRES "libyaml")
+set (CPACK_RPM_PACKAGE_REQUIRES "libyaml,openssl")
 set (CPACK_RPM_PACKAGE_LICENSE "GNU General Public License v3.0")
 set (CPACK_RPM_PACKAGE_GROUP "Networking Tools")
 
