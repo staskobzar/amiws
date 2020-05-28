@@ -56,6 +56,7 @@
 
 /*! Macro to initilize configuration structure. */
 #define macro_init_conf(conf) conf = (struct amiws_config *) malloc(sizeof(struct amiws_config));\
+  memset(conf,0,sizeof(struct amiws_config)); \
   conf->log_level     = DEFAULT_LOG_LEVEL;    \
   conf->log_facility  = DEFAULT_LOG_FACILITY; \
   conf->ws_port       = DEFAULT_WEBSOCK_PORT; \
@@ -71,13 +72,15 @@
 
 /*! Macro to initilize AMI connection. */
 #define macro_init_conn(conn) conn = (struct amiws_conn *) malloc(sizeof(struct amiws_conn)); \
-  conn->port = 5038;      \
-  conn->address = NULL;   \
-  conn->name = NULL;      \
-  conn->host = NULL;      \
-  conn->username = NULL;  \
-  conn->secret = NULL;    \
-  conn->is_ssl = 0;       \
+  memset(conn,0,sizeof(struct amiws_conn)); \
+  conn->port = 5038;        \
+  conn->address = NULL;     \
+  conn->name = NULL;        \
+  conn->host = NULL;        \
+  conn->username = NULL;    \
+  conn->secret = NULL;      \
+  conn->is_ssl = 0;         \
+  conn->event_names = NULL; \
 
 
 /*!
