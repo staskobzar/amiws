@@ -2272,6 +2272,27 @@ void mg_mgr_free(struct mg_mgr *m) {
     }
     MG_FREE(m->ifaces);
   }
+#if MG_ENABLE_SSL
+    FIPS_mode_set(0);
+    CRYPTO_set_locking_callback(NULL);
+    CRYPTO_set_id_callback(NULL);
+
+    ERR_remove_state(0);
+
+    SSL_COMP_free_compression_methods();
+
+    ENGINE_cleanup();
+
+    CONF_modules_free();
+    CONF_modules_unload(1);
+
+    COMP_zlib_cleanup();
+
+    ERR_free_strings();
+    EVP_cleanup();
+
+    CRYPTO_cleanup_all_ex_data();
+#endif
 }
 
 time_t mg_mgr_poll(struct mg_mgr *m, int timeout_ms) {

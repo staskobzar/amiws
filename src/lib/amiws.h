@@ -126,6 +126,10 @@ struct amiws_conn {
   struct amiws_conn *next;  /*!< Pointer to next connection. */
 };
 
+int isExiting();
+
+void setExiting();
+
 /**
  * Initialize amiws with given configuration.
  * Will start listening for HTTP and WebSocket
