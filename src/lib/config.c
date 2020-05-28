@@ -161,6 +161,10 @@ void set_conn_param( struct amiws_conn *conn,
 
     conn->name = val;
 
+  } else if (strcmp(key, "id") == 0) {
+
+    conn->id = intval(val);
+
   } else if (strcmp(key, "port") == 0) {
 
     conn->port = intval(val);
@@ -179,6 +183,10 @@ void set_conn_param( struct amiws_conn *conn,
   } else if (strcmp(key, "secret") == 0) {
 
     conn->secret = val;
+
+  } else if (strcmp(key, "event_names") == 0) {
+
+    conn->event_names = val;
 
 #if MG_ENABLE_SSL
   } else if (strcmp(key, "ssl_key") == 0) {

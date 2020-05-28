@@ -45,9 +45,10 @@ void amiws_init(struct amiws_config *conf)
   for (struct amiws_conn* conn = conf->head; conn; conn = conn->next) {
     amiws_connect_ami_server(conn);
   }
+  syslog (LOG_INFO, "AMI hosts connected.");
 
   sprintf(port_str, "%d", conf->ws_port);
-  syslog (LOG_INFO, "Listening Web Socket port %s", port_str);
+  syslog (LOG_INFO, "Listening Web Socket port %d", conf->ws_port);
 
   memset(&bind_opts, 0, sizeof(bind_opts));
 #if MG_ENABLE_SSL
@@ -78,7 +79,7 @@ void amiws_connect_ami_server(struct amiws_conn *conn)
 {
   struct mg_connection *mgcon;
   struct mg_connect_opts opts;
-  syslog (LOG_DEBUG, "Connecting to %s -> %s", conn->name, conn->address);
+  syslog (LOG_DEBUG, "Connecting to server %d:%s -> %s", conn->id, conn->name, conn->address);
 
   memset(&opts, 0, sizeof(opts));
 #if MG_ENABLE_SSL
@@ -91,7 +92,7 @@ void amiws_connect_ami_server(struct amiws_conn *conn)
 #endif
   mgcon = mg_connect_opt(&mgr, conn->address, ami_ev_handler, opts);
   if(mgcon == NULL){
-    syslog (LOG_ERR, "Failed to connect server %s", conn->address);
+    syslog (LOG_ERR, "Failed to connect server %d:%s -> %s", conn->id, conn->name, conn->address);
   } else {
     mgcon->user_data = (void*) conn;
   }
@@ -180,8 +181,8 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
 
   switch(type)
   {
-    case AMI_ACTION:
     case AMI_EVENT:
+    case AMI_ACTION:
     case AMI_RESPONSE: {
       AMIPacket *ami_pack;
       if ((ami_pack = amipack_parser_message(ami_pack_str)) == NULL) {
@@ -190,6 +191,19 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
       }
       if (auth_fail(ami_pack)) {
         syslog (LOG_ERR, "Authentication failed.");
+      }
+	// Check event name
+      if (type == AMI_EVENT) {
+        if (conn->event_names && strlen(conn->event_names) > 0) {
+	    for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
+		if (!strcmp(hdr->name, "Event")) {
+		    if (!strstr(conn->event_names, hdr->value)) {
+			return NULL;
+		    }
+		    break;
+		}
+	    }
+	}
       }
       for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
         json_printf(&out, "%Q: %Q", hdr->name, hdr->value);

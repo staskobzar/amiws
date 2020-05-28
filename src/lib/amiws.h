@@ -116,6 +116,7 @@ struct amiws_conn {
   char *host;               /*!< AMI server host of IP. */
   char *username;           /*!< AMI username. */
   char *secret;             /*!< AMI password. */
+  char *event_names;        /*!< Event names filter. */
   AMIVer ami_ver;           /*!< AMI version as server prompts. */
 #if MG_ENABLE_SSL
   char *ssl_cert;           /*!< SSL certificate file. */
