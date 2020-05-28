@@ -56,6 +56,7 @@ They do not need to me installed. *mongoose* and *frozen* are already included. 
 
 ### Building and install
 ```
+autoreconf -if
 ./configure
 make && make install
 ```
