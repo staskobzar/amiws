@@ -43,6 +43,7 @@ static const struct option options[] = {
   NULL,       0,  NULL, 0
 };
 
+static int exiting = 0;
 static int pidfd = -1;
 static char *conf_file = NULL;
 static char *pidfile   = DEFAULT_PID_FILE;
@@ -170,6 +171,13 @@ static void daemonize(const char *pidfile,
   close(STDERR_FILENO);
 }
 
+int isExiting() {
+    return exiting;
+}
+
+void setExiting() {
+    exiting = 1;
+}
 
 static void handle_signal(int sig)
 {
@@ -180,6 +188,9 @@ static void handle_signal(int sig)
       break;
     case SIGINT:
     case SIGTERM:
+      // Set EXITING flag
+      setExiting();
+
       syslog(LOG_INFO, "Exiting application.");
         if (pidfd != -1) {
         lockf(pidfd, F_ULOCK, 0);
@@ -190,7 +201,7 @@ static void handle_signal(int sig)
         unlink(pidfile);
       }
       amiws_destroy();
-      free_conf(conf);
+      if (conf) free_conf(conf);
       /* Reset signal handling to default behavior */
       signal(SIGINT, SIG_DFL);
       exit(EXIT_SUCCESS);

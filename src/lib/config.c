@@ -31,11 +31,11 @@ static unsigned int yaml_tokenize(yaml_token_type_t token)
 
 struct amiws_config *read_conf(const char *filename)
 {
-  FILE *fh;
+  FILE *fh = NULL;
   yaml_parser_t parser;
   yaml_token_t  token;
-  struct amiws_config *conf;
-  char *val;
+  struct amiws_config *conf = NULL;
+  char *val = NULL;
   void *scanner = ParseAlloc (malloc);
 
  if (!yaml_parser_initialize (&parser)) {
@@ -73,7 +73,9 @@ struct amiws_config *read_conf(const char *filename)
 
     if ( token.type == YAML_SCALAR_TOKEN ) {
       val = (char*)strndup(token.data.scalar.value, token.data.scalar.length);
-    } else { val = NULL; }
+    } else {
+      val = NULL;
+    }
 
     Parse(scanner, yaml_tokenize(token.type), val, conf);
 
@@ -168,6 +170,7 @@ void set_conn_param( struct amiws_conn *conn,
   } else if (strcmp(key, "id") == 0) {
 
     conn->id = intval(val);
+    free(val);
 
   } else if (strcmp(key, "port") == 0) {
 
@@ -233,17 +236,26 @@ static int str2int( const char *val, int len)
 void free_conf(struct amiws_config *conf)
 {
   if(!conf) return;
-  for (struct amiws_conn *conn = conf->head; conn; conn = conn->next) {
-    if(conn->name)      free(conn->name);
-    if(conn->address)   free(conn->address);
-    if(conn->host)      free(conn->host);
-    if(conn->username)  free(conn->username);
-    if(conn->secret)    free(conn->secret);
+  if(!conf->head) return;
+
+  struct amiws_conn *conn = NULL;
+  conn = conf->head;
+
+  while (conn != NULL) {
+	if(conn->name)      free(conn->name);
+	if(conn->address)   free(conn->address);
+	if(conn->host)      free(conn->host);
+	if(conn->username)  free(conn->username);
+	if(conn->secret)    free(conn->secret);
+	if(conn->event_names)    free(conn->event_names);
 #if MG_ENABLE_SSL
-    if(conn->ssl_cert)  free(conn->ssl_cert);
-    if(conn->ssl_key)   free(conn->ssl_key);
+	if(conn->ssl_cert)  free(conn->ssl_cert);
+	if(conn->ssl_key)   free(conn->ssl_key);
 #endif
-    free(conn);
+	struct amiws_conn *conn_to_delete = conn;
+	conn = conn->next;
+	free(conn_to_delete);
+	conn_to_delete = NULL;
   }
 
   if (conf){
@@ -255,6 +267,7 @@ void free_conf(struct amiws_config *conf)
     if(conf->ssl_key) free(conf->ssl_key);
 #endif
     free(conf);
+    conf = NULL;
   }
 }
 

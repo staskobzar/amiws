@@ -29,11 +29,11 @@
 
 static struct mg_mgr mgr;
 static struct mg_serve_http_opts s_http_server_opts;
-struct mg_connection *nc_ws;
+struct mg_connection *nc_ws = NULL;
 
 void amiws_init(struct amiws_config *conf)
 {
-  char port_str[5];
+  char port_str[5]; memset(port_str, 0, sizeof(port_str));
   struct mg_bind_opts bind_opts;
 
   mg_mgr_init(&mgr, NULL);
@@ -155,9 +155,11 @@ void ami_ev_handler(struct mg_connection *nc,
       break;
 
     case MG_EV_CLOSE:
-      syslog (LOG_INFO, "MG_EV_CLOSE reconnect ... [%s] %s\n", conn->address, conn->name);
-      amiws_connect_ami_server(conn);
-      sleep(1);
+      if (!isExiting()) {
+	syslog (LOG_INFO, "MG_EV_CLOSE reconnect ... [%s] %d:%s\n", conn->address, conn->id, conn->name);
+	amiws_connect_ami_server(conn);
+	sleep(1);
+      }
       break;
 
     default:
@@ -184,9 +186,10 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
     case AMI_EVENT:
     case AMI_ACTION:
     case AMI_RESPONSE: {
-      AMIPacket *ami_pack;
+      AMIPacket *ami_pack = NULL;
       if ((ami_pack = amipack_parser_message(ami_pack_str)) == NULL) {
         syslog (LOG_ERR, "Failed to parse pack: %s", ami_pack_str);
+	if (buf) { free(buf); buf = NULL; }
         return NULL;
       }
       if (auth_fail(ami_pack)) {
@@ -198,6 +201,8 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
 	    for (AMIHeader *hdr = ami_pack->head; hdr; hdr = hdr->next) {
 		if (!strcmp(hdr->name, "Event")) {
 		    if (!strstr(conn->event_names, hdr->value)) {
+			if (buf) { free(buf); buf = NULL; }
+			if (ami_pack) amipack_destroy(ami_pack);
 			return NULL;
 		    }
 		    break;
@@ -212,7 +217,7 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
         }
       }
       json_printf(&out, "}}", 1);
-      amipack_destroy(ami_pack);
+      if (ami_pack) amipack_destroy(ami_pack);
       break;
     }
 
@@ -220,6 +225,7 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
       AMIPacket *ami_pack;
       if ((ami_pack = amipack_parser_command(ami_pack_str)) == NULL) {
         syslog (LOG_ERR, "Failed to parse command response: %s", ami_pack_str);
+        if (buf) { free(buf); buf = NULL; }
         return NULL;
       }
       syslog (LOG_DEBUG, "AMI Command Response.");
@@ -230,7 +236,7 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
         }
       }
       json_printf(&out, "}}", 1);
-      amipack_destroy(ami_pack);
+      if (ami_pack) amipack_destroy(ami_pack);
       break;
     }
 
@@ -238,6 +244,7 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
       AMIQueue *queue;
       if ((queue = amipack_parser_queue(ami_pack_str)) == NULL) {
         syslog (LOG_ERR, "Failed to parse queue: %s", ami_pack_str);
+        if (buf) { free(buf); buf = NULL; }
         return NULL;
       }
       json_printf(&out, "QueueName: %Q,", queue->name);
@@ -254,12 +261,12 @@ char *amipack_to_json(const char *ami_pack_str, int len, struct amiws_conn *conn
       json_printf(&out, "MembersCount: %d,", queue->members_size);
       json_printf(&out, "CallersCount: %d", queue->callers_size);
       json_printf(&out, "}}", 1);
-      amipack_queue_destroy(queue);
+      if (queue) amipack_queue_destroy(queue);
       break;
     }
     default:
       syslog (LOG_ERR, "Unknown AMI packet:\n%s", ami_pack_str);
-      if (buf) free(buf);
+      if (buf) { free(buf); buf = NULL; }
       return NULL;
       break;
   }
@@ -331,6 +338,7 @@ void ami_login(struct mg_connection *nc, struct amiws_conn *conn)
   syslog (LOG_INFO, "AMI login with user: %s to server: %s", conn->username, conn->name);
   mg_send(nc, pack_str, len);
 
+  if (pack_str) { free(pack_str); pack_str = NULL; }
   amipack_destroy (pack);
 }
 
