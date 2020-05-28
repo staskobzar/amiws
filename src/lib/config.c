@@ -40,11 +40,15 @@ struct amiws_config *read_conf(const char *filename)
 
  if (!yaml_parser_initialize (&parser)) {
     fprintf(stderr, "ERROR: Failed to initialize YAML parser.\n");
+    yaml_parser_delete(&parser);
+    ParseFree (scanner, free);
     return NULL;
   }
 
   if ( (fh = fopen( filename, "rb" )) == NULL ) {
     fprintf(stderr, "ERROR: file \"%s\" does not exists or can not be read.\n", filename);
+    yaml_parser_delete(&parser);
+    ParseFree (scanner, free);
     return NULL;
   }
 
