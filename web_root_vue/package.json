@@ -17,7 +17,7 @@
     "bootstrap": "^3.3.6",
     "bootstrap-vue": "^1.5.1",
     "flag-icon-css": "^2.9.0",
-    "highcharts": "^6.1.0",
+    "highcharts": "^7.2.2",
     "libphonenumber-js": "^0.4.52",
     "moment": "^2.22.1",
     "vue": "^2.5.16",
