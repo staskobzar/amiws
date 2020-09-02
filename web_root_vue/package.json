@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "bootstrap-vue": "^1.5.1",
+    "bootstrap-vue": "^2.0.0",
     "flag-icon-css": "^2.9.0",
     "highcharts": "^6.1.0",
     "libphonenumber-js": "^0.4.52",
