@@ -44,7 +44,7 @@ AS_IF([test "x$with_ssl" = "xyes"], [
   AC_SEARCH_LIBS([CRYPTO_new_ex_data], [eay32 crypto], [], [
                   AC_MSG_ERROR([crypto library not found])
                   ])
-  AC_SEARCH_LIBS([SSL_library_init], [ssleay32 ssl], [], [
+  AC_SEARCH_LIBS([SSL_new], [ssleay32 ssl], [], [
                   AC_MSG_ERROR([openssl library not found])
                   ])
   AC_SUBST([AM_CPPFLAGS], [-DMG_ENABLE_SSL])
