@@ -6,6 +6,17 @@
 
 #include "amiws.h"
 
+static int exiting = 0;
+
+int isExiting() {
+    return exiting;
+}
+
+void setExiting() {
+    exiting = 1;
+}
+
+
 static void scan_ami_packet_from_tcp (void **state)
 {
   (void) *state;
