@@ -46,7 +46,7 @@ Options:
 * ```openssl``` - TLS/SSL for AMI and HTTP. Only if compiled with ssl support.
 
 *amiws* relies on several greate projects:
-* [mogoose](https://github.com/cesanta/mongoose) - awesome embedded networking library from [Cesanta](https://www.cesanta.com/).
+* [mongoose](https://github.com/cesanta/mongoose) - awesome embedded networking library from [Cesanta](https://www.cesanta.com/).
 * [fozen](https://github.com/cesanta/frozen) - awesome JSON parser and emitter from [Cesanta](https://www.cesanta.com/).
 * [re2c](http://re2c.org/) - awesome lexer generator for AMI protocol implementation. 
 * [cmocka](https://cmocka.org/) - awesome unit testing framework for C.
