@@ -14,7 +14,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "bootstrap": "^3.3.6",
+    "bootstrap": "^3.4.1",
     "bootstrap-vue": "^2.0.0",
     "flag-icon-css": "^2.9.0",
     "highcharts": "^9.0.0",
