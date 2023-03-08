@@ -26,6 +26,7 @@
  */
 
 #include "amiws.h"
+#include "linked_str_stack.h"
 
 static struct mg_mgr mgr;
 static struct mg_serve_http_opts s_http_server_opts;
@@ -384,6 +385,10 @@ int scan_amipack( const char *p,
   return found ? i + 3 : 0;
 }
 
+typedef struct CallbackData_ {
+    AMIPacket *pack;
+    LinkedStrStack *stack;
+} CallbackData;
 
 static void send_ami_action(struct websocket_message *wm,
                             struct mg_connection *nc)
@@ -391,13 +396,20 @@ static void send_ami_action(struct websocket_message *wm,
   char *p_str = NULL;
   size_t len;
   struct mg_connection *c;
-  AMIPacket *pack = (AMIPacket *) amipack_init ();
+  AMIPacket *pack = amipack_init();
 
-  if(json_walk((const char*)wm->data, wm->size, json_scan_cb, (void*)pack) < (int)wm->size ){
-    syslog (LOG_ERR, "Invalid JSON string: %.*s", (int)wm->size, wm->data);
+  CallbackData callback_data;
+  callback_data.pack = pack;
+  callback_data.stack = linked_str_stack_create();
+
+  if (json_walk((const char *) wm->data, wm->size, json_scan_cb, (void *) &callback_data) < (int) wm->size) {
+    syslog(LOG_ERR, "Invalid JSON string: %.*s", (int) wm->size, wm->data);
     amipack_destroy(pack);
+    linked_str_stack_destroy(callback_data.stack);
     return;
   }
+
+  linked_str_stack_destroy(callback_data.stack);
 
   len = amipack_to_str(pack, &p_str);
   syslog (LOG_DEBUG, "Converted to AMI packet from JSON:\n %.*s", (int)len, p_str);
@@ -428,7 +440,13 @@ static void json_scan_cb( void *callback_data,
                           const char *path,
                           const struct json_token *token)
 {
-  AMIPacket *pack = (AMIPacket*) callback_data;
+  char *hdr_name;
+  size_t name_size;
+
+  CallbackData *data = (CallbackData *) callback_data;
+  AMIPacket *pack = data->pack;
+  LinkedStrStack *stack = data->stack;
+
   switch(token->type) {
     case JSON_TYPE_STRING:
     case JSON_TYPE_NUMBER:
@@ -439,9 +457,27 @@ static void json_scan_cb( void *callback_data,
         pack->sid = atoi(token->ptr);
         syslog (LOG_DEBUG, "AMI server header AMIServerID: %d", pack->sid);
       } else {
-        amipack_append(pack, strndup(name, name_len), name_len,
-                             strndup(token->ptr, token->len), token->len);
+        name_size = linked_str_stack_peek(stack, &hdr_name);
+        if(hdr_name != NULL)
+          hdr_name = strndup(hdr_name, name_size);
+        else {
+          hdr_name = strndup(name, name_len);
+          name_size = name_len;
+        }
+
+        amipack_append(pack, hdr_name, name_size,
+                       strndup(token->ptr, token->len), token->len);
       }
+      break;
+    case JSON_TYPE_ARRAY_START:
+      linked_str_stack_push(stack, strndup(name, name_len), name_len);
+      break;
+    case JSON_TYPE_OBJECT_START:
+      linked_str_stack_push(stack, NULL, 0);
+      break;
+    case JSON_TYPE_OBJECT_END:
+    case JSON_TYPE_ARRAY_END:
+      linked_str_stack_pull(stack);
       break;
     default: break;
   }
