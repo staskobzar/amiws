@@ -1,4 +1,4 @@
-## amiws - Asterisk Manager Iterface (AMI) to web-socket proxy
+## amiws - Asterisk Manager Interface (AMI) to web-socket proxy
 
 [![Build Status](https://travis-ci.org/staskobzar/amiws.svg?branch=master)](https://travis-ci.org/staskobzar/amiws)
 ![](https://img.shields.io/badge/license-GPL_3-green.svg "License")
@@ -7,7 +7,7 @@
 
 
 ### Introduction
-*amiws* is simple proxy from AMI to WEB. It can connect to one or more Asterisk PBXs via AMI (Asterisk Manager Interface), read messages from AMI stream and send actions/commands to it. Received messages are parsed and converted to JSON. 
+*amiws* is simple proxy from AMI to WEB. It can connect to one or more Asterisk PBXs via AMI (Asterisk Manager Interface), read messages from AMI stream and send actions/commands to it. Received messages are parsed and converted to JSON.
 *amiws* also provides HTTP/WebSocket interface and sends JSON messages to all connected users via HTTP.
 
 
@@ -15,7 +15,7 @@ Here is simple workflow scheme:
 ![amiws workflow](https://github.com/staskobzar/amiws/blob/master/doc/amiws.workflaw.png)
 
 
-*amiws* proxy can help to build interctive, realtime dashboards for Asterisk PBX single or multiple servers. The example of a simple dashboard can be found in directory "web_root". Here is how it would look like when connecting two Asterisk PBXs:
+*amiws* proxy can help to build interactive, real-time dashboards for Asterisk PBX single or multiple servers. The example of a simple dashboard can be found in directory "web_root". Here is how it would look like when connecting two Asterisk PBXs:
 ![web interface](https://github.com/staskobzar/amiws/blob/master/doc/amiws.user.screen.png)
 
 
@@ -24,8 +24,8 @@ Here is simple workflow scheme:
 * Plain TCP or SSL/TLS connection to AMI
 * Logging with syslog
 * HTTP and WebSocket server
-* SSL/TLS encypted connection for HTTP and WebSocket
-* WWW Digest authenticatation with username/password for HTTP(s)
+* SSL/TLS encrypted connection for HTTP and WebSocket
+* WWW Digest authentication with username/password for HTTP(s)
 * YAML configuration file
 
 
@@ -47,12 +47,12 @@ Options:
 
 *amiws* relies on several greate projects:
 * [mongoose](https://github.com/cesanta/mongoose) - awesome embedded networking library from [Cesanta](https://www.cesanta.com/).
-* [fozen](https://github.com/cesanta/frozen) - awesome JSON parser and emitter from [Cesanta](https://www.cesanta.com/).
-* [re2c](http://re2c.org/) - awesome lexer generator for AMI protocol implementation. 
+* [frozen](https://github.com/cesanta/frozen) - awesome JSON parser and emitter from [Cesanta](https://www.cesanta.com/).
+* [re2c](http://re2c.org/) - awesome lexer generator for AMI protocol implementation.
 * [cmocka](https://cmocka.org/) - awesome unit testing framework for C.
 * [lemon](http://www.hwaci.com/sw/lemon/lemon.html) - parser generator to process YAML tokens
 
-They do not need to me installed. *mongoose* and *frozen* are already included. *re2c* and *cmocka* are only needed for developers.
+They do not need to be installed. *mongoose* and *frozen* are already included. *re2c* and *cmocka* are only needed for developers.
 
 ### Building and install
 ```
@@ -79,12 +79,12 @@ To run unit tests (requires cmocka):
 make check
 ```
 
-This repo also provides init scripts for [System V](https://github.com/staskobzar/amiws/blob/master/etc/amiws.sysv.init) 
+This repo also provides init scripts for [System V](https://github.com/staskobzar/amiws/blob/master/etc/amiws.sysv.init)
 and [systemctl](https://github.com/staskobzar/amiws/blob/master/etc/amiws.service) in "etc/" directory.
 
 ### Configuration
 
-Program behaviour is controlled by configuration file. Configuration parameters are described in sample file ["amiws.annotated.yaml"](https://github.com/staskobzar/amiws/blob/master/etc/amiws.annotated.yaml) in directory "etc" of this repository. 
+Program behaviour is controlled by configuration file. Configuration parameters are described in sample file ["amiws.annotated.yaml"](https://github.com/staskobzar/amiws/blob/master/etc/amiws.annotated.yaml) in directory "etc" of this repository.
 
 ### JSON message
 
@@ -137,17 +137,17 @@ _AMI message types_:
 
 AMI description in details can be found in [Asterisk wiki](https://wiki.asterisk.org/wiki/display/AST/Home).
 
-*amiws* also accepts JSON messages and send them back to all Asterisk servers:
+*amiws* also accepts JSON messages and sends them back to all Asterisk servers:
 ```javascript
 sock.send(JSON.stringify({"Action": "CoreStatus", "ActionID": "12345"}));
 ```
 Beware that this will send same Action to all AMI servers!
 
-Keep this in mind when you deploy *amiws* within public Internet and protect access to it.
+Keep this in mind when you deploy *amiws* on public Internet and protect access to it.
 
 #### Special header AMIServerID
 To send message to specified AMI server you can use header ```AMIServerID```.
-The is should correspond to the ```server_id``` in requests.
+This should correspond to the ```server_id``` in requests.
 
 Example:
 ```javascript
@@ -174,9 +174,9 @@ http://staskobzar.blogspot.ca/2017/05/amiws-asterisk-manager-iterface-to-web.htm
 Some more information can be found in annotated configuration file.
 
 ### Digest Authentication
-HTTP content can be protected with username/password. When this option is enabled, then anyone trying access web-page, will have to provide username and password to proceed.
+HTTP content can be protected with username/password. When this option is enabled, anyone trying to access web-page will have to provide username and password to proceed.
 
-Configuration paramers to set are:
+Configuration parameters to set are:
 ```
 auth_domain   : example.com
 auth_file     : /var/www/.htaccess
