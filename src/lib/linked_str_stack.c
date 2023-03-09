@@ -18,6 +18,13 @@
  * along with amiws.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file linked_str_stack.c
+ * @brief Linked stack of strings implementation
+ *
+ * @author Kohanis
+ */
+
 #include <malloc.h>
 #include <assert.h>
 

@@ -18,6 +18,13 @@
  * along with amiws.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file linked_str_stack.h
+ * @brief Linked stack of strings implementation interface
+ *
+ * @author Kohanis
+ */
+
 #ifndef __AMIWS_linked_str_stack_H
 #define __AMIWS_linked_str_stack_H
 

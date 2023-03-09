@@ -154,6 +154,19 @@ Example:
 sock.send(JSON.stringify({"Action": "CoreStatus", "AMIServerID": 1}));
 ```
 
+#### Sending multiple variables
+In some cases, you will need to send multiple variables. This can be done with a list:
+
+Example:
+```javascript
+sock.send(JSON.stringify({"Action": "CoreStatus", "Variable": ["Trunk=provider07", "Hop=hop315"]}));
+```
+
+List is unnecessary when there is only one variable:
+```javascript
+sock.send(JSON.stringify({"Action": "CoreStatus", "Variable": "Trunk=provider07"}));
+```
+
 ### SSL/TLS transport
 SSL/TLS transport usage is described in this blog article:
 http://staskobzar.blogspot.ca/2017/05/amiws-asterisk-manager-iterface-to-web.html
