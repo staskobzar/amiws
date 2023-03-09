@@ -19,7 +19,7 @@
  */
 
 /**
- * @file amiws.h
+ * @file amipack.h
  * @brief AMI (Asterisk Management Interface) messages
  * read/create functions interface.
  * AMI packet is implemented as linked list of headers.
